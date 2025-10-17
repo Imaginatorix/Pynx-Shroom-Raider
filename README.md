@@ -85,7 +85,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ### 🎮 Controls
 
-<table width="100%">
+<table>
     <tr>
         <th>Key</th>
         <th>Action</th>
@@ -127,7 +127,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ### 🧱 Tiles and Items Overview
 
-<table width="100%">
+<table>
     <tr>
         <th>UI</th>
         <th>ASCII</th>
@@ -192,7 +192,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ---
 
-## 🧑‍💻 About Codebase {#about-codebase}
+<h2 id="about-codebase">🧑‍💻 About Codebase</h2>
 
 ### 📁 Directory Structure
 
@@ -242,7 +242,7 @@ pytest
 
 ### 🚨 Test Coverage
 
-<table width="100%">
+<table>
     <tr>
         <th>Test File</th>
         <th>Description</th>
@@ -269,7 +269,7 @@ The tests:
 
 ## ⭐ Bonus Features
 
-<table width="100%">
+<table>
     <tr>
         <th>Feature</th>
         <th>Description</th>
