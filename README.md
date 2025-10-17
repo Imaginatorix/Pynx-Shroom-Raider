@@ -10,11 +10,10 @@ A terminal-based adventure game written in **Python 3**, where you play as **Lar
 <!-- <video src=''></video> -->
 
 ---
-
 ## 📘 Table of Contents
 1. [🕹️ User Manual](#️-user-manual)
     - [🚩 Goal](#-goal)
-    - [🏃 How to Run the Game](#️-how-to-run-the-game)
+    - [🏃 How to Run the Game](#-how-to-run-the-game)
     - [🎮 Controls](#-controls)
 2. [⚙️ Mechanics](#️-mechanics)
     - [🧱 Tiles and Items Overview](#-tiles-and-items-overview)
@@ -22,7 +21,7 @@ A terminal-based adventure game written in **Python 3**, where you play as **Lar
     - [📁 Directory Structure](#-directory-structure)
     - [🤔 How It Works](#-how-it-works)
 4. [🧪 Unit Testing](#-unit-testing)
-    - [🏃 Running the Tests](#️-running-the-tests)
+    - [🏃 Running the Tests](#-running-the-tests)
     - [🚨 Test Coverage](#-test-coverage)
     - [➕ Adding New Tests](#-adding-new-tests)
 5. [⭐ Bonus Features](#-bonus-features)
@@ -30,13 +29,23 @@ A terminal-based adventure game written in **Python 3**, where you play as **Lar
 7. [👥 Team Information](#-team-information)
 8. [⚖️ License & Copyright](#️-license--copyright)
 
+<!-- For the tables below -->
+<style>
+    table {
+        width: 100%;
+    }
+</style>
+
+---
 
 ## 🕹️ User Manual
 
 ### 🚩 Goal
+
 Navigate through a forest grid, collect every mushroom 🍄 while avoiding falling victim to the dangerous external elements (e.g. water 🟦).
 
 ### 🏃 How to Run the Game
+
 1. Clone the repository
     ```bash
     git clone https://github.com/Imaginatorix/Pynx-Shroom-Raider.git
@@ -48,6 +57,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
     ```
 3. Play!
     - **Option 1: Adventure Mode**
+
         Play directly from your terminal:
         ```bash
         python3 shroom_raider.py
@@ -55,6 +65,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         This goes through all the levels in order.
 
     - **Option 2: Play a Specific Stage**
+
         ```bash
         python3 shroom_raider.py -f <stage_file>
         ```
@@ -64,6 +75,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         ```
 
     - **Option 3: Automated Mode**
+
         Run a game using a sequence of moves and output the final result:
         ```bash
         python3 shroom_raider.py -f <stage_file> -m <string_of_moves> -o <output_file>
@@ -79,7 +91,8 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         - Write the final state and result (`CLEAR` or `NO CLEAR`) to `result.txt`.
 
 ### 🎮 Controls
-<table style="width:100%">
+
+<table>
     <tr>
         <th>Key</th>
         <th>Action</th>
@@ -120,7 +133,8 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 ## ⚙️ Mechanics
 
 ### 🧱 Tiles and Items Overview
-<table style="width:100%">
+
+<table>
     <tr>
         <th>UI</th>
         <th>ASCII</th>
@@ -188,6 +202,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 ## 🧑‍💻 About Codebase
 
 ### 📁 Directory Structure
+
 ```bash
 shroom_raider/
 │
@@ -215,6 +230,7 @@ shroom_raider/
 ```
 
 ### 🤔 How It Works
+
 <!-- ![Flowchart](./assets/flowchart.drawio.svg) -->
 <!-- How your algorithm works and how that step is implemented -->
 
@@ -225,13 +241,15 @@ shroom_raider/
 Unit tests are written using `pytest`, as required.
 
 ### 🏃 Running the Tests
+
 To execute all tests, run:
 ```bash
 pytest
 ```
 
 ### 🚨 Test Coverage
-<table style="width:100%">
+
+<table>
     <tr>
         <th>Test File</th>
         <th>Description</th>
@@ -249,6 +267,7 @@ The tests:
 - And other criteria for thoroughness
 
 ### ➕ Adding New Tests
+
 <!-- Still studying how pytest works -->
 1. Create a new file under `tests/` starting with `test_`.
 2. Run `pytest` again to verify!
@@ -256,7 +275,8 @@ The tests:
 ---
 
 ## ⭐ Bonus Features
-<table style="width:100%">
+
+<table>
     <tr>
         <th>Feature</th>
         <th>Description</th>
@@ -267,7 +287,8 @@ The tests:
     </tr>
 </table>
 
-## References
+## 📚 References
+
 The following resources were used in creating this project:
 - [Python Documentation](https://docs.python.org/3/)
 - [Pytest Framework Docs](https://docs.pytest.org/en/stable/)
@@ -276,9 +297,13 @@ The following resources were used in creating this project:
     - String-Terminal Interaction Information [1](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python) [2](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
 
 ## 👥 Team Information
+
 **Course:** CS 11 - Introduction to Computer Science 1
+
 **Section:** 25.1
+
 **Project:** Shroom Raider
+
 **Institution:** University of the Philippines Diliman
 
 **Developed by:**
@@ -287,4 +312,5 @@ The following resources were used in creating this project:
 - 👤 Jumawan, Edward Isaac
 
 ## ⚖️ License & Copyright
+
 See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
