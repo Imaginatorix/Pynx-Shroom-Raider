@@ -17,7 +17,7 @@ A terminal-based adventure game written in **Python 3**, where you play as **Lar
     - [🎮 Controls](#-controls)
 2. [⚙️ Mechanics](#️-mechanics)
     - [🧱 Tiles and Items Overview](#-tiles-and-items-overview)
-3. [🧑‍💻 About Codebase](#-about-codebase)
+3. [🧑‍💻 About Codebase](#about-codebase)
     - [📁 Directory Structure](#-directory-structure)
     - [🤔 How It Works](#-how-it-works)
 4. [🧪 Unit Testing](#-unit-testing)
@@ -28,13 +28,6 @@ A terminal-based adventure game written in **Python 3**, where you play as **Lar
 6. [📚 References](#-references)
 7. [👥 Team Information](#-team-information)
 8. [⚖️ License & Copyright](#️-license--copyright)
-
-<!-- For the tables below -->
-<style>
-    table {
-        width: 100%;
-    }
-</style>
 
 ---
 
@@ -92,7 +85,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ### 🎮 Controls
 
-<table>
+<table width="100%">
     <tr>
         <th>Key</th>
         <th>Action</th>
@@ -134,7 +127,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ### 🧱 Tiles and Items Overview
 
-<table>
+<table width="100%">
     <tr>
         <th>UI</th>
         <th>ASCII</th>
@@ -199,7 +192,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ---
 
-## 🧑‍💻 About Codebase
+## 🧑‍💻 About Codebase {#about-codebase}
 
 ### 📁 Directory Structure
 
@@ -249,7 +242,7 @@ pytest
 
 ### 🚨 Test Coverage
 
-<table>
+<table width="100%">
     <tr>
         <th>Test File</th>
         <th>Description</th>
@@ -276,7 +269,7 @@ The tests:
 
 ## ⭐ Bonus Features
 
-<table>
+<table width="100%">
     <tr>
         <th>Feature</th>
         <th>Description</th>
