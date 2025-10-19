@@ -19,33 +19,33 @@ def userInput(maxRange,prevLoc,item,mush):
     colMush=set()
     if not command:
         return
-    if all(x in possibleInputs for x in set(command)):
-        output=[]
-        for action in command:
-            if action=="E":
-                output.append("End")
-            elif action=="!":
-                prevLoc=(0,0)
+    output=[]
+    for action in command:
+        if action not in possibleInputs:
+            print("Invalid input detected")
+            return [output,item,colMush]
+        if action=="E":
+            output.append("End")
+        elif action=="!":
+            prevLoc=(0,0)
+            output.append(prevLoc)
+            item=""
+        elif action=="P":
+            if prevLoc not in itemsDict:
+                return 
+            if item:
+                ...#drop current item
+            item=itemsDict[prevLoc]
+        else:
+            x,y=prevLoc
+            i,j=possibleInputs[action]
+            if 0<=x+i<=maxRange[0] and 0<=y+j<=maxRange[1]:
+                prevLoc=(x+i,y+j)
                 output.append(prevLoc)
-                item=""
-            elif action=="P":
-                if prevLoc not in itemsDict:
-                    return 
-                if item:
-                    ...#drop current item
-                item=itemsDict[prevLoc]
-            else:
-                x,y=prevLoc
-                i,j=possibleInputs[action]
-                if 0<=x+i<=maxRange[0] and 0<=y+j<=maxRange[1]:
-                    prevLoc=(x+i,y+j)
-                    output.append(prevLoc)
-                    if prevLoc in mush:
-                        mush.remove(prevLoc)
-                        colMush.add(prevLoc)
-        return [output,item,colMush]
-    else:
-        return 
+                if prevLoc in mush:
+                    mush.remove(prevLoc)
+                    colMush.add(prevLoc)
+    return [output,item,colMush]
 
 while True:
     inp=userInput(mapSize,currentLoc,currentItem,mushrooms)
