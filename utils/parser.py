@@ -1,7 +1,7 @@
 def get_locations(grid):
     locations = {}
     for i, line in enumerate(grid):
-        for j, c in enumerate(line):
+        for j, c in enumerate(line.strip()):
             if not c in locations:
                 locations[c] = []
             locations[c].append((i, j))

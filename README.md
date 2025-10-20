@@ -2,9 +2,17 @@
 # 🍄 Pynx-Shroom-Raider
 **Version 0.0.0** *subject to change*
 
-A terminal-based adventure game written in **Python 3**, where you play as **Laro Craft**, an experienced mushroom gatherer exploring a mysterious forest while avoiding dangerous elements that may come her way.
+A terminal-based adventure game written in **Python 3**, where you play as **Laro Craft**,  a passionate mushroom collector and daring adventurer exploring a mysterious forest while avoiding dangerous elements that may come his way.
 
-**Laro Craft** comes from the humble village of *Wyndon*; however, her grandfather fell into sickness and it was said that a rare mushroom can cure it. Will you help her traverse the dangerous wilderness and find the cure?
+**Laro Craft** comes from the humble village of *Kalikasan*; Laro is a devoted Filipino grandson, he embarks on a quest to heal his sick grandmother by crafting a legendary potion known as the Mighty Concoction **(a mixed of different ingredients)** that was made from rare and powerful mushrooms scattered across mystical, seasonal, and majestical land that is still unknown amongst Filipinos.
+
+In the heart of the **“𝐋𝐢𝐛𝐥𝐢𝐛” 𝐚𝐧𝐝 “𝐊𝐚𝐬𝐮𝐥𝐮𝐤𝐬𝐮𝐥𝐮𝐤𝐚𝐧𝐠”** village of Kalikasan, there lies a simple *𝐛𝐚𝐡𝐚𝐲-𝐤𝐮𝐛𝐨* positioned beneath the shade of ancient balete trees. Within it resides an old but daring Lola whose wisdom once guided generations, now silenced by a mysterious illness that drains her strength with each passing moon.
+
+No one knows what this mysterious illness might be, but…
+
+Legends whisper of a cure: the 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍...
+
+Will you help him traverse the dangerous wilderness and find the cure?
 
 **🫣 Sneak Peek**
 <!-- <video src=''></video> -->
