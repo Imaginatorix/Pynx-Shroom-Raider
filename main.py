@@ -1,5 +1,10 @@
 #import level size and origloc
-#Level Map Data
+#Level Map 
+game_info={}
+locations={}
+animations={"user":[],"rocks":[],}
+currentItem="none"
+
 mapSize=(30,30) #added
 origLoc=(0,0) #added
 mushrooms={(3,3),(4,4)} #added
@@ -9,9 +14,8 @@ water=((1,1),)
 pavetile=((),)
 rocks=((),)
 itemsDict={(0,0):"Axe",(1,1):"Flamethrower"} #added
-currentLoc=origLoc
-currentItem="none"
 
+currentLoc=origLoc#currentloc = user[]
 
 def userInput(maxRange,prevLoc,item,mush):
     command=tuple(ch for ch in tuple(input("What will you do? ").upper()) if ch !=" ")
@@ -72,8 +76,6 @@ while True:
         break
 
 #to be added: item and environment interactions
-
-
 
 #added better input logic and tested edge cases
 #added temporary exit 
