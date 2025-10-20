@@ -1,0 +1,12 @@
+SPRING: Lvl 2
+
+"TTTTTTTTT",
+"T.....~+T",
+"T...R.TTT",
+"T.....T.T",
+"T.x.....T",
+"T.~.....T",
+"T.~.....T",
+"T..*TTT.T",
+"TL......T",
+"TTTTTTTTT"
