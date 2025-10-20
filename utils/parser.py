@@ -26,6 +26,6 @@ def parse_lvl(filename):
     return (level_info, locations)
 
     
-print(parse_lvl("levels/spring/1(10,10).txt"))
+print(parse_lvl("levels/spring/Level_1_easy.txt"))
 
 
