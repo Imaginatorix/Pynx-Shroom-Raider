@@ -48,23 +48,33 @@ ASCII_UI_CONVERSIONS = {
 
 
 # === CREATE SCREEN MAP UI ===
-def create_map_ui(map_ascii: tuple[str]) -> tuple[str]:
-    return tuple(
-        ''.join(ASCII_UI_CONVERSIONS[char] for char in row)
-        for row in map_ascii
-    )
+def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, int]]]) -> tuple[str]:
+    r, c = size
+    # Generate empty map
+    map_ui = []
+    for i in range(r):
+        map_ui.append([""]*c)
+
+    # Record overlays (specifically, those on character cell which information is lost upon UI creation)
+    character_location = locations['L'][0]
+    character_cell = []
+    for c, coord in locations.items():
+        for i, j in coord:
+            if (i, j) == character_location and c != 'L':
+                character_cell.append(ASCII_UI_CONVERSIONS[c])
+            # Set cell to higher priority (for now, only character)
+            if not map_ui[i][j] or c == 'L':
+                map_ui[i][j] = ASCII_UI_CONVERSIONS[c]
+
+    # Join row completely to a string
+    for i in range(r):
+        map_ui[i] = ''.join(map_ui[i])
+
+    return map_ui, character_cell
 
 
 # === CREATE SCREEN INSTRUCTIONS ===
-def create_instructions(
-        current_mushrooms: int,
-        total_mushrooms: int,
-        on_floor: None|str = None,
-        in_hand: None|str = None,
-        game_end: bool = False,
-        win: bool = False
-    ) -> tuple[str]:
-
+def create_instructions(level_info: dict[str: list[tuple[int, int]]], character_cell: str) -> tuple[str]:
     # Header
     header = (
         "=== SHROOM RAIDER ===",
@@ -74,7 +84,7 @@ def create_instructions(
 
     # Default instructions
     default_instructions = (
-        f"{current_mushrooms} out of {total_mushrooms} mushroom(s) collected"
+        f"{level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s) collected"
         "",
         "[W] Move up",
         "[A] Move left",
@@ -82,14 +92,14 @@ def create_instructions(
         "[D] Move right",
         "[!] Reset",
         "",
-        "No items here" if not on_floor else f"[P] Pick up {on_floor}",
-        "Not holding anything" if not in_hand else f"Currently holding {in_hand}",
+        "No items here" if not character_cell else f"[P] Pick up {character_cell}",
+        "Not holding anything" if not level_info['inventory'] else f"Currently holding {', '.join(level_info['inventory'][0])}",
         "",
     )
 
     # Win instructions
     win_message = (
-        f"You collected {current_mushrooms} out of {total_mushrooms} mushroom(s)",
+        f"You collected {level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s)",
         "You win!",
         ""
     )
@@ -99,28 +109,21 @@ def create_instructions(
         "You lost!",
     )
 
-    if game_end:
-        return header+win_message if win else header+lose_message
+    if level_info['game_end']:
+        return header+win_message if level_info['game_win'] else header+lose_message
     return header+default_instructions
 
 
 # === CREATE SCREEN ===
-def show_screen(
-        map_ascii: tuple[str],
-        current_mushrooms: int,
-        total_mushrooms: int,
-        on_floor: None|str = None,
-        in_hand: None|str = None,
-        game_end: bool = False,
-        win: bool = False
-    ) -> None:
-
+def show_screen(level_info: tuple[str], locations: dict[str: list[tuple[int, int]]]) -> None:
     # Check width of terminal
     terminal_columns = shutil.get_terminal_size()[0]
 
     # Create what needs to be placed in screen
-    map_ui = create_map_ui(map_ascii)
-    instructions = create_instructions(current_mushrooms, total_mushrooms, on_floor, in_hand, game_end, win)
+    ## The Map
+    map_ui, character_cell = create_map_ui(level_info["size"], locations)
+    ## The Instructions
+    instructions = create_instructions(level_info, character_cell)
 
     # Calculate width to determine screen arrangement
     map_width = wcswidth(map_ui[0])
@@ -136,34 +139,9 @@ def show_screen(
         for instructions_row in instructions:
             print(instructions_row)
     else:
+        map_gap = ' '*map_width
         # Print both at the same time
         for map_row, instructions_row in itertools.zip_longest(map_ui, instructions):
-            map_row = map_row if map_row else settings.SPACE*settings.MAP_INSTRUCTIONS_GAP
-            instructions_row = instructions_row if instructions_row else settings.SPACE*settings.MAP_INSTRUCTIONS_GAP
+            map_row = map_row if map_row else map_gap
+            instructions_row = instructions_row if instructions_row else ''
             print(map_row + screen_gap + instructions_row)
-
-
-map_ascii = (
-"TTTTTTTTTTTTTTTTTT",
-"T........T.......T",
-"T........~.......T",
-"T.x......T.......T",
-"T..TT....T....+..T",
-"T.T+T....T.......T",
-"T.TT.....TTTTTTTTT",
-"T........R.......T",
-"T................T",
-"T...........*....T",
-"T...TT...........T",
-"T.....T..........T",
-"T......T.......TTT",
-"TTTT...TTTT......T",
-"T...T....~.T..R..T",
-"T.L.T...TT.....T~T",
-"T...TTT..T....T+.T",
-"T........T....T..T",
-"T........T....T..T",
-"TTTTTTTTTTTTTTTTTT",
-)
-
-show_screen(map_ascii, 0, 10)

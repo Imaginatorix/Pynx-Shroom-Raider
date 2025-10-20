@@ -76,6 +76,7 @@ while True:
         break
 
 #to be added: item and environment interactions
+#change logic by splitting inputs into individual characters, check first if valid
 
 #added better input logic and tested edge cases
 #added temporary exit 
