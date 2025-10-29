@@ -12,20 +12,16 @@ def get_level_info(grid, locations):
         "size": (len(grid), len(grid[0])),
         "mushroom_collected": 0,
         "mushroom_total": len(locations['+']),
-        "game_win": False,
         "game_end": False,
-        "inventory": []
+        "inventory": None
     }
 
-def parse_lvl(filename):
+def parse_level(filename):
     with open(filename, 'r') as f:
         grid = f.readlines()
         locations = get_locations(grid)
     level_info = get_level_info(grid, locations)
-
+    level_info["original_location"] = locations["L"]
     return (level_info, locations)
-
-    
-print(parse_lvl("levels/spring/Level_1_easy.txt"))
 
 

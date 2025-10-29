@@ -1,83 +1,40 @@
 #import level size and origloc
-#Level Map 
-game_info={}
-locations={}
-animations={"user":[],"rocks":[],}
-currentItem="none"
+#Level Map
+from utils.parser import parse_level
+from utils.movement import user_input
+from utils.ui import show_screen 
 
-mapSize=(30,30) #added
-origLoc=(0,0) #added
-mushrooms={(3,3),(4,4)} #added
-collectedMush=set() #added
-trees=((2,2),(5,5))
-water=((1,1),)
-pavetile=((),)
-rocks=((),)
-itemsDict={(0,0):"Axe",(1,1):"Flamethrower"} #added
-
-currentLoc=origLoc#currentloc = user[]
-
-def userInput(maxRange,prevLoc,item,mush):
-    command=tuple(ch for ch in tuple(input("What will you do? ").upper()) if ch !=" ")
-    possibleInputs={"W":(0,-1),"A":(-1,0),"S":(0,1),"D":(1,0),"!":None, "P":None,"E":None}
-    colMush=set()
-    if not command:
-        return
-    output=[]
-    for action in command:
-        if action not in possibleInputs:
-            print("Invalid input detected")
-            return [output,item,colMush]
-        if action=="E":
-            output.append("End")
-        elif action=="!":
-            prevLoc=(0,0)
-            output.append(prevLoc)
-            item=""
-        elif action=="P":
-            if prevLoc not in itemsDict:
-                return 
-            if item:
-                ...#drop current item
-            item=itemsDict[prevLoc]
-        else:
-            x,y=prevLoc
-            i,j=possibleInputs[action]
-            if 0<=x+i<=maxRange[0] and 0<=y+j<=maxRange[1]:
-                prevLoc=(x+i,y+j)
-                output.append(prevLoc)
-                if prevLoc in mush:
-                    mush.remove(prevLoc)
-                    colMush.add(prevLoc)
-    return [output,item,colMush]
+level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
+show_screen(level_info, locations)
 
 while True:
-    inp=userInput(mapSize,currentLoc,currentItem,mushrooms)
-    if inp==None:
+    actions = user_input(level_info["size"], level_info["inventory"], level_info["original_location"], locations)
+    if not actions:
+        show_screen(level_info, locations)
         print("Invalid input. Try again.")
-    elif "End" in inp[0]:
-        print("Test end")
-        break
+    elif "End" in actions[0]:
+        level_info["game_end"] = True
     else:
-        if inp[0]==[]:
-            inp[0]=[currentLoc,]
-        print(inp)#pass to ui
-        currentLoc=inp[0][-1]
-        currentItem=inp[1]
-        collectedMush|=inp[2]
-        mushrooms-=inp[2]
-        print(f"""
-        location: {currentLoc}
-        item: {currentItem}
-        collected: {collectedMush}
-        remaining: {mushrooms}""")
-    if not mushrooms:
-        print("Level done !")
+        for current_locations, inventory in actions:
+            level_info["inventory"] = inventory
+            locations = current_locations
+            if locations["L"][0] in locations["T"]:
+                show_screen(level_info, locations)
+                print("Invalid input. Try again.")
+                continue
+            if locations["L"][0] in locations["+"]:
+                locations["+"].remove(locations["L"][0])
+                level_info["mushroom_collected"] += 1
+            show_screen(level_info, locations)
+            if level_info["mushroom_collected"] == level_info["mushroom_total"]:
+                print("You've won !")
+                level_info["game_end"] = True
+                break
+            if level_info["game_end"]:
+                break
+    if level_info["game_end"]:
+        print("Game ended !")
         break
 
 #to be added: item and environment interactions
 #change logic by splitting inputs into individual characters, check first if valid
-
-#added better input logic and tested edge cases
-#added temporary exit 
-#added mushroom logic
