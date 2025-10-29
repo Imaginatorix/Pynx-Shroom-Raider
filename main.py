@@ -44,3 +44,4 @@ while True:
 
 #to be added: item and environment interactions
 #change logic by splitting inputs into individual characters, check first if valid
+#TODO: change name, add testing and fix rocks
