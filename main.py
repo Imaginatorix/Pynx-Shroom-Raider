@@ -7,6 +7,7 @@ from time import sleep
 from copy import deepcopy
 
 level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
+locations["_"]=[]
 original_locations=deepcopy(locations)
 show_screen(level_info, locations)
 
