@@ -2,13 +2,16 @@
 #Level Map
 from utils.parser import parse_level
 from utils.movement import user_input
-from utils.ui import show_screen 
+from utils.ui import show_screen
+from time import sleep
+from copy import deepcopy
 
 level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
+original_locations=deepcopy(locations)
 show_screen(level_info, locations)
 
 while True:
-    actions = user_input(level_info["size"], level_info["inventory"], level_info["original_location"], locations)
+    actions = user_input(level_info["size"], level_info["inventory"], locations, original_locations)
     if not actions:
         show_screen(level_info, locations)
         print("Invalid input. Try again.")
@@ -19,21 +22,23 @@ while True:
             level_info["inventory"] = inventory
             locations = current_locations
             if locations["L"][0] in locations["T"]:
+                sleep(0.1)
                 show_screen(level_info, locations)
                 print("Invalid input. Try again.")
                 continue
             if locations["L"][0] in locations["+"]:
                 locations["+"].remove(locations["L"][0])
                 level_info["mushroom_collected"] += 1
+            sleep(0.1)
             show_screen(level_info, locations)
             if level_info["mushroom_collected"] == level_info["mushroom_total"]:
-                print("You've won !")
+                print("You've won!")
                 level_info["game_end"] = True
                 break
             if level_info["game_end"]:
                 break
     if level_info["game_end"]:
-        print("Game ended !")
+        print("Game ended!")
         break
 
 #to be added: item and environment interactions

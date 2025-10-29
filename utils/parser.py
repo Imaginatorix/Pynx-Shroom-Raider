@@ -21,7 +21,6 @@ def parse_level(filename):
         grid = f.readlines()
         locations = get_locations(grid)
     level_info = get_level_info(grid, locations)
-    level_info["original_location"] = locations["L"]
     return (level_info, locations)
 
 
