@@ -1,6 +1,7 @@
 import itertools
 import utils.settings as settings
 import shutil
+import os
 from wcwidth import wcswidth
 
 # === ASCII ===
@@ -116,6 +117,10 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 # === CREATE SCREEN ===
 def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -> None:
+    # Fucntion to clear terminal
+    def clear():
+        os.system('cls' if os.name == 'nt' else 'clear')
+
     # Check width of terminal
     terminal_columns = shutil.get_terminal_size()[0]
 
@@ -129,6 +134,8 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -
     map_width = wcswidth(map_ui[0])
     instructions_width = max(tuple(wcswidth(line) for line in instructions))
 
+    # Clear terminal before printing
+    clear()
     screen_gap = settings.SPACE*settings.MAP_INSTRUCTIONS_GAP
     if map_width + instructions_width + wcswidth(screen_gap) > terminal_columns:
         # Print map_ui first, then instructions
