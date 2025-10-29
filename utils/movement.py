@@ -25,12 +25,16 @@ def user_input(size, inventory, original_location, locations):
                 inventory=("*" if locations["L"][0] in locations["*"] else "x")
                 locations[inventory].remove(locations["L"][0])
         else:
-            locations["."].append(locations["L"][0])
+            if :
+                locations["."].append(locations["L"][0])
             x,y = locations["L"][0]
             i,j = possible_inputs[action]
-            if 0<=x+i<=size[0] and 0<=y+j<=size[1]:
+            if 0<=x+i<=size[0] and 0<=y+j<=size[1] and (x+i,y+j) not in locations["T"]:
                 locations["L"][0] = (x+i,y+j)
-                locations["."].remove(locations["L"][0])
+                try:
+                    locations["."].remove(locations["L"][0])
+                except ValueError:
+                    pass
             else:
                 print("Invalid input detected")
                 break

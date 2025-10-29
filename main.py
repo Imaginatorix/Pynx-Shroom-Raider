@@ -9,7 +9,7 @@ show_screen(level_info, locations)
 
 while True:
     actions = user_input(level_info["size"], level_info["inventory"], level_info["original_location"], locations)
-    if not actions[0]:
+    if not actions:
         show_screen(level_info, locations)
         print("Invalid input. Try again.")
     elif "End" in actions[0]:
@@ -18,6 +18,10 @@ while True:
         for current_locations, inventory in actions:
             level_info["inventory"] = inventory
             locations = current_locations
+            if locations["L"][0] in locations["T"]:
+                show_screen(level_info, locations)
+                print("Invalid input. Try again.")
+                continue
             if locations["L"][0] in locations["+"]:
                 locations["+"].remove(locations["L"][0])
                 level_info["mushroom_collected"] += 1
