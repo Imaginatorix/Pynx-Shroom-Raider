@@ -74,7 +74,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 
 
 # === CREATE SCREEN INSTRUCTIONS ===
-def create_instructions(level_info: dict[str: list[tuple[int, int]]], character_cell: str) -> tuple[str]:
+def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Header
     header = (
         "=== SHROOM RAIDER ===",
@@ -93,7 +93,7 @@ def create_instructions(level_info: dict[str: list[tuple[int, int]]], character_
         "[!] Reset",
         "",
         "No items here" if not character_cell else f"[P] Pick up {character_cell}",
-        "Not holding anything" if not level_info['inventory'] else f"Currently holding {', '.join(level_info['inventory'][0])}",
+        "Not holding anything" if not level_info['inventory'] else f"Currently holding {level_info['inventory']}",
         "",
     )
 
@@ -115,7 +115,7 @@ def create_instructions(level_info: dict[str: list[tuple[int, int]]], character_
 
 
 # === CREATE SCREEN ===
-def show_screen(level_info: tuple[str], locations: dict[str: list[tuple[int, int]]]) -> None:
+def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -> None:
     # Check width of terminal
     terminal_columns = shutil.get_terminal_size()[0]
 
