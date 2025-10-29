@@ -2,7 +2,6 @@
 import sys
 from os import path
 sys.path.append(path.abspath("."))
-sys.path.append(path.abspath("./utils"))
 
 from utils.ui import show_screen
 import pytest
