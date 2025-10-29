@@ -1,5 +1,5 @@
 import itertools
-import utils.settings as settings
+import settings
 import shutil
 from wcwidth import wcswidth
 
