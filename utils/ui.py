@@ -117,7 +117,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 # === CREATE SCREEN ===
 def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -> None:
-    # Fucntion to clear terminal
+    # Function to clear terminal
     def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
 
