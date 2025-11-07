@@ -93,7 +93,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "[D] Move right",
         "[!] Reset",
         "",
-        "You already have an item" if level_info['inventory'] else "No items here" if not character_cell else f"[P] Pick up {''.join(character_cell)}",
+        "" if level_info['inventory'] and not character_cell else f"Cannot pick up {''.join(character_cell)}" if level_info['inventory'] and character_cell else "No items here" if not character_cell else f"[P] Pick up {''.join(character_cell)}",
         "Not holding anything" if not level_info['inventory'] else f"Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
         "",
     )
