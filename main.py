@@ -6,7 +6,7 @@ from utils.ui import show_screen
 from time import sleep
 from copy import deepcopy
 
-level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
+level_info, locations = parse_level(f"levels/spring/Level_2_difficult.txt")
 locations["_"]=[]
 original_locations=deepcopy(locations)
 show_screen(level_info, locations)
@@ -20,12 +20,19 @@ while True:
         level_info["game_end"] = True
     else:
         for current_locations, inventory in actions:
+            if not current_locations:
+                if not inventory :
+                    show_screen(level_info, locations)
+                    print("Invalid input detected")
+                else:
+                    print("You've lost!")
+                    level_info["game_end"] = True
+                break
             level_info["inventory"] = inventory
             locations = current_locations
             if locations["L"][0] in locations["T"]:
                 sleep(0.1)
                 show_screen(level_info, locations)
-                print("Invalid input. Try again.")
                 continue
             if locations["L"][0] in locations["+"]:
                 locations["+"].remove(locations["L"][0])
