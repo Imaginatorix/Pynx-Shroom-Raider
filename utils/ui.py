@@ -79,7 +79,12 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Header
     header = (
         "=== SHROOM RAIDER ===",
-        "Goal: Collect all mushrooms to proceed to the next level!",
+        "✅ Goal : Collect all the mushrooms to proceed to the next level!",
+        "",
+        "Weapons/Tools:",
+        " 🔥 Flamethrower : Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
+        " 🪓 Axe : Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
+        " 🪨 Rock : This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
         ""
     )
 
