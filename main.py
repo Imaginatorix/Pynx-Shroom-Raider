@@ -7,6 +7,7 @@ from time import sleep
 from copy import deepcopy
 
 level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
+locations["_"]=[]
 original_locations=deepcopy(locations)
 show_screen(level_info, locations)
 
@@ -43,3 +44,4 @@ while True:
 
 #to be added: item and environment interactions
 #change logic by splitting inputs into individual characters, check first if valid
+#TODO: change name, add testing and fix rocks

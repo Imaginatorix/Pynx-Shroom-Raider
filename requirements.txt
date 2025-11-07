@@ -1,4 +1,6 @@
 colorama==0.4.6
+deflate_dict==1.2.2
+dict_hash==1.3.6
 iniconfig==2.3.0
 packaging==25.0
 pluggy==1.6.0

@@ -40,7 +40,7 @@ def user_input(size, inventory, locations, original_locations):
                 inventory = ("*" if _locations["L"][0] in _locations["*"] else "x")
                 _locations[inventory].remove(_locations["L"][0])
         else:
-            if _locations["L"][0] not in (*_locations["*"], *_locations["x"]):
+            if _locations["L"][0] not in (*_locations["*"], *_locations["x"], *_locations["_"]):
                 _locations["."].append(_locations["L"][0])
             x,y = _locations["L"][0]
             i,j = possible_inputs[action]
@@ -51,7 +51,7 @@ def user_input(size, inventory, locations, original_locations):
                 print("here")
                 inventory = ""
                 firespread((x+i,y+j),_locations)
-            if 0<=x+i<size[0]-1 and 0<=y+j<size[1]-1 and (x+i,y+j) not in _locations["T"]:
+            if 0<=x+i<size[0]-1 and 0<=y+j<size[1]-1 and (x+i,y+j) not in (*_locations["T"],*_locations["~"]):
                 _locations["L"][0] = (x+i,y+j)
                 try:
                     _locations["."].remove(_locations["L"][0])
@@ -63,13 +63,12 @@ def user_input(size, inventory, locations, original_locations):
                 new_rock = (x+i*2,y+j*2)
                 if new_rock in _locations["~"]:
                     _locations["~"].remove(new_rock)
-                    try:
-                        _locations["_"].append(new_rock)
-                    except KeyError:
-                        _locations["_"]=[new_rock]
+                    _locations["_"].append(new_rock)
                 else:
                     _locations["R"].append(new_rock)
                 _locations["R"].remove(_locations["L"][0])
+        print(_locations["R"])
+        #the error is napupush si rock kahit saan
         actions.append((_locations, inventory))
         _locations = deepcopy(_locations)
     return actions
