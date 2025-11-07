@@ -14,8 +14,11 @@ def firespread(start,locations):
                 locations["."].append(new)
         n+=1
 
-def user_input(size, inventory, locations, original_locations):
-    commands=tuple(ch for ch in tuple(input("What will you do? ").upper()))
+def user_input(size, inventory, locations, original_locations, sys_input = ""):
+    if sys_input: 
+        commands = tuple(ch for ch in sys_input.upper())
+    else:
+        commands = tuple(ch for ch in tuple(input("What will you do? ").upper()))
     possible_inputs={"W":(-1,0),"A":(0,-1),"S":(1,0),"D":(0,1),"!":None, "P":None,"E":None}
     if not commands:
         return
@@ -71,7 +74,6 @@ def user_input(size, inventory, locations, original_locations):
                     break
             else:
                 continue
-        #the error is napupush si rock kahit saan
         actions.append((_locations, inventory))
         _locations = deepcopy(_locations)
     return actions
