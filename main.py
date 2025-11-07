@@ -1,12 +1,10 @@
 #import level size and origloc
 #Level Map
-from utils.parser import parse_level
-from utils.movement import user_input
-from utils.ui import show_screen
+
 from time import sleep
 from copy import deepcopy
 
-level_info, locations = parse_level(f"levels/spring/Level_2_difficult.txt")
+level_info, locations = parse_level(f"levels/spring/Level_1_easy.txt")
 locations["_"]=[]
 original_locations=deepcopy(locations)
 show_screen(level_info, locations)
