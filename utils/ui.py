@@ -128,6 +128,8 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "needed to make the legendary 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍.",
     )
 
+    
+
     if level_info['game_end']:
         return header[0]+win_message if level_info['game_win'] else header[0] +lose_message
     return header+default_instructions+storyline
