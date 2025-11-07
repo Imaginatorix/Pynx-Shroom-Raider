@@ -79,8 +79,12 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Header
     header = (
         "=== SHROOM RAIDER ===",
-        "Goal: Collect all mushrooms to proceed to the next level!",
-        ""
+        "✅ Goal : Collect all the mushrooms to proceed to the next level!",
+        "",
+        "Weapons/Tools:",
+        "🔥 Flamethrower : Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
+        "🪓 Axe : Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
+        " 🪨 Rock : This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
     )
 
     # Default instructions
@@ -93,7 +97,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "[D] Move right",
         "[!] Reset",
         "",
-        "You already have an item" if level_info['inventory'] else "No items here" if not character_cell else f"[P] Pick up {''.join(character_cell)}",
+        "No items here" if not character_cell else f"[P] Pick up {''.join(character_cell)}" if not level_info['inventory'] else f"Cannot pick up {''.join(character_cell)}",
         "Not holding anything" if not level_info['inventory'] else f"Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
         "",
     )
@@ -110,9 +114,27 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "You lost!",
     )
 
+    storyline = (
+        "𝐌𝐄𝐄𝐓 𝐋𝐀𝐑𝐎 🧑 : A passionate mushroom collector and daring adventurer."
+        "Laro is a devoted Filipino grandson,he embarks on a quest to heal his",
+        "sick grandmother by crafting a legendary potion known as the",
+        "Mighty Concoction (a mixed of different ingredients) that was made",
+        "from rare and powerful mushrooms scattered across mystical, seasonal,",
+        "and majestical land that is still unknown amongst Filipinos.",
+        "",
+        "Mission Brief:",
+        "Laro’s grandmother is gravely ill.",
+        "To save her, you must help Laro collect the rare mushrooms",
+        "needed to make the legendary 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍.",
+    )
+
+    
+
     if level_info['game_end']:
-        return header+win_message if level_info['game_win'] else header+lose_message
-    return header+default_instructions
+        return header[0]+win_message if level_info['game_win'] else header[0] +lose_message
+    return header+default_instructions+storyline
+
+
 
 
 # === CREATE SCREEN ===
