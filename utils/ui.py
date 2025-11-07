@@ -5,9 +5,11 @@ import shutil
 import os
 from wcwidth import wcswidth
 from colorama import Fore, Back, Style
+from utils.storyline import storyline
+from utils.parser import parse_level
 
 colorama.init(autoreset=True)
-
+ 
 # === ASCII ===
 # TILES
 EMPTY_TILE_ASCII = '.'
@@ -82,9 +84,14 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Header
     header = (
-        "=== SHROOM RAIDER ="
-        "==",
-        f"✅{Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
+        "=====================",
+        f"🍄 {Fore.BLUE}𝗦𝗛𝗥𝗢𝗢𝗠 {Style.RESET_ALL}{Fore.RED}𝗥𝗔𝗜𝗗𝗘𝗥{Style.RESET_ALL} 🍄",
+        "=====================",
+        "",
+    )
+
+    description = (
+        f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
         "",
         f"{Style.BRIGHT}Weapons/Tools:",
         f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
@@ -111,50 +118,21 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Win instructions
     win_message = (
         f"You collected {level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s)",
-        f"{Fore.GREEN}You win!",
+        "You win!",
         ""
     )
 
     # Lose instructions
     lose_message = (
-        f"{Fore.RED}You lost!",
+        "You lost!",
     )
-
-    storyline = (
-        "𝐌𝐄𝐄𝐓 𝐋𝐀𝐑𝐎 🧑 : A passionate mushroom collector and daring adventurer.",
-        "Laro is a devoted Filipino grandson,he embarks on a quest to heal his",
-        "sick grandmother by crafting a legendary potion known as the Mighty",
-        "Concoction (a mixed of different ingredients) that was made from rare",
-        "and powerful mushrooms scattered across mystical, seasonal,",
-        "and majestical land that is still unknown amongst Filipinos.",
-        "",
-        "Mission Brief:",
-        "Laro’s grandmother is gravely ill.",
-        "To save her, you must help Laro collect the rare mushrooms",
-        "needed to make the legendary 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍.",
-    )
-
-    spring_storyline = (
-        "Welcome to the Spring Season! The Beginning of the Journey",
-        "SPRING SEASON: THE AWAKENING OF LIFE",
-        "After setting off from his Lola’s humble bahay-kubo, Laro arrives at the Springlands of Kalikasan . The first realm",
-        "in his journey toward crafting the Mighty Concoction. The air here is fresh and full of life, but danger hides beneath",
-        "its life.",
-        "",
-        "This vibrant land bursts with blooming flowers, lush forests, and glimmering rivers that chant along with the birds.",
-        "Ancient spirits watch over this place, guarding the Spring Mushrooms. This is the first key ingredient in the",
-        "legendary potion. ",
-        "",
-        "Join Laro on an exciting adventure through the blooming landscapes of spring!",
-        )
     
-    summer_storyline = ()
-    fall_storyline = ()
-    
+    storylines = storyline("levels/fall/stage6.txt")
+
 
     if level_info['game_end']:
         return header[0]+win_message if level_info['game_win'] else header[0]+lose_message
-    return header+default_instructions+storyline
+    return header+storylines+description+default_instructions
 
 
 

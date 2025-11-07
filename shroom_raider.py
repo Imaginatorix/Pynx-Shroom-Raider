@@ -1,5 +1,7 @@
 #import level size and origloc
 #Level Map
+import colorama
+from colorama import Fore, Back, Style
 from utils.parser import parse_level
 from utils.parser import parse_output
 from utils.movement import user_input
@@ -8,9 +10,11 @@ from time import sleep
 from copy import deepcopy
 import sys
 
+colorama.init(autoreset=True)
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        level_info, locations = parse_level(f"levels/spring/Level_2_difficult.txt")
+        level_info, locations = parse_level(f"levels/summer/stage5.txt")
 
     else:
         command = ""
@@ -60,7 +64,7 @@ while True:
                     print("Invalid input detected")
                 else:
                     if len(sys.argv) <= 3:
-                        print("You've lost!")
+                        print(Fore.RED + Style.BRIGHT + "You've lost!")
                     level_info["game_end"] = True
                 break
             level_info["inventory"] = inventory
@@ -75,7 +79,7 @@ while True:
                 if len(sys.argv) > 3:
                     has_clear = "CLEAR"
                 else:
-                    print("You've won!")
+                    print(Fore.GREEN + Style.BRIGHT + "You've won!")
                 level_info["game_end"] = True
                 break
     if len(sys.argv) > 3:
@@ -83,7 +87,7 @@ while True:
         break
     if level_info["game_end"]:
         if len(sys.argv) <= 3:
-            print("Game ended!")
+            print(Style.BRIGHT + "Game ended!")
         break
         
 
