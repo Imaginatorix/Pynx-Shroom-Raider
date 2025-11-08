@@ -20,8 +20,10 @@ def get_level_info(grid, locations):
         "size": (len(grid), len(grid[0])),
         "mushroom_collected": 0,
         "mushroom_total": len(locations['+']),
-        "game_end": False,
-        "inventory": None
+        "game_won": False,
+        "game_lost": False,
+        "inventory": "",
+        "invalid_input": False
     }
 
 def parse_level(filename):

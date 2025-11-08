@@ -12,10 +12,9 @@ import sys
 
 colorama.init(autoreset=True)
 
-if __name__ == "__main__":
+if __name__ == "__main__": #reformat
     if len(sys.argv) < 2:
         level_info, locations = parse_level(f"levels/summer/stage5.txt")
-
     else:
         command = ""
         has_own_level = False
@@ -38,36 +37,30 @@ if __name__ == "__main__":
                 print("Invalid input. Try again.")
                 sys.exit()
 
-        
-
-locations["_"] = []
+original_level_info = deepcopy(level_info)
 original_locations = deepcopy(locations)
 
 while True:
     if len(sys.argv) > 3:
-        actions = user_input(level_info["size"], level_info["inventory"], locations, original_locations, sys_actions)
+        actions = user_input(level_info, locations, original_locations, original_level_info, sys_actions)
         has_clear = "NO CLEAR"
     else:
-        sys_actions = ""
         show_screen(level_info, locations)
-        actions = user_input(level_info["size"], level_info["inventory"], locations, original_locations)
+        actions = user_input(level_info, locations, original_locations, original_level_info)
     if not actions:
         show_screen(level_info, locations)
         print("Invalid input. Try again.")
-    elif "End" in actions[0]:
-        level_info["game_end"] = True
     else:
-        for current_locations, inventory in actions:
-            if not current_locations:
-                if not inventory :
-                    show_screen(level_info, locations)
-                    print("Invalid input detected")
-                else:
-                    if len(sys.argv) <= 3:
-                        print(Fore.RED + Style.BRIGHT + "You've lost!")
-                    level_info["game_end"] = True
+        for current_locations, current_level_info in actions: #fix this
+            if current_level_info["invalid_input"]:
+                show_screen(level_info, locations)
+                print("Invalid input detected")
                 break
-            level_info["inventory"] = inventory
+            elif current_level_info["game_lost"]:
+                show_screen(level_info, locations)
+                if len(sys.argv) <= 3:
+                    print(Fore.RED + Style.BRIGHT + "You've lost!")
+            level_info = current_level_info
             locations = current_locations
             if locations["L"][0] in locations["+"]:
                 locations["+"].remove(locations["L"][0])
@@ -80,12 +73,12 @@ while True:
                     has_clear = "CLEAR"
                 else:
                     print(Fore.GREEN + Style.BRIGHT + "You've won!")
-                level_info["game_end"] = True
+                    level_info["game_won"] = True
                 break
     if len(sys.argv) > 3:
         parse_output(output_file, locations, level_info, has_clear)
         break
-    if level_info["game_end"]:
+    if level_info["game_won"] or level_info["game_lost"]:
         if len(sys.argv) <= 3:
             print(Style.BRIGHT + "Game ended!")
         break
