@@ -14,7 +14,7 @@ colorama.init(autoreset=True)
 
 if __name__ == "__main__": #reformat
     if len(sys.argv) < 2:
-        level_info, locations = parse_level(f"levels/summer/stage5.txt")
+        level_info, locations = parse_level(f"levels/spring/stage5.txt")
     else:
         command = ""
         has_own_level = False
@@ -40,12 +40,14 @@ if __name__ == "__main__": #reformat
 original_level_info = deepcopy(level_info)
 original_locations = deepcopy(locations)
 
+if len(sys.argv) <= 3:
+        show_screen(level_info, locations)
+
 while True:
     if len(sys.argv) > 3:
         actions = user_input(level_info, locations, original_locations, original_level_info, sys_actions)
         has_clear = "NO CLEAR"
     else:
-        show_screen(level_info, locations)
         actions = user_input(level_info, locations, original_locations, original_level_info)
     if not actions:
         show_screen(level_info, locations)
