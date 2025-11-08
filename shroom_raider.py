@@ -50,15 +50,18 @@ while True:
                 show_screen(level_info, locations)
                 print("Invalid input detected")
                 break
-            elif current_level_info["game_lost"]:
-                show_screen(level_info, locations)
-                if not output_file:
-                    print(Fore.RED + Style.BRIGHT + "You've lost!")
             level_info = current_level_info
-            locations = current_locations
+            locations = current_locations 
             if locations["L"][0] in locations["+"]:
                 locations["+"].remove(locations["L"][0])
                 level_info["mushroom_collected"] += 1
+            elif locations["L"][0] in locations["~"]:
+                locations["~"].remove(locations["L"][0])
+                level_info["game_lost"] = True
+                if not output_file:
+                    show_screen(level_info, locations)
+                    print(Fore.RED + Style.BRIGHT + "You've lost!")
+                break
             if not output_file:
                 sleep(0.1)
                 show_screen(level_info, locations)
@@ -76,8 +79,3 @@ while True:
         if not output_file:
             print(Style.BRIGHT + "Game ended!")
         break
-        
-
-#to be added: item and environment interactions
-#change logic by splitting inputs into individual characters, check first if valid
-#TODO: change name, add testing and fix rocks

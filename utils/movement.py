@@ -65,8 +65,6 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                     else:
                         continue
                 elif _locations["L"][0] in _locations["~"]:
-                    _locations["~"].remove(_locations["L"][0])
-                    _level_info["game_lost"] = True
                     actions.append((_locations, _level_info))
                     break
                 _locations["L"][0] = player_location
