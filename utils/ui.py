@@ -1,9 +1,15 @@
+import colorama
 import itertools
 import utils.settings as settings
 import shutil
 import os
 from wcwidth import wcswidth
+from colorama import Fore, Back, Style
+from utils.storyline import storyline
+from utils.parser import parse_level
 
+colorama.init(autoreset=True)
+ 
 # === ASCII ===
 # TILES
 EMPTY_TILE_ASCII = '.'
@@ -85,23 +91,34 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     # Header
     header = (
-        "=== SHROOM RAIDER ===",
-        "Goal: Collect all mushrooms to proceed to the next level!",
-        ""
+        "=====================",
+        f"🍄 {Fore.BLUE}𝗦𝗛𝗥𝗢𝗢𝗠 {Style.RESET_ALL}{Fore.RED}𝗥𝗔𝗜𝗗𝗘𝗥{Style.RESET_ALL} 🍄",
+        "=====================",
+        "",
+    )
+
+    description = (
+        f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
+        "",
+        f"{Style.BRIGHT}Weapons/Tools:",
+        f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
+        f"🪓 {Style.BRIGHT}Axe{Style.RESET_ALL}: Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
+        f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
+        "",
     )
 
     # Default instructions
     default_instructions = (
         f"{level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s) collected"
         "",
-        "[W] Move up",
-        "[A] Move left",
-        "[S] Move down",
-        "[D] Move right",
-        "[!] Reset",
+        f"[W]{Style.BRIGHT} Move up",
+        f"[A]{Style.BRIGHT} Move left",
+        f"[S]{Style.BRIGHT} Move down",
+        f"[D]{Style.BRIGHT} Move right",
+        f"[!]{Style.BRIGHT} Reset",
         "",
-        "No items here" if not character_cell else f"[P] Pick up {character_cell}" if not level_info['inventory'] else f"Cannot pick up {character_cell}",
-        "Not holding anything" if not level_info['inventory'] else f"Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
+        "No items here" if not character_cell else f"{Fore.GREEN}[P] Pick up {character_cell}" if not level_info['inventory'] else f"{Fore.RED}Cannot pick up {character_cell}",
+        "Not holding anything" if not level_info['inventory'] else f"{Fore.BLUE}Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
         "",
     )
 
@@ -116,10 +133,15 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     lose_message = (
         "You lost!",
     )
+    
+    storylines = storyline("levels/fall/stage6.txt")
 
-    if level_info['game_end']:
-        return header+win_message if level_info['game_win'] else header+lose_message
-    return header+default_instructions
+
+    if level_info['game_lost'] or level_info['game_won']:
+        return header[0]+win_message if level_info['game_won'] else header[0]+lose_message
+    return header+storylines+description+default_instructions
+
+
 
 
 # === CREATE SCREEN ===
