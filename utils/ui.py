@@ -51,6 +51,13 @@ ASCII_UI_CONVERSIONS = {
 # === CREATE SCREEN MAP UI ===
 def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, int]]]) -> tuple[str]:
     r, c = size
+    if r == 0 or c == 0:
+        return [], None
+    if r < 0 or c < 0:
+        raise ValueError("Map size cannot be negative")
+    if r > 30 or c > 30:
+        raise ValueError("Map size cannot exceed 30 by 30")
+
     # Generate empty map
     map_ui = []
     for i in range(r):
@@ -58,11 +65,11 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 
     # Record overlays (specifically, those on character cell which information is lost upon UI creation)
     character_location = locations['L'][0]
-    character_cell = []
+    character_cell = None
     for c, coord in locations.items():
         for i, j in coord:
             if (i, j) == character_location and c != 'L':
-                character_cell.append(ASCII_UI_CONVERSIONS[c])
+                character_cell = ASCII_UI_CONVERSIONS[c]
             # Set cell to higher priority (for now, only character)
             if not map_ui[i][j] or c == 'L':
                 map_ui[i][j] = ASCII_UI_CONVERSIONS[c]
@@ -93,7 +100,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "[D] Move right",
         "[!] Reset",
         "",
-        "No items here" if not character_cell else f"[P] Pick up {''.join(character_cell)}" if not level_info['inventory'] else f"Cannot pick up {''.join(character_cell)}",
+        "No items here" if not character_cell else f"[P] Pick up {character_cell}" if not level_info['inventory'] else f"Cannot pick up {character_cell}",
         "Not holding anything" if not level_info['inventory'] else f"Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
         "",
     )
