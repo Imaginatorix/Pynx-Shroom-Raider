@@ -1,11 +1,12 @@
-CLEAR
+NO CLEAR
+10 10
 TTTTTTTTT
-T...L...T
-T..._...T
-T.....T.T
+T...+...T
+T...~...T
+T...R.T.T
 T.T..TT.T
 T.x...*.T
 T.......T
 T.......T
-T.......T
+T...L...T
 TTTTTTTTT
