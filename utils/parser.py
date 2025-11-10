@@ -41,7 +41,7 @@ def parse_output(filename, locations, level_info, has_clear):
     coordinates[locations["L"][0]] = "L"
     with open(filename, 'w') as f:
         f.write(has_clear+"\n")
-        f.write(f"{level_info["size"][0]} {level_info["size"][1]}")
+        f.write(f"{level_info["size"][0]} {level_info["size"][1]}\n")
         for i in range(level_info["size"][0]):
             temp = ""
             for j in range(level_info["size"][1]-1):
