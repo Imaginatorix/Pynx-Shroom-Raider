@@ -182,6 +182,7 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], t
             map_row = map_row if map_row else map_gap
             instructions_row = instructions_row if instructions_row else ''
             display.append(map_row + screen_gap + instructions_row)
+
     # Clear terminal before printing
     clear()
     print(*display, sep='\n')
