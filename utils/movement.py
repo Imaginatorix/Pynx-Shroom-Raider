@@ -20,13 +20,17 @@ def user_input(level_info, locations, original_locations, original_level_info, s
     else:
         commands = tuple(ch for ch in input("What will you do? ").upper())
     possible_inputs={"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":None, "P":None, "=":None}
-    if not commands:
-        return
     actions=[]
     _locations = deepcopy(locations)
     _level_info = deepcopy(level_info)
+    if not commands:
+        _level_info["invalid_input"] = True
+        actions.append((_locations, _level_info))
+        return actions
     for action in commands:
         if action not in possible_inputs:
+            _level_info["invalid_input"] = True
+            actions.append((_locations, _level_info))
             break
         elif action == "=":
             actions= "end"
@@ -36,7 +40,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             _locations = deepcopy(original_locations)
         elif action=="P":
             if _locations["L"][0] not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
-                break
+                continue
             _level_info["inventory"] = ("*" if _locations["L"][0] in _locations["*"] else "x")
             _locations[_level_info["inventory"]].remove(_locations["L"][0])
         else:

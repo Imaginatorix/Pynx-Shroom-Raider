@@ -137,8 +137,8 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     storylines = storyline("levels/fall/stage6.txt")
 
 
-    if level_info['game_lost'] or level_info['game_won']:
-        return header[0]+win_message if level_info['game_won'] else header[0]+lose_message
+    if level_info['game_end']:
+        return header+win_message if level_info['game_won'] else header+lose_message
     return header+storylines+description+default_instructions
 
 
