@@ -145,13 +145,14 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 
 # === CREATE SCREEN ===
-def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -> None:
+def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], terminal_columns: int|None = None) -> None:
     # Function to clear terminal
     def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
 
     # Check width of terminal
-    terminal_columns = shutil.get_terminal_size()[0]
+    if not terminal_columns:
+        terminal_columns = shutil.get_terminal_size()[0]
 
     # Create what needs to be placed in screen
     ## The Map
@@ -163,21 +164,26 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]]) -
     map_width = wcswidth(map_ui[0])
     instructions_width = max(tuple(wcswidth(line) for line in instructions))
 
-    # Clear terminal before printing
-    clear()
+    # Calculate what gets shown in the screen
     screen_gap = settings.SPACE*settings.MAP_INSTRUCTIONS_GAP
+    display = []
     if map_width + instructions_width + wcswidth(screen_gap) > terminal_columns:
         # Print map_ui first, then instructions
         for map_row in map_ui:
-            print(map_row)
-        print()
+            display.append(map_row)
+        display.append('')
 
         for instructions_row in instructions:
-            print(instructions_row)
+            display.append(instructions_row)
     else:
         map_gap = ' '*map_width
         # Print both at the same time
         for map_row, instructions_row in itertools.zip_longest(map_ui, instructions):
             map_row = map_row if map_row else map_gap
             instructions_row = instructions_row if instructions_row else ''
-            print(map_row + screen_gap + instructions_row)
+            display.append(map_row + screen_gap + instructions_row)
+    # Clear terminal before printing
+    clear()
+    print(*display, sep='\n')
+    return display
+
