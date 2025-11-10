@@ -1,0 +1,5 @@
+# Validate level_info
+# Validate locations
+
+# === VALIDATOR TO TEST WHETHER FUNCTION PARAMETERS CONFORM TO THE EXPECTED VALUES ===
+
