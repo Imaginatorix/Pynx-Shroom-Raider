@@ -18,17 +18,11 @@ def solution_search(filename: str, limit: int|float = float("inf")) -> str:
     def next_actions(level_info: dict, locations: dict[str: set[tuple[int, int]]]):
         ...
 
-    def preprocess_locations(locations: dict):
-        new_locations = {}
-        for key, value in locations.items():
-            new_locations[key] = set(value)
-        return new_locations
-
     initial_level_info, initial_locations = parser.parse_level(filename)
 
     frontier = [(initial_level_info, initial_locations, "")]
     visited = set()
-    visited.add((dict_hash(initial_level_info), dict_hash(preprocess_locations(initial_locations))))
+    visited.add((dict_hash(initial_level_info), dict_hash(initial_locations)))
 
     kernel = 'WASDP'
     longest_move = 0
@@ -46,8 +40,8 @@ def solution_search(filename: str, limit: int|float = float("inf")) -> str:
             if not next_state:
                 continue
             next_locations, next_level_info = next_state[-1]
-            next_state_hash = (dict_hash(next_level_info), dict_hash(preprocess_locations(next_locations)))
-            ui.show_screen(next_level_info, next_locations)
+            next_state_hash = (dict_hash(next_level_info), dict_hash(next_locations))
+            # ui.show_screen(next_level_info, next_locations)
 
             # If that move ended game and it is a win, return series of moves
             if next_level_info["game_end"] and next_level_info["mushroom_collected"] == next_level_info["mushroom_total"]:

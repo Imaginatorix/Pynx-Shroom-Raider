@@ -1,23 +1,23 @@
 def get_locations(grid):
     locations = {
-        ".": [],
-        "T": [],
-        "R": [],
-        "_": [],
-        "~": [],
-        "x": [],
-        "*": [],
-        "+": [],
-        "L": []
+        ".": set(),
+        "T": set(),
+        "R": set(),
+        "_": set(),
+        "~": set(),
+        "x": set(),
+        "*": set(),
+        "+": set(),
+        "L": set()
     }
     for i, line in enumerate(grid):
         for j, c in enumerate(line.strip()):
-            locations[c].append((i, j))
+            locations[c].add((i, j))
     return locations
 
 def get_level_info(grid, locations):
     return {
-        "size": (len(grid), len(grid[0])),
+        "size": (len(grid), len(grid[0].strip())),
         "mushroom_collected": 0,
         "mushroom_total": len(locations['+']),
         "game_end": False,
