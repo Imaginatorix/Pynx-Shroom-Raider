@@ -7,6 +7,11 @@ from wcwidth import wcswidth
 from colorama import Fore, Back, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
+from utils.game_progress import progress
+from utils.game_progress import get_next_stage
+from utils.game_progress import save_progress
+
+
 
 colorama.init(autoreset=True)
  
@@ -124,17 +129,18 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
     # Win instructions
     win_message = (
-        f"You collected {level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s)",
-        "You win!",
+        f"You collected {level_info['mushroom_collected']} 🍄 out of {level_info['mushroom_total']} 🍄 mushroom(s)",
+        f"{Fore.GREEN}You win!",
         ""
     )
 
     # Lose instructions
     lose_message = (
-        "You lost!",
+        f"{Fore.RED}𝙸'𝚖 𝚜𝚘𝚛𝚛𝚢. 𝚃𝚛𝚢 𝚊𝚐𝚊𝚒𝚗 𝚗𝚎𝚡𝚝 𝚝𝚒𝚖𝚎!",
     )
     
-    storylines = storyline("levels/fall/stage6.txt")
+    season, stage_file = progress()
+    storylines = storyline(os.path.join("levels", season, stage_file))
 
 
     if level_info['game_end']:
