@@ -8,6 +8,10 @@ from time import sleep
 from copy import deepcopy
 import sys
 import argparse
+from utils.game_progress import progress
+from utils.game_progress import get_next_stage
+from utils.game_progress import save_progress
+import os
 
 def main(level_info, locations, moves, output_file):
     original_level_info = deepcopy(level_info)
@@ -19,6 +23,8 @@ def main(level_info, locations, moves, output_file):
         show_screen(level_info, locations)
 
     while True:
+        season, stage =  progress()
+        next_season, next_stage = get_next_stage(season, stage)
         if moves:
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
             moves = ""
@@ -40,11 +46,15 @@ def main(level_info, locations, moves, output_file):
                 if output_file:
                     has_clear = "CLEAR"
                 else:
+                    season, stage =  progress()
+                    level_info["game_end"] = True
+                    next_season, next_stage = get_next_stage(season, stage)
                     print(Fore.GREEN + Style.BRIGHT + "You've won!")
-                break
+                    save_progress(next_season, next_stage)
+                    
             elif level_info["game_end"]:
                 if not output_file:
-                    print(Fore.RED + Style.BRIGHT + "You've lost!")
+                    print(Fore.RED  + "𝚈𝚘𝚞'𝚟𝚎 𝚕𝚘𝚜𝚝!")
                 break
         if output_file:
             parse_output(output_file, locations, level_info, has_clear)
@@ -61,7 +71,12 @@ if __name__ == "__main__":
     parser.add_argument("-o", type = str, dest="output_file")
     system_input = parser.parse_args()
 
-    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/spring/stage2.txt")
+
+
+    season, stage_file = progress()
+    level_path = system_input.stage_file or os.path.join("levels", season, stage_file)
+    level_info, locations = parse_level(level_path)
+    #level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage5.txt")
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 
