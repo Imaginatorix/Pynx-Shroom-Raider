@@ -10,7 +10,7 @@ def clear():
 
 clear()
 
-cred = credentials.Certificate("utils/shroomraider-70f6a-firebase-adminsdk-fbsvc-9862286d59.json")
+cred = credentials.Certificate("utils\shroomraider-70f6a-firebase-adminsdk-fbsvc-d32608413b.json")
 firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
 reference = db.reference("/")
 
@@ -34,7 +34,7 @@ def signup():
     while True:
         username = input("Enter Username: ")
         password = pwinput.pwinput(prompt="Enter your password: ", mask="*")
-        confirmpassword = pwinput.pwinput(prompt="Enter your password: ", mask="*")
+        confirmpassword = pwinput.pwinput(prompt="Reenter your password: ", mask="*")
         if password == confirmpassword and username not in taken_usernames:
             print("Account Created Nice")
             break

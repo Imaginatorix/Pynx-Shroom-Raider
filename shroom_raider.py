@@ -33,16 +33,6 @@ def main(level_info, locations, moves, output_file):
                 break
             level_info = current_level_info
             locations = current_locations 
-            if locations["L"][0] in locations["+"]:
-                locations["+"].remove(locations["L"][0])
-                level_info["mushroom_collected"] += 1
-            elif locations["L"][0] in locations["~"]:
-                locations["~"].remove(locations["L"][0])
-                if not output_file:
-                    show_screen(level_info, locations)
-                    print(Fore.RED + Style.BRIGHT + "You've lost!")
-                    level_info["game_end"] = True
-                break
             if not output_file:
                 sleep(0.1)
                 show_screen(level_info, locations)
@@ -51,14 +41,15 @@ def main(level_info, locations, moves, output_file):
                     has_clear = "CLEAR"
                 else:
                     print(Fore.GREEN + Style.BRIGHT + "You've won!")
-                    level_info["game_end"] = True
+                break
+            elif level_info["game_end"]:
+                if not output_file:
+                    print(Fore.RED + Style.BRIGHT + "You've lost!")
                 break
         if output_file:
             parse_output(output_file, locations, level_info, has_clear)
             break
-        if level_info["game_end"]:
-            if not output_file:
-                print(Style.BRIGHT + "Game ended!")
+        elif level_info["game_end"]:
             break
 
 if __name__ == "__main__":
@@ -70,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", type = str, dest="output_file")
     system_input = parser.parse_args()
 
-    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/spring/stage5.txt")
+    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/spring/stage2.txt")
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 

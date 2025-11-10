@@ -70,9 +70,14 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                         _locations["R"].remove(player_location)
                     else:
                         continue
-                elif _locations["L"][0] in _locations["~"]:
-                    actions.append((_locations, _level_info))
-                    break
+                elif player_location in _locations["~"]:
+                    _locations["~"].remove(player_location)
+                    _level_info["game_end"] = True
+                elif player_location in _locations["+"]:
+                    _locations["+"].remove(player_location)
+                    _level_info["mushroom_collected"] += 1
+                if _level_info["mushroom_collected"] == _level_info["mushroom_total"]:
+                    _level_info["game_end"] = True
                 _locations["L"][0] = player_location
             else:
                 continue

@@ -6,4 +6,5 @@ packaging==25.0
 pluggy==1.6.0
 Pygments==2.19.2
 pytest==8.4.2
+pytest-timeout==2.4.0
 wcwidth==0.2.14
