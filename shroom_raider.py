@@ -51,7 +51,6 @@ def main(level_info, locations, moves, output_file):
                     has_clear = "CLEAR"
                 else:
                     print(Fore.GREEN + Style.BRIGHT + "You've won!")
-                    level_info["game_won"] = True
                     level_info["game_end"] = True
                 break
         if output_file:

@@ -131,7 +131,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 
     if level_info['game_end']:
-        return header+win_message if level_info['game_won'] else header+lose_message
+        return header+win_message if level_info["mushroom_collected"] == level_info["mushroom_total"] else header+lose_message
     return header+storylines+description+default_instructions
 
 
