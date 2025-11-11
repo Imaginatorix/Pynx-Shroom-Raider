@@ -11,7 +11,7 @@ def firespread(start,locations):
             if new in locations["T"]:
                 frontier.append(new)
                 locations["T"].remove(new)
-                locations["."].append(new)
+                locations["."].add(new)
         n+=1
 
 def user_input(level_info, locations, original_locations, original_level_info, sys_input = ""):
@@ -39,14 +39,14 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             _level_info = deepcopy(original_level_info)
             _locations = deepcopy(original_locations)
         elif action=="P":
-            if _locations["L"][0] not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
+            if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
                 continue
-            _level_info["inventory"] = ("*" if _locations["L"][0] in _locations["*"] else "x")
-            _locations[_level_info["inventory"]].remove(_locations["L"][0])
+            _level_info["inventory"] = ("*" if next(iter(_locations["L"])) in _locations["*"] else "x")
+            _locations[_level_info["inventory"]].remove(next(iter(_locations["L"])))
         else:
-            if _locations["L"][0] not in (*_locations["*"], *_locations["x"], *_locations["_"]):
-                _locations["."].append(_locations["L"][0])
-            x,y = _locations["L"][0]
+            if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"], *_locations["_"]):
+                _locations["."].add(next(iter(_locations["L"])))
+            x,y = next(iter(_locations["L"]))
             i,j = possible_inputs[action]
             player_location = (x+i,y+j)
             if player_location in _locations["T"] and _level_info["inventory"] == "x":
@@ -60,11 +60,11 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                     new_rock = (x+i*2,y+j*2)
                     if new_rock in _locations["~"]:
                         _locations["~"].remove(new_rock)
-                        _locations["_"].append(new_rock)
+                        _locations["_"].add(new_rock)
                         _locations["R"].remove(player_location)
                     elif new_rock in _locations["."]:
                         _locations["."].remove(new_rock)
-                        _locations["R"].append(new_rock)
+                        _locations["R"].add(new_rock)
                         _locations["R"].remove(player_location)
                     else:
                         continue
@@ -76,12 +76,12 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                     _level_info["mushroom_collected"] += 1
                 if _level_info["mushroom_collected"] == _level_info["mushroom_total"]:
                     _level_info["game_end"] = True
-                _locations["L"][0] = player_location
+                _locations["L"] = {player_location}
             else:
                 continue
-            if _locations["L"][0] in _locations["."]:
-                _locations["."] = list(set(_locations["."]))
-                _locations["."].remove(_locations["L"][0])
+            if next(iter(_locations["L"])) in _locations["."]:
+                _locations["."] = set(_locations["."])
+                _locations["."].remove(next(iter(_locations["L"])))
         actions.append((_locations, _level_info))
         _locations = deepcopy(_locations)
         _level_info = deepcopy(_level_info)

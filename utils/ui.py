@@ -75,7 +75,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
         map_ui.append([""]*c)
 
     # Record overlays (specifically, those on character cell which information is lost upon UI creation)
-    character_location = locations['L'][0]
+    character_location = next(iter(locations['L']))
     character_cell = None
     for c, coord in locations.items():
         for i, j in coord:
