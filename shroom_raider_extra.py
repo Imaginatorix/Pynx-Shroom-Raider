@@ -15,7 +15,8 @@ from firebase_admin import credentials, db
 import pwinput
 import survey
 import os
-import json
+
+global allow_auto_keyboard
 
 def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -69,9 +70,7 @@ def signup(reference):
                 )
                 return username
                 
-
-
-def gameloop(level_info, locations, moves = "", output_file = ""):
+def gameloop(level_info, locations, allow_auto_keyboard, moves = "", output_file = ""):
     colorama.init(autoreset=True)
 
     original_level_info = deepcopy(level_info)
@@ -233,24 +232,49 @@ def match(username, reference):
     reference.set(temp)
     return opponent
 
+def preferences(username):
+    while True:
+        options_list = ["Keyboard", "Gamepad Recognition", "Return"]
+        answer = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        if answer == "Keyboard":
+            options_list = ["Auto input", "Press enter after input", "Return"]
+            answer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Auto input": 
+                allow_auto_keyboard = False
+            else:
+                allow_auto_keyboard = True
+            print()#does global var work
+
+
+def settings(username):
+    while True:
+        clear()
+        options_list = ["Preferences", "Account Information", "Return"]
+        playmode = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        if playmode == "Preferences":
+            preferences(username)
+        else:
+            break
+
+
 def starting_menu():
     while True:
-            clear()
-            options_list = ["Login", "Sign up", "Play Locally", "Exit"]
-            playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-            if playmode == "Login":
-                username = login(reference)
-                if username != None:
-                    break
-            elif playmode == "Sign up":
-                username = signup(reference)
-                if username != None:
-                    break
-            elif playmode == "Play Locally":
-                username = ""
+        clear()
+        options_list = ["Login", "Sign up", "Play Locally", "Exit"]
+        playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        if playmode == "Login":
+            username = login(reference)
+            if username != None:
                 break
-            else:
-                sys.exit()
+        elif playmode == "Sign up":
+            username = signup(reference)
+            if username != None:
+                break
+        elif playmode == "Play Locally":
+            username = ""
+            break
+        else:
+            sys.exit()
     return username
 
 def main_menu(username, reference):
@@ -288,6 +312,8 @@ def main_menu(username, reference):
                     reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
 
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        elif playmode == "Settings":
+            settings(username)
         elif playmode == "Unlocked Levels":
             if username:
                 unlocked_levels(username, reference)
@@ -358,6 +384,7 @@ if __name__ == "__main__":
         sys.exit(1)
     if output_file or moves or system_input.stage_file:
         level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/spring/stage1.txt")
+        allow_auto_keyboard = False
         gameloop(level_info, locations, moves, output_file)
     else:
         # if offline dont do below
