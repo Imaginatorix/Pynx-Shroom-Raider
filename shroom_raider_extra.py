@@ -39,29 +39,37 @@ def signup(reference):
     print("Loading data...")
     users = reference.child("users").get()
     while True:
-        clear()
-        username = input("Enter Username: ")
-        password = pwinput.pwinput(prompt="Enter your password: ", mask="*")
-        confirmpassword = pwinput.pwinput(prompt="Reenter your password: ", mask="*")
-        if password == confirmpassword and username not in users:
-            reference.child("users").update({
-                username:{
-                    "password": password,
-                    "rank": 1000,
-                    "story_level": "levels/spring/stage1.txt",
-                    "story_history":{
-                        "spring":{
-                            "stage1":None,
-                        }
-                    }
-                }
-            })
-            return username
-        else:
+        while True:
+            clear()
+            username = input("Enter Username: ")
+            if username not in users:
+                break
             options_list = ["Try again", "Return"]
-            answer = options_list[survey.routines.select("Password mismatched " if password != confirmpassword else "Username already taken ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            answer = options_list[survey.routines.select("Password must atleast be 8 characters long",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return":
                 return None
+        while True:
+            password = pwinput.pwinput(prompt="Enter your password: ", mask="*")
+            confirmpassword = pwinput.pwinput(prompt="Reenter your password: ", mask="*")
+            if len(password) < 7 or password != confirmpassword:
+                options_list = ["Try again", "Return"]
+                answer = options_list[survey.routines.select("Password must atleast be 8 characters long! " if len(password) < 7 else "Password mismatched! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+                if answer == "Return":
+                    return None
+                clear()
+                print("Enter Username: " + username)
+            else:
+                reference.child("users").update({
+                    username:{
+                        "password": password,
+                        "rank": 1000,
+                        "story_level": "levels/spring/stage1.txt",
+                        }
+                    }
+                )
+                return username
+                
+
 
 def gameloop(level_info, locations, moves = "", output_file = ""):
     colorama.init(autoreset=True)
