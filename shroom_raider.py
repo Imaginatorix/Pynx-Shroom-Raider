@@ -8,7 +8,6 @@ from time import sleep
 from copy import deepcopy
 import sys
 import argparse
-import os
 
 def main(level_info, locations, moves, output_file):
     original_level_info = deepcopy(level_info)
@@ -62,9 +61,6 @@ if __name__ == "__main__":
     parser.add_argument("-m", type = str, dest="string_of_moves")
     parser.add_argument("-o", type = str, dest="output_file")
     system_input = parser.parse_args()
-
-
-
 
     level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage5.txt")
     moves = system_input.string_of_moves

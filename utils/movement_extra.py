@@ -21,7 +21,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         commands = tuple(ch for ch in sys_input.upper())
     else:
         commands = tuple(ch for ch in input("What will you do? ").upper())
-    possible_inputs={"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":None, "P":None, "=":None}
+    possible_inputs={"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":None, "P":None, "E":None}
     actions=[]
     _locations = deepcopy(locations)
     _level_info = deepcopy(level_info)
@@ -34,8 +34,8 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             _level_info["invalid_input"] = True
             actions.append((_locations, _level_info))
             break
-        elif action == "=":
-            actions= "end"
+        elif action == "E":
+            actions.append(({},{}))
             break
         elif action == "!":
             _level_info = deepcopy(original_level_info)
