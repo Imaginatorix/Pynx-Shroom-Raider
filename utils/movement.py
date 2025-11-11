@@ -66,6 +66,9 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                         _locations["."].remove(new_rock)
                         _locations["R"].add(new_rock)
                         _locations["R"].remove(player_location)
+                    elif new_rock in _locations["_"]: #requires more testing, primative fix
+                        _locations["R"].add(new_rock)
+                        _locations["R"].remove(player_location)
                     else:
                         continue
                 elif player_location in _locations["~"]:

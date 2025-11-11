@@ -68,6 +68,9 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                         _locations["."].remove(new_rock)
                         _locations["R"].add(new_rock)
                         _locations["R"].remove(player_location)
+                    elif new_rock in _locations["_"]: #requires more testing, primative fix
+                        _locations["R"].add(new_rock)
+                        _locations["R"].remove(player_location)
                     else:
                         continue
                 elif player_location in _locations["~"]:
@@ -95,7 +98,7 @@ def keyboard_tracker():
     if pygame.joystick.get_count() > 0:
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
-        buttons = {-195:"s", -196:"d", -197:"a", -198:"w", -200:"!", -199:"p"}
+        buttons = {-195:"s", -196:"d", -197:"a", -198:"w", -200:"!", -199:"p"} #add e
     print("What will you do?")
     keyboard_input = keyboard.read_key() 
     if pygame.joystick.get_count() > 0:

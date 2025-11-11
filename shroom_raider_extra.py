@@ -15,6 +15,7 @@ from firebase_admin import credentials, db
 import pwinput
 import survey
 import os
+import json
 
 def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -80,7 +81,7 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
             moves = ""
         else:
             keyboard_input = keyboard_tracker()
-            if keyboard_input in ("w","a","s","d","p", "!", "="):
+            if keyboard_input in ("w","a","s","d","p", "!", "e"):
                 actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
                 show_screen(level_info, locations)
             else:
@@ -88,8 +89,8 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
                 print(Fore.RED + Style.BRIGHT + "Invalid input detected")
                 continue
         for current_locations, current_level_info in actions:
-            if not (current_locations, current_level_info):
-                return -3
+            if not (current_locations and current_level_info):
+                return "exit"
             if current_level_info["invalid_input"]:
                 show_screen(level_info, locations)
                 print(Fore.RED + Style.BRIGHT + "Invalid input detected")
@@ -134,7 +135,7 @@ def story_mode(story_progress):
             if answer == "Return to main menu":
                 break
         else:
-            output.update({story_progress:moves_count})
+            output[story_progress] = moves_count
             options_list = ["Next Level", "Return to main menu"]
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return to main menu":
@@ -142,6 +143,66 @@ def story_mode(story_progress):
             else:
                 story_progress = shroom_level_parser(story_progress)
     return output
+
+def unlocked_levels(username = "", reference = "",):
+    try_again = False
+    while True:
+        if try_again:
+            try_again = False
+        else:
+            if username:
+                options_list = [level for level in reference.child(f"users/{username}/story_data").get()] + ["Return to main menu"]
+                if not options_list:
+                    print("Play through the \"Story\" mode to unlock levels")
+            else:
+                print("Currently playing locally, progress won't be saved")
+                #options_list = [level for level in generator please()]
+                ...
+            chosen_level = options_list[survey.routines.select(f"Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if chosen_level == "Return to main menu":
+                break
+        
+        chosen_level_path = f"levels/{chosen_level.split(" - ")[0]}/{chosen_level.split(" - ")[1]}.txt"
+        level_info, locations = parse_level(chosen_level_path)
+        moves_count = gameloop(level_info, locations, moves, output_file)
+
+        if type(moves_count) == str:
+            options_list = ["Try again", "Choose level", "Return to main menu"]
+            answer = options_list[survey.routines.select("Laro gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            
+            if answer == "Try again":
+                try_again = True
+            elif answer == "Return to main menu":
+                break
+
+        elif moves_count == -1:
+            options_list = ["Try again", "Choose level", "Return to main menu"]
+            answer = options_list[survey.routines.select("You died! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            
+            if answer == "Try again":
+                try_again = True
+            elif answer == "Return to main menu":
+                break
+
+        else:
+            if username:
+                print(f"Current moves: {moves_count}, Previous moves: {reference.child(f"users/{username}/story_data/{chosen_level}").get()}")
+                
+                options_list = ["Yes, keep it", "No, don't keep it"]
+                answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+                
+                if answer == "Yes, keep it":
+                    reference.child(f"users/{username}/story_data/{chosen_level}").set(moves_count)
+            
+            options_list = ["Try again", "Choose next level", "Return to main menu"]
+            answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            
+            if answer == "Try again":
+                try_again = True
+            elif answer == "Return to main menu":
+                break
+
+    return
 
 def match(username, reference):
     print("Finding an opponent", end="")
@@ -188,65 +249,88 @@ def main_menu(username, reference):
     continue_game = True
     while True:
         clear()
-        options_list = ["Story Mode", "Ranked Match", "Unranked Match", "Settings", "Return"]
+        options_list = ["Story", "Unlocked Levels", "Ranked Match", "Unranked Match", "Level Leaderboard", "Rank Leaderboard", "Settings", "Return"] 
+        #condense "Account Information" to settings, story, unlocked levels, level leaderboard to levels, ranked and unranked and leaderboard (spectate - see map, current moves of each player, time, end of game 
+        #find oponent - create room and wait for both players to join and click start for ready other players who join will specate only, find match) to matches
         playmode = options_list[survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Story Mode":
+        if playmode == "Story": #add ending
             if username:
                 story_data = story_mode(reference.child(f"users/{username}/story_level").get())
-                reference.child(f"users/{username}").update({"story_data":story_data}) #this is an error
-                reference.child(f"users/{username}/story_level").set(next(reversed(story_data)))
+                old_data = reference.child(f"users/{username}/story_data").get()
+                if old_data == None:
+                    old_data = {}
+                new_data = {}
             else:
                 story_data = story_mode("levels/spring/stage1.txt")
             if story_data:
+
                 print("Moves done per level:")
+
                 for story_level in story_data:
                     if "/" in story_level:
                         story_level_names = story_level.split("/")
                     else:
                         story_level_names = story_level.split("\\")
                     print(f"{story_level_names[1]} - {story_level_names[2][:-4]}: {story_data[story_level]} moves")
+                    if username:
+                        new_data[f"{story_level_names[1]} - {story_level_names[2][:-4]}"] = story_data[story_level]
+
+                if username:
+                    reference.child(f"users/{username}/story_data").update(old_data | new_data)
+                    reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
+
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        elif playmode == "Ranked Match":
+        elif playmode == "Unlocked Levels":
+            if username:
+                unlocked_levels(username, reference)
+            else:
+                unlocked_levels()
+        elif playmode == "Ranked Match": #add time limit
             if not username:
                 print("This is only available for logged in users")
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 break
             ...
-        elif playmode == "Unranked Match":
-            opponent = match(username, reference.child("unranked_match"))
-            reference.child("matches").update({
-                "test":{
-                    opponent:-2,
-                    username:-2
-                }
-            })
-            level_info, locations = parse_level("levels/spring/stage1.txt")
-            moves_count = gameloop(level_info, locations, moves, output_file)
-            reference.child(f"matches/test/{username}").set(moves_count)
-            print(f"You finished in {moves_count} moves")
-            opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-            if opponent_moves_count == -2:
-                print(f"Waiting for {opponent} to finish", end="")
-                while True:
-                    sleep(1.5)
-                    print(".", end="")
-                    opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                    if opponent_moves_count != -2:
-                        print("")
-                        print(f"{opponent} has finished in {opponent_moves_count} moves")
-                        break
-                    sleep(1.5)
-            if moves_count > -1 and moves_count == opponent_moves_count:
-                print(f"You tied with {opponent}")
-                break
-            elif  moves_count > -1 and moves_count < opponent_moves_count:
-                print(f"You've defeated {opponent} by {opponent_moves_count - moves_count}")
-                break
-            elif moves_count > -1 and moves_count < opponent_moves_count:
-                print(f"You've lost to {opponent} by {moves_count - opponent_moves_count}")
+        elif playmode == "Unranked Match": #add time limit
+            if not username:
+                print("This is only available for logged in users")
+                options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 break
             else:
-                print(f"You didn't finish, automatically lost")
+                opponent = match(username, reference.child("unranked_match"))
+                reference.child("matches").update({ #find match and lobby name
+                    "test":{
+                        opponent:-2,
+                        username:-2
+                    }
+                })
+                level_info, locations = parse_level("levels/spring/stage1.txt") #get random file from edward
+                moves_count = gameloop(level_info, locations, moves, output_file)
+                reference.child(f"matches/test/{username}").set(moves_count)
+                print(f"You finished in {moves_count} moves")
+                opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
+                if opponent_moves_count == -2:
+                    print(f"Waiting for {opponent} to finish", end="")
+                    while True:
+                        sleep(1.5)
+                        print(".", end="")
+                        opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
+                        if opponent_moves_count != -2:
+                            print("")
+                            print(f"{opponent} has finished in {opponent_moves_count} moves")
+                            break
+                        sleep(1.5)
+                if moves_count > -1 and moves_count == opponent_moves_count:
+                    print(f"You tied with {opponent}")
+                    break
+                elif  moves_count > -1 and moves_count < opponent_moves_count:
+                    print(f"You've defeated {opponent} by {opponent_moves_count - moves_count}")
+                    break
+                elif moves_count > -1 and moves_count < opponent_moves_count:
+                    print(f"You've lost to {opponent} by {moves_count - opponent_moves_count}")
+                    break
+                else:
+                    print(f"You didn't finish, automatically lost")
         elif playmode == "Return":
             continue_game = False
             break
