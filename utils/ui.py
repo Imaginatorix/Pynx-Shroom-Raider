@@ -94,6 +94,10 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
+
+    season, stage_file = progress()
+    storylines = storyline(os.path.join("levels", season, stage_file))
+
     # Header
     header = (
         "=====================",
@@ -128,10 +132,11 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     )
 
     # Win instructions
-    win_message = (
+    win_message = ((
         f"You collected {level_info['mushroom_collected']} 🍄 out of {level_info['mushroom_total']} 🍄 mushroom(s)",
         f"{Fore.GREEN}You win!",
-        ""
+        "") if stage_file != "stage6.txt" else f"{Fore.GREEN}Congratulation! {season.capitalize()} Season!: Completed ✅",
+        f"{Fore.GREEN}New season unlocked. Please proceed to the next level..."
     )
 
     # Lose instructions
@@ -139,10 +144,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"{Fore.RED}𝙸'𝚖 𝚜𝚘𝚛𝚛𝚢. 𝚃𝚛𝚢 𝚊𝚐𝚊𝚒𝚗 𝚗𝚎𝚡𝚝 𝚝𝚒𝚖𝚎!",
     )
     
-    season, stage_file = progress()
-    storylines = storyline(os.path.join("levels", season, stage_file))
-
-
+    
     if level_info['game_end']:
         return header+win_message if level_info["mushroom_collected"] == level_info["mushroom_total"] else header+lose_message
     return header+storylines+description+default_instructions

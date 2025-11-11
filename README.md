@@ -72,7 +72,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         ```
         Example
         ```bash
-        python3 shroom_raider.py -f levels/fall/1.txt
+        python3 shroom_raider.py -f levels/fall/stage1.txt
         ```
 
     - **Option 3: Automated Mode**
@@ -83,7 +83,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         ```
         Example
         ```bash
-        python3 shroom_raider.py -f levels/fall/1.txt -m "DDWW" -o result.txt
+        python3 shroom_raider.py -f levels/fall/stage1.txt -m "DDWW" -o result.txt
         ```
 
         This command will:
@@ -220,10 +220,10 @@ shroom_raider/
 │   └── ...
 │
 ├── levels/
-│   └── [phase]/             # [phase] could be fall, spring, summer, winter, or temple
-│       ├── 1.txt
-│       ├── 2.txt
-│       └── ...
+│   └── summer/             # [phase] could be fall, spring, summer, winter, or 
+│       ├── stage1.txt
+│       ├── stage2.txt
+│       └── stage3.txt
 │
 ├── requirements.txt
 ├── LICENSE
