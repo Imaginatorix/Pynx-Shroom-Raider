@@ -1,41 +1,38 @@
 import os
 
+LEVEL_DIRECTORY = "levels"
 SEASONS = ["spring", "summer", "fall"]
-PROGRESS_FILE = "progress.txt"
-
-
-def progress():
-    if not os.path.exists(PROGRESS_FILE):
-        return SEASONS[0], "stage1.txt"  
-    with open(PROGRESS_FILE, "r") as file:
-        season, stage = file.read().strip().split(",")
-    return season, stage
-
-
-def save_progress(season, stage):
-    with open(PROGRESS_FILE, "w") as f:
-        f.write(f"{season},{stage}")
-
 
 def get_next_stage(season, current_stage):
-    stage_files = sorted(os.listdir(os.path.join("levels", season)))
-    if current_stage in stage_files:
-        stage_number = stage_files.index(current_stage)
+    seasons = os.path.join(LEVEL_DIRECTORY, season)
+    stages = sorted(os.listdir(seasons))
+
+    if current_stage in stages:
+        stage_number = stages.index(current_stage)
     else:
         stage_number = -1
 
- 
-    if stage_number + 1 < len(stage_files):
-    
-        return season, stage_files[stage_number + 1]
+    if stage_number + 1 < len(stages):
+        return season, stages[stage_number + 1]
     else:
-        
-        next_season_stage = SEASONS.index(season) + 1
-        if next_season_stage < len(SEASONS):
-            next_season = SEASONS[next_season_stage]
-            next_stage = sorted(os.listdir(os.path.join("levels", next_season)))[0]
+        next_season_index = SEASONS.index(season) + 1
+        if next_season_index < len(SEASONS):
+            next_season = SEASONS[next_season_index]
+            next_stage = sorted(os.listdir(os.path.join(LEVEL_DIRECTORY, next_season)))[0]
             return next_season, next_stage
         else:
-            return SEASONS[0], "stage1.txt"  
+            return None, None
 
-    return get_next_stage(season, current_stage)
+
+def shroom_level_parser(current_level_path):
+    folders = os.path.normpath(current_level_path).split(os.sep)
+    season = folders[-2]
+    current_stage = folders[-1]
+    next_season, next_stage = get_next_stage(season, current_stage)
+    if not next_season or not next_stage:
+        return None
+    next_level_path = os.path.join(LEVEL_DIRECTORY, next_season, next_stage)
+    return next_level_path
+
+current_level = "levels/summer/stage2.txt"
+next_level = shroom_level_parser(current_level)

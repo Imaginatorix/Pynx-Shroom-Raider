@@ -7,9 +7,7 @@ from wcwidth import wcswidth
 from colorama import Fore, Back, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
-from utils.game_progress import progress
-from utils.game_progress import get_next_stage
-from utils.game_progress import save_progress
+from utils.game_progress import current_level
 
 
 
@@ -95,8 +93,8 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-    season, stage_file = progress()
-    storylines = storyline(os.path.join("levels", season, stage_file))
+
+    storylines = storyline(current_level)
 
     # Header
     header = (
@@ -132,11 +130,9 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     )
 
     # Win instructions
-    win_message = ((
+    win_message = (
         f"You collected {level_info['mushroom_collected']} 🍄 out of {level_info['mushroom_total']} 🍄 mushroom(s)",
         f"{Fore.GREEN}You win!",
-        "") if stage_file != "stage6.txt" else f"{Fore.GREEN}Congratulation! {season.capitalize()} Season!: Completed ✅",
-        f"{Fore.GREEN}New season unlocked. Please proceed to the next level..."
     )
 
     # Lose instructions

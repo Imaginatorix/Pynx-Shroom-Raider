@@ -1,3 +1,4 @@
+10 10
 TTTTTTTTTT
 T+..T...RT
 T..TTT..RT
