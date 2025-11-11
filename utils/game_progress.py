@@ -1,7 +1,7 @@
 import os
 
 LEVEL_DIRECTORY = "levels"
-SEASONS = ["spring", "summer", "fall"]
+SEASONS = ["spring", "summer", "fall", "winter", "temple"]
 
 def get_next_stage(season, current_stage):
     seasons = os.path.join(LEVEL_DIRECTORY, season)
