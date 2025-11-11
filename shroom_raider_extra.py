@@ -193,7 +193,8 @@ def main_menu(username, reference):
         if playmode == "Story Mode":
             if username:
                 story_data = story_mode(reference.child(f"users/{username}/story_level").get())
-                reference.child(f"users/{username}/story_data").update(story_data)
+                reference.child(f"users/{username}").update({"story_data":story_data}) #this is an error
+                reference.child(f"users/{username}/story_level").set(next(reversed(story_data)))
             else:
                 story_data = story_mode("levels/spring/stage1.txt")
             if story_data:
