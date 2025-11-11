@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
 
 
-    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage5.txt")
+    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/temple/stage3.txt")
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 
