@@ -4,7 +4,7 @@ from utils.parser import parse_level
 from utils.parser import parse_output
 from utils.movement_extra import user_input, keyboard_tracker
 from utils.ui import show_screen
-from utils.game_progress import shroom_level_parse_generator
+from utils.game_progress import shroom_level_parser_generator
 from time import sleep
 from copy import deepcopy
 import sys
@@ -158,7 +158,7 @@ def story_mode(story_progress):
             if answer == "Return to main menu":
                 break
             else:
-                story_progress = shroom_level_parser_generator(story_progress)
+                story_progress = next(shroom_level_parser_generator(story_progress))
     return output
 
 def unlocked_levels(username = "", reference = "",):
@@ -281,7 +281,7 @@ def starting_menu():
         clear()
         options_list = ["Login", "Sign up", "Play Locally", "Exit"]
         sys.stdout.flush()
-        laymode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Login":
             username = login(reference)
             if username != None:
@@ -330,7 +330,7 @@ def main_menu(username, reference):
 
                 if username:
                     reference.child(f"users/{username}/story_data").update(old_data | new_data)
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
+                    reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
                 sys.stdout.flush()
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         elif playmode == "Settings":
