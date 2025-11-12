@@ -15,9 +15,9 @@ def get_locations(grid):
             locations[c].add((i, j))
     return locations
 
-def get_level_info(grid, locations):
+def get_level_info(size, grid, locations):
     return {
-        "size": (len(grid), len(grid[0].strip())),
+        "size": size,
         "mushroom_collected": 0,
         "mushroom_total": len(locations['+']),
         "game_end": False,
@@ -27,9 +27,14 @@ def get_level_info(grid, locations):
 
 def parse_level(filename):
     with open(filename, 'r') as f:
-        grid = f.readlines()
+        lines = f.readlines()
+        size_of_stage = lines[0].strip()
+        grid = lines[1:]
+    width, height = map(int, size_of_stage.split())
+    size = (height, width)
+
     locations = get_locations(grid)
-    level_info = get_level_info(grid, locations)
+    level_info = get_level_info(size, grid, locations)
     return (level_info, locations)
 
 def parse_output(filename, locations, level_info, has_clear):

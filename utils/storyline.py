@@ -9,47 +9,48 @@ def get_season_from_path(path):
     parts = os.path.normpath(path).split(os.sep)
 
     for part in parts:
-        if part.lower() in ("spring", "summer", "fall"):
+        if part.lower() in ("spring", "summer", "fall", "winter", "temple"):
             return part.lower()
     return
 
 def storyline(path):
     mission_brief = (
-        f"{Style.BRIGHT}Mission Brief:",
-        "Laro’s grandmother is gravely ill.",
-        "To save her, you must help Laro collect the rare mushrooms",
-        "needed to make the legendary 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍.",
-        "",
+         f"{Style.BRIGHT}Mission Brief:",
+         "Laro’s grandmother is gravely ill.",
+         "To save her, you must help Laro collect the rare mushrooms",
+         "needed to make the legendary 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍.",
+         "",
         )
 
     storylines = {
         "spring": (
-            f"{Fore.MAGENTA}Welcome to the Spring Season! The Beginning of the Journey", 
-            "After setting off from his Lola’s humble bahay-kubo, Laro",
-            "arrives at the Springlands of Kalikasan . The first realm in",
-            "his journey toward crafting the Mighty Concoction. The air here",
-            "is fresh and full of life, but danger hides beneath its life.",
+            f"{Fore.GREEN}Welcome to the Spring Season! The Beginning of the Journey", 
+            "Laro arrives at the Springlands of Kalikasan .",
             "",
             ),
 
         "summer": (
             f"{Fore.MAGENTA}Welcome to the Summer Season! The Trial of Heat",
-            "After surviving the gentle bloom of Spring, Laro now steps",
-            "into the scorching Sunfields of Kalikasan. A vast, blazing ",
-            "realm where the earth cracks under the relentless heat of the",
-            "sun. The once-cool breeze has turned into waves of warmth, and ",
-            "every step tests his endurance.",
+            "Laro now steps into the scorching Sunfields of Kalikasan.",
             "",
             ),
 
         "fall": (
-            f"{Fore.MAGENTA}Welcome to the Fall Season! The Whisper of Change",
-            "After enduring the scorching trials of Summer, Laro ",
-            "now dives into the Amber Woods of Kalikasan. A realm",
-            "cloaked in golden leaves and drifting winds. The once-vibrant",
-            "land of life and fire has grown quiet, its warmth fading into a ",
+            f"{Fore.BLUE}Welcome to the Fall Season! The Whisper of Change",
+            "Laro now dives into the Amber Woods of Kalikasan.",
             "",
             ),
+
+        "winter": (
+            f"{Fore.CYAN}Welcome to the Winter Season! The cold never bothered Laro anyway.",
+            "Laro now steps into the Frosted Kalikasan. It might be caused by someone...",
+            "",),
+
+        "temple": (
+            f"{Fore.RED}{Style.BRIGHT}Welcome to the Final Stage: THE TEMPLE!",
+            "Laro now ascends to a sacred temple",
+            ),
+
         }
 
     season = get_season_from_path(path)
