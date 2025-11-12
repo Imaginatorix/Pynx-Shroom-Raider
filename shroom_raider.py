@@ -62,7 +62,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", type = str, dest="output_file")
     system_input = parser.parse_args()
 
-    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage1.txt")
+    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage5.txt")
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 
