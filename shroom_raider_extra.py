@@ -28,6 +28,7 @@ def input_clear():
         termios.tcflush(sys.stdin, termios.TCIFLUSH)
         
 global allow_auto_keyboard
+global allow_gamepad
 
 def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -46,9 +47,16 @@ def login(reference):
             if answer == "Return":
                 return None
         else:
+            global allow_auto_keyboard
+            global allow_gamepad
+
+            allow_auto_keyboard = reference.child(f"users/{username}/allow_auto_keyboard").get()
+            allow_gamepad = reference.child(f"users/{username}/allow_gamepad").get()
             return username
 
 def signup(reference):
+    global allow_auto_keyboard
+    global allow_gamepad
     print("Loading data...")
     users = reference.child("users").get()
     while True:
@@ -59,7 +67,7 @@ def signup(reference):
                 break
             options_list = ["Try again", "Return"]
             input_clear()
-            answer = options_list[survey.routines.select("Password must atleast be 8 characters long",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            answer = options_list[survey.routines.select("Username already taken",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return":
                 return None
         while True:
@@ -74,11 +82,28 @@ def signup(reference):
                 clear()
                 print("Enter Username: " + username)
             else:
+                options_list = ["Automatically input keyboard strokes", "Collect keyboard strokes and click enter to input"]
+                input_clear()
+                answer = options_list[survey.routines.select("How do you want to input moves? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+                if answer == "Automatically input keyboard strokes":
+                    allow_auto_keyboard = True
+                    options_list = ["Allow gamepad inputs", "Restrict to only keyboards"]
+                    input_clear()
+                    answer = options_list[survey.routines.select("Do you want to allow gamepad inputs (only applicable if 'Automatically input keyboard strokes' is on)? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+                    if answer == "Allow gamepad inputs":
+                        allow_gamepad = True
+                    else:
+                        allow_gamepad = False
+                else:
+                    allow_auto_keyboard = False
+                    allow_gamepad = False
                 reference.child("users").update({
                     username:{
                         "password": password,
                         "rank": 1000,
                         "story_level": "levels/spring/stage1.txt",
+                        "allow_auto_keyboard": allow_auto_keyboard,
+                        "allow_gamepad": allow_gamepad
                         }
                     }
                 )
@@ -103,7 +128,7 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
         elif allow_auto_keyboard == False:
             actions = user_input(level_info, locations, original_locations, original_level_info)
         else:
-            keyboard_input = keyboard_tracker()
+            keyboard_input = keyboard_tracker(allow_gamepad)
             input_clear()    
             if keyboard_input in ("w","a","s","d","p", "!", "e"):
                 actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
@@ -184,7 +209,7 @@ def story_mode(story_progress):
                 story_progress = next(shroom_level_parser_generator(story_progress))
     return output
 
-def unlocked_levels(username = "", reference = "",):
+def unlocked_levels(username = "", reference = ""):
     try_again = False
     while True:
         if try_again:
@@ -197,8 +222,7 @@ def unlocked_levels(username = "", reference = "",):
                     print("Play through the \"Story\" mode to unlock levels")
             else:
                 print("Currently playing locally, progress won't be saved")
-                #options_list = [level for level in generator please()]
-                ...
+                options_list = ["spring - stage1"] + [level.split("\\")[1] + " - " + level.split("\\")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
             input_clear()
             chosen_level = options_list[survey.routines.select(f"Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if chosen_level == "Return to main menu":
@@ -238,7 +262,7 @@ def unlocked_levels(username = "", reference = "",):
                 
                 if answer == "Yes, keep it":
                     reference.child(f"users/{username}/story_data/{chosen_level}").set(moves_count)
-            
+                    reference.child(f"level_leaderboard/{chosen_level}/{username}").set(moves_count)
             options_list = ["Try again", "Choose next level", "Return to main menu"]
             input_clear()
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
@@ -249,28 +273,80 @@ def unlocked_levels(username = "", reference = "",):
                 break
     return
 
-def match(username, reference):
+def find_match(username, reference): 
     print("Finding an opponent", end="")
-    reference.update({username: 0})
+    waiting_for_opponent = False
     while True:
         sleep(1.5)
         print(".", end="")
-        reference.child(username).set(reference.child(username).get()+1)
-        if len(reference.get()) > 1:
-            opponent = None
-            temp = reference.get()
-            temp.pop(username)
-            for user in temp:
-                opponent = user
+        if not waiting_for_opponent:
+            if reference.get():
+                available_rooms = reference.get()
+                for room in available_rooms:
+                    if len(available_rooms[room]) < 2: #found an available room
+                        opponent = room
+                        reference.child(f"{room}/{username}").set(-2)
+                        print("")
+                        print(f"Opponent found: {opponent}")
+                        sleep(1.5)
+                        return (room, opponent)
+            #if no available room, create one
+            room = username
+            reference.child(f"{room}/{username}").set(-2)
+            waiting_for_opponent = True
+        else:
+            
+            #if created a room, wait till an opponent
+            if len(reference.child(room).get()) == 2:
+                for user in reference.child(room).get():
+                    if user != username:
+                        opponent = user
                 print("")
                 print(f"Opponent found: {opponent}")
                 sleep(1.5)
                 break
-            break
-    reference.set(temp)
-    return opponent
+    return (room, opponent)
 
-def preferences(username):
+def match(username, reference, room, opponent, gamemode):
+    level_info, locations = parse_level("levels/spring/stage1.txt") #get random file from edward
+    moves_count = gameloop(level_info, locations, moves, output_file)
+    reference.child(f"{room}/{username}").set(moves_count)
+    print(f"You finished in {moves_count} moves")
+    opponent_moves_count = reference.child(f"{room}/{opponent}").get()
+    if opponent_moves_count == -2:
+        print(f"Waiting for {opponent} to finish", end="")
+        while True:
+            sleep(1.5)
+            print(".", end="")
+            opponent_moves_count = reference.child(f"{room}/{opponent}").get()
+            if opponent_moves_count > -1:
+                print(" ")
+                print(f"{opponent} has finished in {opponent_moves_count} moves")
+                break
+            elif opponent_moves_count == -1 or opponent_moves_count == "exit":
+                break
+    if opponent_moves_count == -1 or opponent_moves_count == "exit":
+        match_result = f"{opponent} didn't finish, you automatically won"
+        rank_score = 15
+    elif moves_count == -1 or moves_count == "exit":
+        match_result = f"You didn't finish, automatically lost"
+        rank_score = -15
+    elif moves_count > -1 and moves_count == opponent_moves_count:
+        match_result = f"You tied with {opponent}"
+        rank_score = 5
+    elif moves_count > -1 and moves_count < opponent_moves_count:
+        match_result = f"You've defeated {opponent} by {opponent_moves_count - moves_count}"
+        rank_score = 15 + opponent_moves_count - moves_count
+    elif moves_count > -1 and moves_count > opponent_moves_count:
+        match_result = f"You've lost to {opponent} by {moves_count - opponent_moves_count}"
+        rank_score = -15 - opponent_moves_count - moves_count
+    reference.child(f"{room}/{opponent}").delete()
+    if gamemode == "unranked":
+        return match_result
+    else:
+        return match_result, rank_score
+
+def preferences(username): #to implement
     while True:
         options_list = ["Keyboard", "Gamepad Recognition", "Return"]
         input_clear()
@@ -278,7 +354,7 @@ def preferences(username):
         if answer == "Keyboard":
             options_list = ["Auto input", "Press enter after input", "Return"]
             input_clear()
-            nswer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            answer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Auto input": 
                 allow_auto_keyboard = False
             else:
@@ -298,15 +374,13 @@ def settings(username):
             break
 
 
-def starting_menu():
+def starting_menu(reference):
+    global allow_auto_keyboard
+    global allow_gamepad
     while True:
         clear()
         options_list = ["Login", "Sign up", "Play Locally", "Exit"]
-<<<<<<< HEAD
-        sys.stdout.flush()
-=======
         input_clear()
->>>>>>> 27e466c45bde90a4cf274e5555ce20036a7948e8
         playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Login":
             username = login(reference)
@@ -318,117 +392,24 @@ def starting_menu():
                 break
         elif playmode == "Play Locally":
             username = ""
+            options_list = ["Automatically input keyboard strokes", "Collect keyboard strokes and click enter to input"]
+            input_clear()
+            answer = options_list[survey.routines.select("How do you want to input moves? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Automatically input keyboard strokes":
+                allow_auto_keyboard = True
+                options_list = ["Allow gamepad inputs", "Restrict to only keyboards"]
+                input_clear()
+                answer = options_list[survey.routines.select("Do you want to allow gamepad inputs (only applicable if 'Automatically input keyboard strokes' is on)? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+                if answer == "Allow gamepad inputs":
+                    allow_gamepad = True
+                else:
+                    allow_gamepad = False
+            else:
+                allow_auto_keyboard = False
             break
         else:
             sys.exit()
     return username
-
-def main_menu(username, reference):
-    continue_game = True
-    while True:
-        clear()
-        #options_list = ["Story", "Unlocked Levels", "Ranked Match", "Unranked Match", "Level Leaderboard", "Rank Leaderboard", "Settings", "Return"] 
-        #condense "Account Information" to settings, story, unlocked levels, level leaderboard to levels, ranked and unranked and leaderboard (spectate - see map, current moves of each player, time, end of game 
-        #find oponent - create room and wait for both players to join and click start for ready other players who join will specate only, find match) to matches
-        options_list = ["Levels", "Online Battle", "Settings", "Return"] 
-        input_clear()
-        playmode = options_list[survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Story": #add ending
-            if username:
-                story_data = story_mode(reference.child(f"users/{username}/story_level").get())
-                old_data = reference.child(f"users/{username}/story_data").get()
-                if old_data == None:
-                    old_data = {}
-                new_data = {}
-            else:
-                story_data = story_mode("levels/spring/stage1.txt")
-            if story_data:
-
-                print("Moves done per level:")
-
-                for story_level in story_data:
-                    if "/" in story_level:
-                        story_level_names = story_level.split("/")
-                    else:
-                        story_level_names = story_level.split("\\")
-                    print(f"{story_level_names[1]} - {story_level_names[2][:-4]}: {story_data[story_level]} moves")
-                    if username:
-                        new_data[f"{story_level_names[1]} - {story_level_names[2][:-4]}"] = story_data[story_level]
-
-                if username:
-                    reference.child(f"users/{username}/story_data").update(old_data | new_data)
-<<<<<<< HEAD
-                    reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
-=======
-<<<<<<< HEAD
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-=======
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
->>>>>>> 27e466c45bde90a4cf274e5555ce20036a7948e8
-                sys.stdout.flush()
-                options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
->>>>>>> 01840d5201a8f6adad9ab7bd14811fc36534ff4d
-        elif playmode == "Settings":
-            settings(username)
-        elif playmode == "Unlocked Levels":
-            if username:
-                unlocked_levels(username, reference)
-            else:
-                unlocked_levels()
-        elif playmode == "Ranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            ...
-        elif playmode == "Unranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            else:
-                opponent = match(username, reference.child("unranked_match"))
-                reference.child("matches").update({ #find match and lobby name
-                    "test":{
-                        opponent:-2,
-                        username:-2
-                    }
-                })
-                level_info, locations = parse_level("levels/temple/stage6.txt") #get random file from edward
-                moves_count = gameloop(level_info, locations, moves, output_file)
-                reference.child(f"matches/test/{username}").set(moves_count)
-                print(f"You finished in {moves_count} moves")
-                opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                if opponent_moves_count == -2:
-                    print(f"Waiting for {opponent} to finish", end="")
-                    while True:
-                        sleep(1.5)
-                        print(".", end="")
-                        opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                        if opponent_moves_count != -2:
-                            print("")
-                            print(f"{opponent} has finished in {opponent_moves_count} moves")
-                            break
-                        sleep(1.5)
-                if moves_count > -1 and moves_count == opponent_moves_count:
-                    print(f"You tied with {opponent}")
-                    break
-                elif  moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've defeated {opponent} by {opponent_moves_count - moves_count}")
-                    break
-                elif moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've lost to {opponent} by {moves_count - opponent_moves_count}")
-                    break
-                else:
-                    print(f"You didn't finish, automatically lost")
-        elif playmode == "Return":
-            continue_game = False
-            break
-    return continue_game
 
 def get_value(item):
     return item[1]
@@ -442,10 +423,12 @@ def level_leaderboard(username = "", reference = ""):
             options_list = [level for level in leaderboard_data] + ["Return to main menu"]
             input_clear()
             chosen_level = options_list[survey.routines.select(f"Choose from the following levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            clear()
             if chosen_level == "Return to main menu":
                 break
-            leaderboard = dict(sorted(leaderboard_data[chosen_level].items(), key = get_value, reverse = True))
-            count = 1
+            leaderboard = dict(sorted(leaderboard_data[chosen_level].items(), key = get_value))
+            print(f"Moves Leaderboard for {chosen_level}")
+            count = 0
             for user in leaderboard:
                 count += 1
                 print(f"{count}: {user} with {leaderboard[user]} moves")
@@ -460,7 +443,6 @@ def level_leaderboard(username = "", reference = ""):
         print("This is only available for logged in users")
         survey.routines.select("",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
     
-
 def levels_mode(username, reference):
     while True:
         clear()
@@ -486,9 +468,11 @@ def levels_mode(username, reference):
                     print(f"{story_level_names[1]} - {story_level_names[2][:-4]}: {story_data[story_level]} moves")
                     if username:
                         new_data[f"{story_level_names[1]} - {story_level_names[2][:-4]}"] = story_data[story_level]
+                        reference.child(f"level_leaderboard/{story_level_names[1]} - {story_level_names[2][:-4]}/{username}").set(story_data[story_level])
                 if username:
                     reference.child(f"users/{username}/story_data").update(old_data | new_data)
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
+                    reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
+                    
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
         if playmode == "Unlocked Levels":
@@ -510,23 +494,26 @@ def online_battle_mode(username, reference):
         options_list = ["Ranked Match", "Unranked Match", "Rank Leaderboard", "Return"] 
         input_clear()
         playmode = options_list[survey.routines.select(f"Online Battle Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Ranked Match":
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            ...        
-        if playmode == "Unlocked Levels":
-            if username:
-                unlocked_levels(username, reference)
-            else:
-                unlocked_levels()
-        elif playmode == "Level Leaderboard":
-            if username:
-                level_leaderboard(username, reference)
-            else:
-                level_leaderboard()
+        if playmode == "Ranked Match": #add time limit
+            room, opponent = find_match(username, reference.child("ranked_match"))
+
+            match_result, rank_score = match(username, reference.child("ranked_match"), room, opponent, "ranked")
+
+            old_rank = reference.child(f"users/{username}/rank").get()
+            new_rank = max(old_rank + rank_score, 1000)
+            reference.child(f"users/{username}/rank").set(new_rank)
+            input_clear()
+            print(match_result)
+            survey.routines.select(f"Old rank: {old_rank}, New rank: {new_rank}",  options = ["Continue"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+        elif playmode == "Unranked Match":
+            room, opponent = find_match(username, reference.child("unranked_match"))
+
+            match_result = match(username, reference.child("unranked_match"), room, opponent, "unranked")
+
+            input_clear()
+            survey.routines.select(match_result + " ",  options = ["Continue"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+        elif playmode == "Rank Leaderboard":
+            ...
         else:
             break
 
@@ -534,64 +521,21 @@ def main_menu(username, reference):
     continue_game = True
     while True:
         clear()
-        options_list = ["Levels", "Online Battle", "Settings", "Return"] 
+        options_list = ["Levels", "Online Battle", "Settings", "Return to Login"] 
         input_clear()
         playmode = options_list[survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Levels":
             levels_mode(username,reference)
         elif playmode == "Online Battle":
-            online_battle_mode(username,reference)
+            if not username:
+                print("This is only available for logged in users")
+                input_clear()
+                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+            else:
+                online_battle_mode(username,reference)
         elif playmode == "Settings":
             settings(username)
-        elif playmode == "Ranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            ...
-        elif playmode == "Unranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            else:
-                opponent = match(username, reference.child("unranked_match"))
-                reference.child("matches").update({ #find match and lobby name
-                    "test":{
-                        opponent:-2,
-                        username:-2
-                    }
-                })
-                level_info, locations = parse_level("levels/temple/stage6.txt") #get random file from edward
-                moves_count = gameloop(level_info, locations, moves, output_file)
-                reference.child(f"matches/test/{username}").set(moves_count)
-                print(f"You finished in {moves_count} moves")
-                opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                if opponent_moves_count == -2:
-                    print(f"Waiting for {opponent} to finish", end="")
-                    while True:
-                        sleep(1.5)
-                        print(".", end="")
-                        opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                        if opponent_moves_count != -2:
-                            print("")
-                            print(f"{opponent} has finished in {opponent_moves_count} moves")
-                            break
-                        sleep(1.5)
-                if moves_count > -1 and moves_count == opponent_moves_count:
-                    print(f"You tied with {opponent}")
-                    break
-                elif  moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've defeated {opponent} by {opponent_moves_count - moves_count}")
-                    break
-                elif moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've lost to {opponent} by {moves_count - opponent_moves_count}")
-                    break
-                else:
-                    print(f"You didn't finish, automatically lost")
-        elif playmode == "Return":
+        elif playmode == "Return to Login":
             continue_game = False
             break
     return continue_game
@@ -613,14 +557,15 @@ if __name__ == "__main__":
         allow_auto_keyboard = False
         gameloop(level_info, locations, moves, output_file)
     else:
-        # if offline dont do below
-        cred = credentials.Certificate("utils/private_key.json")
-        firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
-        reference = db.reference("/")
+        try:
+            cred = credentials.Certificate("utils/private_key.json")
+            firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
+            reference = db.reference("/")
+        except:
+            reference = ""
 
-        username = starting_menu()
-        allow_auto_keyboard = True
+        username = starting_menu(reference)
 
         while True:
             if not main_menu(username, reference):
-                username = starting_menu()
+                username = starting_menu(reference)

@@ -23,7 +23,7 @@ def get_next_stage(season, current_stage):
         else:
             return None, None
 
-def shroom_level_parser_generator(current_level_path):
+def shroom_level_parser_generator(current_level_path = "levels/spring/stage1.txt"):
     folders = os.path.normpath(current_level_path).split(os.sep)
     season = folders[-2]
     current_stage = folders[-1]
