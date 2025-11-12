@@ -4,7 +4,7 @@ from utils.parser import parse_level
 from utils.parser import parse_output
 from utils.movement_extra import user_input, keyboard_tracker
 from utils.ui import show_screen
-from utils.game_progress import shroom_level_parser
+from utils.game_progress import shroom_level_parse_generator
 from time import sleep
 from copy import deepcopy
 import sys
@@ -181,7 +181,7 @@ def story_mode(story_progress):
             if answer == "Return to main menu":
                 break
             else:
-                story_progress = shroom_level_parser(story_progress)
+                story_progress = shroom_level_parser_generator(story_progress)
     return output
 
 def unlocked_levels(username = "", reference = "",):
@@ -353,9 +353,15 @@ def main_menu(username, reference):
 
                 if username:
                     reference.child(f"users/{username}/story_data").update(old_data | new_data)
+<<<<<<< HEAD
                     reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+=======
+                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
+                sys.stdout.flush()
+                options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+>>>>>>> 01840d5201a8f6adad9ab7bd14811fc36534ff4d
         elif playmode == "Settings":
             settings(username)
         elif playmode == "Unlocked Levels":
