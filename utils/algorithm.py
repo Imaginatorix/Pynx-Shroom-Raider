@@ -15,8 +15,12 @@ def solution_search(filename: str, limit: int|float = float("inf")) -> str:
     """
     TODO: An interaction-based game stte BFS to speed up solution seaerch
     """
-    def next_actions(level_info: dict, locations: dict[str: set[tuple[int, int]]]):
-        ...
+    def next_interactions(level_info: dict, locations: dict[str: set[tuple[int, int]]]):
+        # Possible interactions
+        # Push a rock
+        # Pick up item (if no item yet)
+        # Use item (if you have no item)
+        # Collect mushroom
 
     initial_level_info, initial_locations = parser.parse_level(filename)
 

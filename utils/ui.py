@@ -77,7 +77,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
     character_cell = None
     for c, coord in locations.items():
         for i, j in coord:
-            if (i, j) == character_location and c != 'L':
+            if (i, j) == character_location and not c in {'L', '_', '.'}:
                 character_cell = ASCII_UI_CONVERSIONS[c]
             # Set cell to higher priority (for now, only character)
             if not map_ui[i][j] or c == 'L':
