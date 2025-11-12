@@ -40,4 +40,4 @@ def shroom_level_parser_generator(current_level_path = "levels/spring/stage1.txt
 
 current_level = "levels/spring/stage1.txt"
 next_level = shroom_level_parser_generator(current_level)
-print(next_level)
+#print(next_level)
