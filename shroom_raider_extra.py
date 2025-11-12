@@ -30,6 +30,7 @@ def login(reference):
         password = pwinput.pwinput(prompt="Enter your password: ", mask="*")
         if username not in users or reference.child(f"users/{username}/password").get() != password:
             options_list = ["Try again", "Return"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select('Incorrect Username or Password ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return":
                 return None
@@ -46,6 +47,7 @@ def signup(reference):
             if username not in users:
                 break
             options_list = ["Try again", "Return"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select("Password must atleast be 8 characters long",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return":
                 return None
@@ -54,6 +56,7 @@ def signup(reference):
             confirmpassword = pwinput.pwinput(prompt="Reenter your password: ", mask="*")
             if len(password) < 7 or password != confirmpassword:
                 options_list = ["Try again", "Return"]
+                sys.stdout.flush()
                 answer = options_list[survey.routines.select("Password must atleast be 8 characters long! " if len(password) < 7 else "Password mismatched! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 if answer == "Return":
                     return None
@@ -86,6 +89,8 @@ def gameloop(level_info, locations, allow_auto_keyboard, moves = "", output_file
         if moves:
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
             moves = ""
+        elif allow_auto_keyboard == False:
+            actions = user_input(level_info, locations, original_locations, original_level_info)
         else:
             keyboard_input = keyboard_tracker()
             if keyboard_input in ("w","a","s","d","p", "!", "e"):
@@ -106,6 +111,11 @@ def gameloop(level_info, locations, allow_auto_keyboard, moves = "", output_file
                 moves_count += 1
             level_info = current_level_info
             locations = current_locations 
+
+            if (level_info, locations) ==  (original_level_info, original_locations): #fix, still primative make a reset method
+                moves_count = 0
+                continue
+
             if not output_file:
                 # sleep(0.1)
                 show_screen(level_info, locations)
@@ -125,8 +135,6 @@ def gameloop(level_info, locations, allow_auto_keyboard, moves = "", output_file
             break
         elif level_info["game_end"]:
             break
-        else:
-            sleep(0.1)
     return moves_count
 
 def story_mode(story_progress):
@@ -138,12 +146,14 @@ def story_mode(story_progress):
             break
         elif moves_count == -1:
             options_list = ["Try again", "Return to main menu"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select("You died! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return to main menu":
                 break
         else:
             output[story_progress] = moves_count
             options_list = ["Next Level", "Return to main menu"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Return to main menu":
                 break
@@ -158,6 +168,7 @@ def unlocked_levels(username = "", reference = "",):
             try_again = False
         else:
             if username:
+                sys.stdout.flush()
                 options_list = [level for level in reference.child(f"users/{username}/story_data").get()] + ["Return to main menu"]
                 if not options_list:
                     print("Play through the \"Story\" mode to unlock levels")
@@ -165,6 +176,7 @@ def unlocked_levels(username = "", reference = "",):
                 print("Currently playing locally, progress won't be saved")
                 #options_list = [level for level in generator please()]
                 ...
+            sys.stdout.flush()
             chosen_level = options_list[survey.routines.select(f"Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if chosen_level == "Return to main menu":
                 break
@@ -175,6 +187,7 @@ def unlocked_levels(username = "", reference = "",):
 
         if type(moves_count) == str:
             options_list = ["Try again", "Choose level", "Return to main menu"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select("Laro gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             
             if answer == "Try again":
@@ -184,6 +197,7 @@ def unlocked_levels(username = "", reference = "",):
 
         elif moves_count == -1:
             options_list = ["Try again", "Choose level", "Return to main menu"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select("You died! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             
             if answer == "Try again":
@@ -196,12 +210,14 @@ def unlocked_levels(username = "", reference = "",):
                 print(f"Current moves: {moves_count}, Previous moves: {reference.child(f"users/{username}/story_data/{chosen_level}").get()}")
                 
                 options_list = ["Yes, keep it", "No, don't keep it"]
+                sys.stdout.flush()
                 answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 
                 if answer == "Yes, keep it":
                     reference.child(f"users/{username}/story_data/{chosen_level}").set(moves_count)
             
             options_list = ["Try again", "Choose next level", "Return to main menu"]
+            sys.stdout.flush()
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             
             if answer == "Try again":
@@ -235,10 +251,12 @@ def match(username, reference):
 def preferences(username):
     while True:
         options_list = ["Keyboard", "Gamepad Recognition", "Return"]
+        sys.stdout.flush()
         answer = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if answer == "Keyboard":
             options_list = ["Auto input", "Press enter after input", "Return"]
-            answer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            sys.stdout.flush()
+            nswer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Auto input": 
                 allow_auto_keyboard = False
             else:
@@ -250,6 +268,7 @@ def settings(username):
     while True:
         clear()
         options_list = ["Preferences", "Account Information", "Return"]
+        sys.stdout.flush()
         playmode = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Preferences":
             preferences(username)
@@ -261,7 +280,8 @@ def starting_menu():
     while True:
         clear()
         options_list = ["Login", "Sign up", "Play Locally", "Exit"]
-        playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        sys.stdout.flush()
+        laymode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Login":
             username = login(reference)
             if username != None:
@@ -284,6 +304,7 @@ def main_menu(username, reference):
         options_list = ["Story", "Unlocked Levels", "Ranked Match", "Unranked Match", "Level Leaderboard", "Rank Leaderboard", "Settings", "Return"] 
         #condense "Account Information" to settings, story, unlocked levels, level leaderboard to levels, ranked and unranked and leaderboard (spectate - see map, current moves of each player, time, end of game 
         #find oponent - create room and wait for both players to join and click start for ready other players who join will specate only, find match) to matches
+        sys.stdout.flush()
         playmode = options_list[survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Story": #add ending
             if username:
@@ -310,7 +331,7 @@ def main_menu(username, reference):
                 if username:
                     reference.child(f"users/{username}/story_data").update(old_data | new_data)
                     reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
-
+                sys.stdout.flush()
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         elif playmode == "Settings":
             settings(username)
@@ -322,12 +343,14 @@ def main_menu(username, reference):
         elif playmode == "Ranked Match": #add time limit
             if not username:
                 print("This is only available for logged in users")
+                sys.stdout.flush()
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 break
             ...
         elif playmode == "Unranked Match": #add time limit
             if not username:
                 print("This is only available for logged in users")
+                sys.stdout.flush()
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 break
             else:
@@ -338,7 +361,7 @@ def main_menu(username, reference):
                         username:-2
                     }
                 })
-                level_info, locations = parse_level("levels/spring/stage1.txt") #get random file from edward
+                level_info, locations = parse_level("levels/temple/stage6.txt") #get random file from edward
                 moves_count = gameloop(level_info, locations, moves, output_file)
                 reference.child(f"matches/test/{username}").set(moves_count)
                 print(f"You finished in {moves_count} moves")
@@ -384,7 +407,7 @@ if __name__ == "__main__":
         sys.exit(1)
     if output_file or moves or system_input.stage_file:
         level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/spring/stage1.txt")
-        allow_auto_keyboard = False
+        allow_auto_keyboard = True
         gameloop(level_info, locations, moves, output_file)
     else:
         # if offline dont do below
