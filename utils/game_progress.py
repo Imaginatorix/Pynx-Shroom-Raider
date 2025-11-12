@@ -22,20 +22,7 @@ def get_next_stage(season, current_stage):
             return next_season, next_stage
         else:
             return None, None
-"""
-def shroom_level_parser(current_level_path):
-    parts = os.path.normpath(current_level_path).split(os.sep)
-    season = parts[-2]
-    current_stage = parts[-1]
 
-    next_season, next_stage = get_next_stage(season, current_stage)
-
-    if not next_season or not next_stage:
-        return None
-
-    next_level_path = os.path.join(LEVEL_DIRECTORY, next_season, next_stage)
-    return next_level_path
-"""
 def shroom_level_parser_generator(current_level_path):
     folders = os.path.normpath(current_level_path).split(os.sep)
     season = folders[-2]
