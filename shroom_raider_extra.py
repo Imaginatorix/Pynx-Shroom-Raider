@@ -107,7 +107,7 @@ def gameloop(level_info, locations, allow_auto_keyboard, moves = "", output_file
             level_info = current_level_info
             locations = current_locations 
             if not output_file:
-                sleep(0.1)
+                # sleep(0.1)
                 show_screen(level_info, locations)
             if level_info["mushroom_collected"] == level_info["mushroom_total"]:
                 if output_file:
