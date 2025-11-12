@@ -26,6 +26,7 @@ def storyline(path):
         "spring": (
             f"{Fore.GREEN}Welcome to the Spring Season! The Beginning of the Journey", 
             "Laro arrives at the Springlands of Kalikasan .",
+            "",
             ),
 
         "summer": (
