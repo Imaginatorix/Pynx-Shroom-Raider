@@ -431,7 +431,7 @@ def level_leaderboard(username = "", reference = ""):
             count = 0
             for user in leaderboard:
                 count += 1
-                print(f"{count}: {user} with {leaderboard[user]} moves")
+                print(f"{count}: {user} with {leaderboard[user]} moves" + ("(you)" if user == username else ""))
                 if count > 10:
                     break
             options_list = ["Choose other level", "Return"]
@@ -442,7 +442,21 @@ def level_leaderboard(username = "", reference = ""):
     else:
         print("This is only available for logged in users")
         survey.routines.select("",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-    
+
+def rank_leaderboard(username, reference):
+    clear()
+    leaderboard_data = reference.child(f"rank_leaderboard").get()
+    leaderboard = dict(sorted(leaderboard_data.items(), key = get_value, reverse = True))
+    print(f"Highest Ranks")
+    count = 0
+    for user in leaderboard:
+        count += 1
+        print(f"{count}: {user} with {leaderboard[user]} points" + ("(you)" if user == username else ""))
+        if count > 10:
+            break
+    input_clear()
+    survey.routines.select("",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+
 def levels_mode(username, reference):
     while True:
         clear()
@@ -502,6 +516,7 @@ def online_battle_mode(username, reference):
             old_rank = reference.child(f"users/{username}/rank").get()
             new_rank = max(old_rank + rank_score, 1000)
             reference.child(f"users/{username}/rank").set(new_rank)
+            reference.child(f"rank_leaderboard/{username}").set(new_rank)
             input_clear()
             print(match_result)
             survey.routines.select(f"Old rank: {old_rank}, New rank: {new_rank}",  options = ["Continue"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
@@ -513,7 +528,7 @@ def online_battle_mode(username, reference):
             input_clear()
             survey.routines.select(match_result + " ",  options = ["Continue"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
         elif playmode == "Rank Leaderboard":
-            ...
+            rank_leaderboard(username, reference)
         else:
             break
 
