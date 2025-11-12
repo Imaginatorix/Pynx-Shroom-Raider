@@ -1,7 +1,19 @@
 from marshal import loads, dumps
 import keyboard
 import pygame
-import sys
+import os
+
+if os.name == 'nt':
+    import msvcrt
+else:
+    import termios
+
+def input_clear():
+    if os.name == 'nt':
+        while msvcrt.kbhit():
+            msvcrt.getch()
+    else:
+        termios.tcflush(sys.stdin, termios.TCIFLUSH)
 
 def firespread(start,locations):
     kernel = ((-1,0),(0,-1),(1,0),(0,1))
@@ -94,7 +106,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         _level_info = loads(dumps(_level_info))
     return actions
 
-def keyboard_tracker():
+def keyboard_tracker(): #fix buffer of gamepad
     pygame.init()
     pygame.joystick.init()
     if pygame.joystick.get_count() > 0:
@@ -104,13 +116,10 @@ def keyboard_tracker():
     print("What will you do?")
     keyboard_input = keyboard.read_key() 
     if pygame.joystick.get_count() > 0:
-        for event in pygame.event.get():
-            if event.type == pygame.JOYAXISMOTION: # implement
-                return ""
         if type(keyboard_input) == int:
             try:
                 keyboard_input = buttons[keyboard_input]
             except KeyError:
                 return ""
-    sys.stdout.flush()
+    input_clear()
     return keyboard_input
