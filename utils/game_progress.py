@@ -34,5 +34,5 @@ def shroom_level_parser(current_level_path):
     next_level_path = os.path.join(LEVEL_DIRECTORY, next_season, next_stage)
     return next_level_path
 
-current_level = "levels/summer/stage2.txt"
+current_level = "levels/fall/stage1.txt"
 next_level = shroom_level_parser(current_level)
