@@ -4,7 +4,7 @@ from utils.parser import parse_level
 from utils.parser import parse_output
 from utils.movement_extra import user_input, keyboard_tracker
 from utils.ui import show_screen
-from utils.game_progress import shroom_level_parse_generator
+from utils.game_progress import shroom_level_parser_generator
 from time import sleep
 from copy import deepcopy
 import sys
