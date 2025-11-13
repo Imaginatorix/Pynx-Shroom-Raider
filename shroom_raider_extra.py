@@ -445,19 +445,19 @@ def main_menu(username, reference):
 
                 if username:
                     reference.child(f"users/{username}/story_data").update(old_data | new_data)
-<<<<<<< HEAD
+
                     reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
-=======
-<<<<<<< HEAD
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser(next(reversed(story_data))))
+
+
+                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_gee(next(reversed(story_data))))
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-=======
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
->>>>>>> 27e466c45bde90a4cf274e5555ce20036a7948e8
+
+                reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
+
                 sys.stdout.flush()
                 options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
->>>>>>> 01840d5201a8f6adad9ab7bd14811fc36534ff4d
+
         elif playmode == "Settings":
             settings(username)
         elif playmode == "Unlocked Levels":

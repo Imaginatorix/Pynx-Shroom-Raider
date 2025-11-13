@@ -5,7 +5,10 @@ SEASONS = ["spring", "summer", "fall", "winter", "temple"]
 
 def get_next_stage(season, current_stage):
     seasons = os.path.join(LEVEL_DIRECTORY, season)
-    stages = sorted(os.listdir(seasons))
+    stages = sorted(
+    f for f in os.listdir(seasons)
+    if os.path.isfile(os.path.join(seasons, f)) and f.endswith(".txt"))
+    print(stages)
 
     if current_stage in stages:
         stage_number = stages.index(current_stage)
@@ -18,13 +21,18 @@ def get_next_stage(season, current_stage):
         next_season_index = SEASONS.index(season) + 1
         if next_season_index < len(SEASONS):
             next_season = SEASONS[next_season_index]
-            next_stage = sorted(os.listdir(os.path.join(LEVEL_DIRECTORY, next_season)))[0]
+            next_stage = sorted(
+                f for f in os.listdir(os.path.join(LEVEL_DIRECTORY, next_season))
+                if os.path.isfile(os.path.join(LEVEL_DIRECTORY, next_season, f))
+                and f.endswith(".txt"))[0]
+
             return next_season, next_stage
         else:
             return None, None
 
 def shroom_level_parser_generator(current_level_path = "levels/spring/stage1.txt"):
     folders = os.path.normpath(current_level_path).split(os.sep)
+    print(folders)
     season = folders[-2]
     current_stage = folders[-1]
 
@@ -38,6 +46,8 @@ def shroom_level_parser_generator(current_level_path = "levels/spring/stage1.txt
 
         season, current_stage = next_season, next_stage
 
+        print(season)
+
 current_level = "levels/spring/stage1.txt"
 next_level = shroom_level_parser_generator(current_level)
-#print(next_level)
+print(*(next_level))
