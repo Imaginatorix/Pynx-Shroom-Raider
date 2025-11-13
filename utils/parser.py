@@ -1,3 +1,4 @@
+# == GET THE LOCATIONS OF THE GAME ELEMENTS == 
 def get_locations(grid):
     locations = {
         ".": set(),
@@ -15,6 +16,7 @@ def get_locations(grid):
             locations[c].add((i, j))
     return locations
 
+# == GAME LEVEL INFO == 
 def get_level_info(size, grid, locations):
     return {
         "size": size,
@@ -25,6 +27,7 @@ def get_level_info(size, grid, locations):
         "invalid_input": False
     }
 
+# == PARSE GAME LEVEL == 
 def parse_level(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()

@@ -8,7 +8,6 @@ from colorama import Fore, Back, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
 from utils.game_progress import shroom_level_parser_generator
-from utils.game_progress import current_level
 
 
 
@@ -94,7 +93,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-    storylines = storyline(next(shroom_level_parser_generator("levels/spring/stage1.txt")))
+    storylines = storyline(parse_level())
 
     # Header
     header = (
@@ -103,7 +102,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "=====================",
         "",
     )
-
+    # In-game item description
     description = (
         f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
         "",
