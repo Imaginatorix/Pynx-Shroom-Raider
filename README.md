@@ -206,11 +206,12 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ```bash
 Pynx-Shroom-Raider/
-├──__pycache__
+├──__pycache__/
+├── generated_maps/ 
 ├── shroom_raider.py                    # Shroom Raider: base game points
 ├── shroom_raider_extra.py              # Shroom Raider: Additional Feature points
 ├── utils/                              # Other helper functions
-│   ├── algorithm.py                        #
+│   ├── algorithm.py                        # Algorithm to find optimal solution
 │   ├── game_progress.py                    # Game Level Progression 
 │   ├── movement_extra.py                   # Shroom Raider: Advanced Movement Features
 │   ├── movement.py                         # Shroom Raider: Core Movement Mechanics
@@ -220,11 +221,16 @@ Pynx-Shroom-Raider/
 │   ├── ui.py                               # All screen and UI management
 │   └── validator.py                        #
 │
-├── assets/                             # Other assets such as images, fonts, music, etc.
+├── assets/                             
 │   └── ...
 │
-├── tests/                              #
-│   └── ...
+├── tests/                              # Testing Game Function with Pytest
+│   ├── __pycache__/
+│   ├── test_movement/
+│   ├── test_parser/
+│   ├── test_shroom_raider/
+│   ├── test_ui/
+│   └── test_validator/
 │
 ├── levels/                             # Game levels  
 │   └── fall/                               # FALL  SEASON : Third season of the game
@@ -376,6 +382,11 @@ The tests:
     </tr>
         </tr>
         <td>Laro Storyline</td>
+        <td>Something</td>
+    </tr>
+        </tr>
+        </tr>
+        <td> Fancier user interface</td>
         <td>Something</td>
     </tr>
 </table>
