@@ -7,7 +7,7 @@ from wcwidth import wcswidth
 from colorama import Fore, Back, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
-from utils.game_progress import current_level
+from utils.game_progress import shroom_level_parser_generator
 
 
 
@@ -77,7 +77,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
     character_cell = None
     for c, coord in locations.items():
         for i, j in coord:
-            if (i, j) == character_location and c != 'L':
+            if (i, j) == character_location and c not in {'L', '_'}:
                 character_cell = ASCII_UI_CONVERSIONS[c]
             # Set cell to higher priority (for now, only character)
             if not map_ui[i][j] or c == 'L':
@@ -93,7 +93,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-    storylines = storyline(current_level)
+    storylines = storyline(parse_level())
 
     # Header
     header = (
@@ -102,7 +102,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         "=====================",
         "",
     )
-
+    # In-game item description
     description = (
         f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
         "",
@@ -122,6 +122,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"[S]{Style.BRIGHT} Move down",
         f"[D]{Style.BRIGHT} Move right",
         f"[!]{Style.BRIGHT} Reset",
+        f"[E]{Style.BRIGHT} Exit",
         "",
         "No items here" if not character_cell else f"{Fore.GREEN}[P] Pick up {character_cell}" if not level_info['inventory'] else f"{Fore.RED}Cannot pick up {character_cell}",
         "Not holding anything" if not level_info['inventory'] else f"{Fore.BLUE}Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
