@@ -1,3 +1,4 @@
+10 10
 TTTTTTTTTT
 TL......RT
 T...~...RT

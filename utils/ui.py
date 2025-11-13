@@ -7,6 +7,7 @@ from wcwidth import wcswidth
 from colorama import Fore, Back, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
+from utils.game_progress import shroom_level_parser_generator
 from utils.game_progress import current_level
 
 
@@ -77,7 +78,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
     character_cell = None
     for c, coord in locations.items():
         for i, j in coord:
-            if (i, j) == character_location and not c in {'L', '_', '.'}:
+            if (i, j) == character_location and c != 'L':
                 character_cell = ASCII_UI_CONVERSIONS[c]
             # Set cell to higher priority (for now, only character)
             if not map_ui[i][j] or c == 'L':
@@ -93,8 +94,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-
-    storylines = storyline(current_level)
+    storylines = storyline(next(shroom_level_parser_generator("levels/spring/stage1.txt")))
 
     # Header
     header = (
@@ -105,13 +105,13 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
     )
 
     description = (
-        # f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
-        # "",
-        # f"{Style.BRIGHT}Weapons/Tools:",
-        # f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
-        # f"🪓 {Style.BRIGHT}Axe{Style.RESET_ALL}: Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
-        # f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
-        # "",
+        f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
+        "",
+        f"{Style.BRIGHT}Weapons/Tools:",
+        f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
+        f"🪓 {Style.BRIGHT}Axe{Style.RESET_ALL}: Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
+        f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
+        "",
     )
 
     # Default instructions
