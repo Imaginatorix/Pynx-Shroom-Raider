@@ -123,6 +123,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"[S]{Style.BRIGHT} Move down",
         f"[D]{Style.BRIGHT} Move right",
         f"[!]{Style.BRIGHT} Reset",
+        f"[E]{Style.BRIGHT} Exit",
         "",
         "No items here" if not character_cell else f"{Fore.GREEN}[P] Pick up {character_cell}" if not level_info['inventory'] else f"{Fore.RED}Cannot pick up {character_cell}",
         "Not holding anything" if not level_info['inventory'] else f"{Fore.BLUE}Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
