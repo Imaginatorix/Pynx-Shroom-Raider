@@ -1,6 +1,6 @@
 from marshal import loads, dumps
 import keyboard
-import pygame
+from time import sleep
 import os
 
 if os.name == 'nt':
@@ -43,6 +43,8 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         actions.append((_locations, _level_info))
         return actions
     for action in commands:
+        if _level_info["level_reset"]:
+            _level_info["level_reset"] = False
         if action not in possible_inputs:
             _level_info["invalid_input"] = True
             actions.append((_locations, _level_info))
@@ -53,6 +55,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         elif action == "!":
             _level_info = loads(dumps(original_level_info))
             _locations = loads(dumps(original_locations))
+            _level_info["level_reset"] = True
         elif action=="P":
             if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
                 continue
@@ -70,7 +73,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             if player_location in _locations["T"] and _level_info["inventory"] == "*":
                 _level_info["inventory"] = ""
                 firespread(player_location,_locations)
-            if 0<=x+i<level_info["size"][0]-1 and 0<=y+j<level_info["size"][1]-1 and player_location not in _locations["T"]:
+            if 0<=x+i<level_info["size"][0] and 0<=y+j<level_info["size"][1] and player_location not in _locations["T"]:
                 if player_location in _locations["R"]:
                     new_rock = (x+i*2,y+j*2)
                     if new_rock in _locations["~"]:
@@ -106,21 +109,8 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         _level_info = loads(dumps(_level_info))
     return actions
 
-def keyboard_tracker(allow_gamepad): #fix buffer of gamepad
-    if allow_gamepad:
-        pygame.init()
-        pygame.joystick.init()
-        if pygame.joystick.get_count() > 0:
-            joystick = pygame.joystick.Joystick(0)
-            joystick.init()
-            buttons = {-195:"s", -196:"d", -197:"a", -198:"w", -200:"!", -199:"p"} #add e
+def keyboard_tracker():
     print("What will you do?")
     keyboard_input = keyboard.read_key() 
-    if allow_gamepad and pygame.joystick.get_count() > 0:
-        if type(keyboard_input) == int:
-            try:
-                keyboard_input = buttons[keyboard_input]
-            except KeyError:
-                return ""
     input_clear()
     return keyboard_input

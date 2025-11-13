@@ -55,7 +55,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             if player_location in _locations["T"] and _level_info["inventory"] == "*":
                 _level_info["inventory"] = ""
                 firespread(player_location,_locations)
-            if 0<=x+i<level_info["size"][0]-1 and 0<=y+j<level_info["size"][1]-1 and player_location not in _locations["T"]:
+            if 0<=x+i<level_info["size"][0] and 0<=y+j<level_info["size"][1] and player_location not in _locations["T"]:
                 if player_location in _locations["R"]:
                     new_rock = (x+i*2,y+j*2)
                     if new_rock in _locations["~"]:

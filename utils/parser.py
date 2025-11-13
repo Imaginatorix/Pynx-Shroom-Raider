@@ -24,7 +24,8 @@ def get_level_info(size, grid, locations):
         "mushroom_total": len(locations['+']),
         "game_end": False,
         "inventory": "",
-        "invalid_input": False
+        "invalid_input": False,
+        "level_reset": False,
     }
 
 # == PARSE GAME LEVEL == 

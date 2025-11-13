@@ -14,6 +14,7 @@ from firebase_admin import credentials, db
 import pwinput
 import survey
 import os
+import keyboard
 
 if os.name == 'nt':
     import msvcrt
@@ -28,7 +29,6 @@ def input_clear():
         termios.tcflush(sys.stdin, termios.TCIFLUSH)
         
 global allow_auto_keyboard
-global allow_gamepad
 
 def clear():
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -48,15 +48,11 @@ def login(reference):
                 return None
         else:
             global allow_auto_keyboard
-            global allow_gamepad
-
             allow_auto_keyboard = reference.child(f"users/{username}/allow_auto_keyboard").get()
-            allow_gamepad = reference.child(f"users/{username}/allow_gamepad").get()
             return username
 
 def signup(reference):
     global allow_auto_keyboard
-    global allow_gamepad
     print("Loading data...")
     users = reference.child("users").get()
     while True:
@@ -82,28 +78,21 @@ def signup(reference):
                 clear()
                 print("Enter Username: " + username)
             else:
+                clear()
+                print("Account has been created")
                 options_list = ["Automatically input keyboard strokes", "Collect keyboard strokes and click enter to input"]
                 input_clear()
                 answer = options_list[survey.routines.select("How do you want to input moves? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
                 if answer == "Automatically input keyboard strokes":
                     allow_auto_keyboard = True
-                    options_list = ["Allow gamepad inputs", "Restrict to only keyboards"]
-                    input_clear()
-                    answer = options_list[survey.routines.select("Do you want to allow gamepad inputs (only applicable if 'Automatically input keyboard strokes' is on)? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-                    if answer == "Allow gamepad inputs":
-                        allow_gamepad = True
-                    else:
-                        allow_gamepad = False
                 else:
                     allow_auto_keyboard = False
-                    allow_gamepad = False
                 reference.child("users").update({
                     username:{
                         "password": password,
                         "rank": 1000,
                         "story_level": "levels/spring/stage1.txt",
                         "allow_auto_keyboard": allow_auto_keyboard,
-                        "allow_gamepad": allow_gamepad
                         }
                     }
                 )
@@ -121,40 +110,44 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
         has_clear = "NO CLEAR"
     else:
         show_screen(level_info, locations)
+    if allow_auto_keyboard:
+        def key_check(event):
+            allowed_keys = {"w", "a", "s", "d", "e", "!", "p", "W", "A", "S", "D", "E", "P"}
+            if event.name in allowed_keys:
+                print(event.name)
+                return True  
+            else:
+                return False
+        keyboard.hook(key_check, suppress=True)
     while True:
         if moves:
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
             moves = ""
         elif allow_auto_keyboard == False:
             actions = user_input(level_info, locations, original_locations, original_level_info)
+            show_screen(level_info, locations)
         else:
-            keyboard_input = keyboard_tracker(allow_gamepad)
+            keyboard_input = keyboard_tracker()
             input_clear()    
-            if keyboard_input in ("w","a","s","d","p", "!", "e"):
-                actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
-                show_screen(level_info, locations)
-            elif keyboard_input == "buffer":
-                continue
-            else:
-                show_screen(level_info, locations)
-                print(Fore.RED + Style.BRIGHT + "Invalid input detected")
-                continue
+            actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
+            show_screen(level_info, locations)
         for current_locations, current_level_info in actions:
             if not (current_locations and current_level_info):
                 return "exit"
             if current_level_info["invalid_input"]:
-                show_screen(level_info, locations)
-                print(Fore.RED + Style.BRIGHT + "Invalid input detected")
+                if not output_file:
+                    sleep(0.1)
+                    show_screen(level_info, locations)
+                    print(Fore.RED + Style.BRIGHT + "Invalid input detected")
                 break
             else:
                 moves_count += 1
+                
             level_info = current_level_info
             locations = current_locations 
 
-            if (level_info, locations) ==  (original_level_info, original_locations): #fix, still primative make a reset method
+            if level_info["level_reset"]:
                 moves_count = 0
-                continue
-
             if not output_file:
                 sleep(0.1)
                 show_screen(level_info, locations)
@@ -169,23 +162,31 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
                     print(Fore.RED + Style.BRIGHT + "You drowned!")
                     moves_count = -1
                 break
+
         if output_file:
             parse_output(output_file, locations, level_info, has_clear)
             break
         elif level_info["game_end"]:
             break
         del actions
-    del level_info
-    del locations
-    del original_level_info
-    del original_locations
+
+    try:
+        del level_info
+        del locations
+        del original_level_info
+        del original_locations
+    finally:
+        keyboard.unhook_all()
     return moves_count
 
 def story_mode(story_progress):
     output = {}
     while True:
         level_info, locations = parse_level(story_progress)
-        moves_count = gameloop(level_info, locations, moves, output_file)
+        try:
+            moves_count = gameloop(level_info, locations, moves, output_file)
+        finally:
+            keyboard.unhook_all()
         if type(moves_count) == str:
             options_list = ["Try again", "Return to main menu"]
             input_clear()
@@ -222,7 +223,10 @@ def unlocked_levels(username = "", reference = ""):
                     print("Play through the \"Story\" mode to unlock levels")
             else:
                 print("Currently playing locally, progress won't be saved")
-                options_list = ["spring - stage1"] + [level.split("\\")[1] + " - " + level.split("\\")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
+                try:
+                    options_list = ["spring - stage1"] + [level.split("\\")[1] + " - " + level.split("\\")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
+                except:
+                    options_list = ["spring - stage1"] + [level.split("/")[1] + " - " + level.split("/")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
             input_clear()
             chosen_level = options_list[survey.routines.select(f"Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if chosen_level == "Return to main menu":
@@ -230,7 +234,10 @@ def unlocked_levels(username = "", reference = ""):
         
         chosen_level_path = f"levels/{chosen_level.split(" - ")[0]}/{chosen_level.split(" - ")[1]}.txt"
         level_info, locations = parse_level(chosen_level_path)
-        moves_count = gameloop(level_info, locations, moves, output_file)
+        try:
+            moves_count = gameloop(level_info, locations, moves, output_file)
+        finally:
+            keyboard.unhook_all()
 
         if type(moves_count) == str:
             options_list = ["Try again", "Choose level", "Return to main menu"]
@@ -309,7 +316,10 @@ def find_match(username, reference):
 
 def match(username, reference, room, opponent, gamemode):
     level_info, locations = parse_level("levels/spring/stage1.txt") #get random file from edward
-    moves_count = gameloop(level_info, locations, moves, output_file)
+    try:
+        moves_count = gameloop(level_info, locations, moves, output_file)
+    finally:
+        keyboard.unhook_all()
     reference.child(f"{room}/{username}").set(moves_count)
     print(f"You finished in {moves_count} moves")
     opponent_moves_count = reference.child(f"{room}/{opponent}").get()
@@ -346,40 +356,89 @@ def match(username, reference, room, opponent, gamemode):
     else:
         return match_result, rank_score
 
-def preferences(username): #to implement
-    while True:
-        options_list = ["Keyboard", "Gamepad Recognition", "Return"]
-        input_clear()
-        answer = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if answer == "Keyboard":
-            options_list = ["Auto input", "Press enter after input", "Return"]
-            input_clear()
-            answer = options_list[survey.routines.select('Choose method of controlling Laro ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-            if answer == "Auto input": 
-                allow_auto_keyboard = False
-            else:
-                allow_auto_keyboard = True
-            print()#does global var work
-
-
-def settings(username):
+def change_password(username, reference):
+    old_password = reference.child(f"users/{username}/password").get()
     while True:
         clear()
-        options_list = ["Preferences", "Account Information", "Return"]
+        password = pwinput.pwinput(prompt="Enter your password: ", mask="*")
+        confirmpassword = pwinput.pwinput(prompt="Reenter your password: ", mask="*")
+        if old_password == password:
+            options_list = ["Try again", "Return"]
+            input_clear()
+            answer = options_list[survey.routines.select("Entered password is same as old one ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Return":
+                return
+        elif len(password) < 7 or password != confirmpassword:
+            options_list = ["Try again", "Return"]
+            input_clear()
+            answer = options_list[survey.routines.select("Password must atleast be 8 characters long! " if len(password) < 7 else "Password mismatched! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Return":
+                return None
+        else:
+            reference.child(f"users/{username}/password").set(password)
+            survey.routines.select("New password has been set ",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+
+def delete_account(username, reference):
+    count = 0
+    while count < 4:
+        options_list = ["Yes, Delete", "Return"]
+        input_clear()
+        answer = options_list[survey.routines.select(f"Are you {"really "*count}sure? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        if answer == "Return":
+            return None
+        count += 1
+    reference.child(f"users/{username}").delete()
+    print("Account has been deleted, thank you for playing !")
+    sys.exit()
+
+def settings(username, reference):
+    global allow_auto_keyboard
+    while True:
+        clear()
+        options_list = ["Input Method", "Account Information", "Return"]
         input_clear()
         playmode = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Preferences":
-            preferences(username)
+        if playmode == "Input Method":
+            clear()
+            options_list = ["Automatically input keyboard strokes", "Collect keyboard strokes and click enter to input"]
+            input_clear()
+            answer = options_list[survey.routines.select("How do you want to input moves? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Automatically input keyboard strokes":
+                allow_auto_keyboard = True
+            else:
+                allow_auto_keyboard = False
+            if username:
+                reference.child(f"users/{username}/allow_auto_keyboard").set(allow_auto_keyboard)
+        elif playmode == "Account Information":
+            if not username:
+                print("This is only available for logged in users")
+                survey.routines.select("",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+                continue
+            else:
+                account_information = reference.child(f"users/{username}").get()
+                print(f"User rank: {account_information["rank"]}")
+                try:
+                    print(f"Story progress: {account_information["story_level"].split("/")[1]} - {account_information["story_level"].split("/")[2][:-4]}")
+                except:
+                    print(f"Story progress: {account_information["story_level"].split("\\")[1]} - {account_information["story_level"].split("\\")[2][:-4]}")
+            options_list = ["Change password", "Delete Account", "Return"]
+            input_clear()
+            answer = options_list[survey.routines.select("Options: ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Change password":
+                change_password(username, reference)
+            elif answer == "Delete Account":
+                clear()
+                delete_account(username, reference)
+            else:
+                continue
         else:
             break
 
-
 def starting_menu(reference):
     global allow_auto_keyboard
-    global allow_gamepad
     while True:
         clear()
-        options_list = ["Login", "Sign up", "Play Locally", "Exit"]
+        options_list = ["Login", "Sign up", "Play Locally", "Exit"] if reference != "" else ["Play Locally", "Exit"]
         input_clear()
         playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Login":
@@ -397,13 +456,6 @@ def starting_menu(reference):
             answer = options_list[survey.routines.select("How do you want to input moves? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if answer == "Automatically input keyboard strokes":
                 allow_auto_keyboard = True
-                options_list = ["Allow gamepad inputs", "Restrict to only keyboards"]
-                input_clear()
-                answer = options_list[survey.routines.select("Do you want to allow gamepad inputs (only applicable if 'Automatically input keyboard strokes' is on)? ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-                if answer == "Allow gamepad inputs":
-                    allow_gamepad = True
-                else:
-                    allow_gamepad = False
             else:
                 allow_auto_keyboard = False
             break
@@ -656,7 +708,7 @@ def main_menu(username, reference):
             else:
                 online_battle_mode(username,reference)
         elif playmode == "Settings":
-            settings(username)
+            settings(username, reference)
         elif playmode == "Return to Login":
             continue_game = False
             break
@@ -684,7 +736,14 @@ if __name__ == "__main__":
             firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
             reference = db.reference("/")
         except:
+            clear()
+            error_message = "Failed initiating a connection with Firebase. Make sure that you are connected to the internet and the private_key.json file is in the utils folder before running "
             reference = ""
+            options_list = ["Continue (only the 'Play Locally' option will be available)", "Exit"]
+            input_clear()
+            answer = options_list[survey.routines.select(error_message,  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            if answer == "Exit":
+                sys.exit()
 
         username = starting_menu(reference)
 
