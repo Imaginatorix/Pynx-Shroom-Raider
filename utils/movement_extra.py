@@ -1,8 +1,6 @@
-from marshal import loads, dumps
-import keyboard
-from time import sleep
 import os
-from copy import deepcopy
+import sys
+from marshal import loads, dumps
 
 if os.name == 'nt':
     import msvcrt
@@ -37,10 +35,8 @@ def user_input(level_info, locations, original_locations, original_level_info, s
         commands = tuple(ch for ch in input("What will you do? ").upper())
     possible_inputs={"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":None, "P":None, "E":None}
     actions=[]
-    # _locations = loads(dumps(locations))
-    # _level_info = loads(dumps(level_info))
-    _locations = deepcopy(locations)
-    _level_info = deepcopy(level_info)
+    _locations = loads(dumps(locations))
+    _level_info = loads(dumps(level_info))
     if not commands:
         _level_info["invalid_input"] = True
         actions.append((_locations, _level_info))
@@ -56,10 +52,8 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             actions.append(({},{}))
             break
         elif action == "!":
-            # _level_info = loads(dumps(original_level_info))
-            # _locations = loads(dumps(original_locations))
-            _locations = deepcopy(original_locations)
-            _level_info = deepcopy(original_level_info)
+            _level_info = loads(dumps(original_level_info))
+            _locations = loads(dumps(original_locations))
             _level_info["level_reset"] = True
         elif action=="P":
             if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
@@ -109,17 +103,9 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                 _locations["."] = set(_locations["."])
                 _locations["."].remove(next(iter(_locations["L"])))
         actions.append((_locations, _level_info))
-        # _locations = loads(dumps(_locations))
-        # _level_info = loads(dumps(_level_info))
-        _locations = deepcopy(_locations)
-        _level_info = deepcopy(_level_info)
+        _locations = loads(dumps(_locations))
+        _level_info = loads(dumps(_level_info))
         
     del _locations
     del _level_info
     return actions
-
-def keyboard_tracker():
-    print("What will you do? ", end = "\r")
-    keyboard_input = keyboard.read_key() 
-    input_clear()
-    return keyboard_input

@@ -1,9 +1,12 @@
-from copy import deepcopy
+from marshal import loads, dumps
 
-def firespread(start,locations):
+# === REMOVES TREES AFFECTED BY FIRE===
+def firespread(start: tuple, locations: dict[str: set[tuple[int, int]]]):
     kernel = ((-1,0),(0,-1),(1,0),(0,1))
     frontier = [start]
     n = 0
+
+    # Keep removing trees until there are no more adjacent trees
     while n < len(frontier):
         i, j = frontier[n]
         for di, dj in kernel:
@@ -14,20 +17,33 @@ def firespread(start,locations):
                 locations["."].add(new)
         n+=1
 
-def user_input(level_info, locations, original_locations, original_level_info, sys_input = ""):
+# === USE USER INPUT TO UPDATE MAP DATA ===
+def user_input(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], original_locations: dict[str: set[tuple[int, int]]], original_level_info: dict[str: set[tuple[int, int]]], sys_input: str = ""):
+    # Checks if moves are given to the function
     if sys_input: 
+        # Use the moves given as commands
         commands = tuple(ch for ch in sys_input.upper())
     else:
+        # Get moves using the input function and use as commands
         commands = tuple(ch for ch in input("What will you do? ").upper())
+    
     possible_inputs={"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":None, "P":None, "=":None}
     actions=[]
-    _locations = deepcopy(locations)
-    _level_info = deepcopy(level_info)
+
+    # Create new copy of map data to modify
+    _locations = loads(dumps(locations))
+    _level_info = loads(dumps(level_info))
+
+    # When commands are empty, mark as invalid input
     if not commands:
         _level_info["invalid_input"] = True
         actions.append((_locations, _level_info))
         return actions
+    
+    # Iterate through each character of commands
     for action in commands:
+
+        # When action is invalid, stop the iteration
         if action not in possible_inputs:
             _level_info["invalid_input"] = True
             actions.append((_locations, _level_info))
@@ -36,19 +52,27 @@ def user_input(level_info, locations, original_locations, original_level_info, s
             actions= "end"
             break
         elif action == "!":
-            _level_info = deepcopy(original_level_info)
-            _locations = deepcopy(original_locations)
+            # Reverts the map data to the original map data
+            _locations = loads(dumps(original_locations))
+            _level_info = loads(dumps(original_level_info))
         elif action=="P":
+            # Check if Laro is in an item tile or already has an item
             if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"]) or _level_info["inventory"]:
                 continue
-            _level_info["inventory"] = ("*" if next(iter(_locations["L"])) in _locations["*"] else "x")
-            _locations[_level_info["inventory"]].remove(next(iter(_locations["L"])))
+            else:
+                # Laro picks up the items and removes it from the map
+                _level_info["inventory"] = ("*" if next(iter(_locations["L"])) in _locations["*"] else "x")
+                _locations[_level_info["inventory"]].remove(next(iter(_locations["L"])))
         else:
             if next(iter(_locations["L"])) not in (*_locations["*"], *_locations["x"], *_locations["_"]):
+                # Add an empty character in Laro's previous location
                 _locations["."].add(next(iter(_locations["L"])))
+            
+            # Create new possible player location
             x,y = next(iter(_locations["L"]))
             i,j = possible_inputs[action]
             player_location = (x+i,y+j)
+            
             if player_location in _locations["T"] and _level_info["inventory"] == "x":
                 _locations["T"].remove(player_location)
                 _level_info["inventory"] = ""
@@ -86,7 +110,7 @@ def user_input(level_info, locations, original_locations, original_level_info, s
                 _locations["."] = set(_locations["."])
                 _locations["."].remove(next(iter(_locations["L"])))
         actions.append((_locations, _level_info))
-        _locations = deepcopy(_locations)
-        _level_info = deepcopy(_level_info)
+        _locations = loads(dumps(_locations))
+        _level_info = loads(dumps(_level_info))
     return actions
 
