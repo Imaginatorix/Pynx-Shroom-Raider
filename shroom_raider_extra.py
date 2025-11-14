@@ -11,6 +11,8 @@ from utils.parser import parse_output
 from utils.movement_extra import user_input
 from utils.ui import show_screen
 from utils.game_progress import shroom_level_parser_generator
+from utils.validator import validate_level_info, validate_locations
+from utils.algorithm import generate_map
 from colorama import Fore, Style
 from firebase_admin import credentials, db, initialize_app
 from itertools import cycle
@@ -132,6 +134,10 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
     
     clear()
     colorama.init(autoreset=True)
+
+    # Check whether the map data is valid
+    validate_locations(*level_info["size"], locations)
+    validate_level_info(level_info)
 
     original_level_info = deepcopy(level_info)
     original_locations = deepcopy(locations)
@@ -308,7 +314,7 @@ def unlocked_levels(username = "", reference = ""):
                 if answer == 0:
                     reference.child(f"users/{username}/story_data/{chosen_level}").set(moves_count)
                     reference.child(f"level_leaderboard/{chosen_level}/{username}").set(moves_count)
-            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Choose Level":<15}| Play a different level", f"{"Return":<15}| Go back to main menu"]
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Choose Level":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
             input_clear()
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. " if not username else "",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             
@@ -556,6 +562,46 @@ def rank_leaderboard(username, reference):
     input_clear()
     survey.routines.select("",  options = [f"{"Return":<10}| Go back to online battle menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
 
+def endless_mode():
+    call = generate_map(limit=1)
+    while True:
+        
+        level_info, locations = parse_level(call)
+        try:
+            moves_count = gameloop(level_info, locations, moves, output_file)
+        finally:
+            keyboard.unhook_all()
+
+        if type(moves_count) is str:
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Skip":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            input_clear()
+            answer = survey.routines.select("Laro gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+            
+            if answer == 1:
+                call = generate_map()
+            elif answer == 2:
+                break
+
+        elif moves_count == -1:
+            options_list = [f"{"Try again":<15}| Restart the map and play again",f"{"Skip":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            input_clear()
+            answer = survey.routines.select("You died! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+            
+            if answer == 1:
+                call = generate_map()
+            elif answer == 2:
+                break
+
+        else:
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Next Level":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            input_clear()
+            answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. " if not username else "",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            
+            if answer == 1:
+                call = generate_map()
+            elif answer == 2:
+                break
+
 def levels_mode(username, reference):
     while True:
         clear()
@@ -588,7 +634,9 @@ def levels_mode(username, reference):
                     
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-        if playmode == 2:
+        elif playmode == 1:
+            endless_mode()
+        elif playmode == 2:
             if username:
                 unlocked_levels(username, reference)
             else:

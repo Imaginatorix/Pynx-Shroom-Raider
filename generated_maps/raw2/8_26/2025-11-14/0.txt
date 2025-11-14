@@ -1,0 +1,9 @@
+8 26
+RRRRRRRRRRRRRRRRRRRRRRRRRR
+R.LTR.xT..+T..x....~x..T+R
+RxTx~.T...TR.+..T........R
+RTRTx~...TR.R..~.T...T...R
+RRTR~+....~...~R~...~.T.~R
+R..T.....~...~R~..x~.~.~.R
+RxT+......~..+~+~......+.R
+RRRRRRRRRRRRRRRRRRRRRRRRRR

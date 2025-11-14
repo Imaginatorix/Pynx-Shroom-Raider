@@ -1,6 +1,6 @@
 # Make higher level directories visible
 import sys
-from os import path
+from os import path, listdir
 sys.path.append(path.abspath("."))
 
 from dict_hash import dict_hash
@@ -41,7 +41,7 @@ def solution_search(filename: str, limit: int|float = float("inf")) -> str:
     while frontier:
         level_info, locations, moves = frontier.popleft()
         if len(moves) > longest_move:
-            print(f"Calculating depth {len(moves)}...")
+            #print(f"Calculating depth {len(moves)}...")
             longest_move = len(moves)
 
         # Try each possible move
@@ -387,7 +387,7 @@ def generate_raw_maps(r: int, c: int, limit: int, raw_maps_directory: str, outpu
                 makedirs(directory_name, exist_ok=True)
                 filename = path.join(directory_name, f"{generated}.txt")
                 write_map(filename, r, c, proposed_grid)
-                print("Generated a raw map...")
+                #print("Generated a raw map...")
 
                 # Check if it is solvable
                 if solution_search(filename) is None:
@@ -398,13 +398,13 @@ def generate_raw_maps(r: int, c: int, limit: int, raw_maps_directory: str, outpu
                 makedirs(directory_name, exist_ok=True)
                 filename = path.join(directory_name, f"{generated}.txt")
                 write_map(filename, r, c, proposed_grid)
-                print("Generated a valid map...")
+                #print("Generated a valid map...")
 
                 # Include in final generated
                 produced = True
                 break
             except Exception as e:
-                print(traceback.print_exception(*sys.exc_info()))
+                #print(traceback.print_exception(*sys.exc_info()))
                 attempts += 1
 
         if not produced:
@@ -415,18 +415,18 @@ def generate_raw_maps(r: int, c: int, limit: int, raw_maps_directory: str, outpu
 
 
 def generate_map(r: None|int = None, c: None|int = None, limit: int = 100, output_directory: None|str = None) -> None:
+    # Generate random if not provided
+    if r is None:
+        r = randrange(5, 7)
+    if c is None:
+        c = randrange(5, 7)
+    
     if r < 3:
         raise ValueError("Grid must have a value of at least 3x3")
     if c < 3:
         raise ValueError("Grid must have a value of at least 3x3")
 
-    # Generate random if not provided
-    if r is None:
-        r = randrange(1, 31)
-    if c is None:
-        c = randrange(1, 31)
-
-    print(f"Generating {r}x{c} maps...")
+    print(f"Generating {r}x{c} map...")
 
     # Important directories
     raw_maps_directory = f"generated_maps/raw2/{r}_{c}"
@@ -435,7 +435,13 @@ def generate_map(r: None|int = None, c: None|int = None, limit: int = 100, outpu
     num_generated = generate_raw_maps(r, c, limit, raw_maps_directory, output_directory)
     # Filter maps according to 'Good Game' Heurstic
 
-    print(f"Generated {num_generated} map(s) at {output_directory}")
+    all_items = listdir(output_directory)
+    random_file_name = choice(all_items)
+    random_file_path = path.join(output_directory, random_file_name)
+
+    #print(f"Generated {num_generated} map(s) at {output_directory}")
+
+    return random_file_path
 
 
 if __name__ == "__main__":

@@ -18,6 +18,10 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
     # Clear screen
     clear()
 
+    # Check whether the map data is valid
+    validate_locations(*level_info["size"], locations)
+    validate_level_info(level_info)
+
     # Record original map stage
     original_level_info = loads(dumps(level_info))
     original_locations = loads(dumps(locations))
@@ -40,18 +44,18 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
             # Delete old moves and allow users to input new moves
             moves = ""
+            clear()
+            show_screen(level_info, locations)
         else:
             actions = user_input(level_info, locations, original_locations, original_level_info)
+            clear()
+            show_screen(level_info, locations)
         
         # Iterate through all map updates based on user's moves
         for current_locations, current_level_info in actions:
             # Updates old map info
             level_info = current_level_info
             locations = current_locations 
-
-            # Check whether the map data is valid
-            validate_locations(*level_info["size"], locations)
-            validate_level_info(level_info)
 
             # Only print the ui if no output file is given
             if not output_file:
@@ -60,6 +64,9 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
 
             # Tell user an invalid input is given, only prints if no output file is given
             if level_info["invalid_input"] and not output_file:
+                level_info["invalid_input"] = False
+                sleep(0.1)
+                show_screen(level_info, locations)
                 print(Fore.RED + Style.BRIGHT + "Invalid input detected")
 
             # When the game ends, check if win or lose 
