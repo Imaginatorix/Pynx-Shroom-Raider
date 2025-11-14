@@ -8,24 +8,10 @@ from colorama import Fore, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
 from utils.game_progress import shroom_level_parser_generator
-
+from settings import EMPTY_TILE_ASCII, LARO_CRAFT_TILE_ASCII, TREE_TILE_ASCII, MUSHROOM_TILE_ASCII, ROCK_TILE_ASCII, WATER_TILE_ASCII, PAVED_TILE_ASCII, AXE_ITEM_ASCII, FLAMETHROWER_ITEM_ASCII
 
 
 colorama.init(autoreset=True)
- 
-# === ASCII ===
-# TILES
-EMPTY_TILE_ASCII = '.'
-LARO_CRAFT_TILE_ASCII = 'L'
-TREE_TILE_ASCII = 'T'
-MUSHROOM_TILE_ASCII = '+'
-ROCK_TILE_ASCII = 'R'
-WATER_TILE_ASCII = '~'
-PAVED_TILE_ASCII = '_'
-# ITEMS
-AXE_ITEM_ASCII = 'x'
-FLAMETHROWER_ITEM_ASCII = '*'
-
 
 # === UI ===
 # TILES
@@ -58,7 +44,7 @@ ASCII_UI_CONVERSIONS = {
 
 
 # === CREATE SCREEN MAP UI ===
-def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, int]]]) -> tuple[str]:
+def create_map_ui(size: tuple[int, int], locations: dict[str: set[tuple[int, int]]]) -> tuple[str]:
     r, c = size
     if r == 0 or c == 0:
         return [], None
@@ -149,7 +135,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 
 # === CREATE SCREEN ===
-def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], terminal_columns: int|None = None) -> None:
+def show_screen(level_info: dict, locations: dict[str: set[tuple[int, int]]], terminal_columns: int|None = None) -> None:
     # Function to clear terminal
     def clear():
        #os.system('cls' if os.name == 'nt' else 'clear')
