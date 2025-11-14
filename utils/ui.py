@@ -8,7 +8,7 @@ from colorama import Fore, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
 from utils.game_progress import shroom_level_parser_generator
-from settings import EMPTY_TILE_ASCII, LARO_CRAFT_TILE_ASCII, TREE_TILE_ASCII, MUSHROOM_TILE_ASCII, ROCK_TILE_ASCII, WATER_TILE_ASCII, PAVED_TILE_ASCII, AXE_ITEM_ASCII, FLAMETHROWER_ITEM_ASCII
+from utils.settings import EMPTY_TILE_ASCII, LARO_CRAFT_TILE_ASCII, TREE_TILE_ASCII, MUSHROOM_TILE_ASCII, ROCK_TILE_ASCII, WATER_TILE_ASCII, PAVED_TILE_ASCII, AXE_ITEM_ASCII, FLAMETHROWER_ITEM_ASCII
 
 
 colorama.init(autoreset=True)

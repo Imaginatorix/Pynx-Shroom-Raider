@@ -8,3 +8,7 @@ Pygments==2.19.2
 pytest==8.4.2
 pytest-timeout==2.4.0
 wcwidth==0.2.14
+keyboard==0.13.5
+firebase_admin==7.1.0
+survey==5.4.2
+pwinput==1.0.3
