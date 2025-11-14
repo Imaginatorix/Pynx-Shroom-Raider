@@ -1,12 +1,18 @@
 import colorama
 import argparse
+import os
 from colorama import Fore, Style 
 from utils.parser import parse_level
 from utils.parser import parse_output
 from utils.movement import user_input
 from utils.ui import show_screen
-from time import sleep
+from utils.validator import validate_level_info, validate_locations
 from marshal import loads, dumps
+from time import sleep
+
+# === CLEAR TERMINAL ===
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 # === MAIN GAME LOOP ===
 def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], moves: str, output_file: str) -> str:
@@ -41,6 +47,11 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
             level_info = current_level_info
             locations = current_locations 
 
+            # Check whether the map data is valid
+            print(type(locations))
+            validate_locations(*level_info["size"], locations)
+            validate_level_info(level_info)
+
             # Only print the ui if no output file is given
             if not output_file:
                 sleep(0.1)
@@ -54,7 +65,7 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
             if level_info["game_end"] and level_info["mushroom_collected"] == level_info["mushroom_total"]:
                 has_clear = "CLEAR"
                 break
-            else:
+            elif level_info["game_end"]:
                 has_clear = "NO CLEAR"
                 break
         
