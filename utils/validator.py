@@ -47,13 +47,13 @@ def validate_locations(r, c, locations):
         raise ValueError(f"Keys must be one of {VALID_TILES}")
 
     # Locations must always contain Lara (with only one location)
-    if not 'L' in location_tiles:
+    if 'L' not in location_tiles:
         raise ValueError("Locations must always contain one Lara")
     if not len(locations['L']) == 1:
         raise ValueError("Locations must always contain one Lara")
 
     # Locations must always have at least one mushroom
-    if not '+' in location_tiles:
+    if '+' not in location_tiles:
         raise ValueError("Locations must always have at least one mushroom")
     if not len(locations['L']) > 1:
         raise ValueError("Locations must always have at least one mushroom")
@@ -72,7 +72,7 @@ def validate_locations(r, c, locations):
             if (i, j) == (li, lj):
                 visited.add((i, j))
                 character_cell.add(key)
-            elif not (i, j) in visited:
+            elif (i, j) not in visited:
                 visited.add((i, j))
             else:
                 raise ValueError("All cells must have only one tile (except Lara)")
@@ -140,7 +140,7 @@ def validate_level_info(level_info):
     if not (isinstance(level_info['inventory'], str) and len(level_info['inventory']) == 1):
         raise TypeError("Item in inventory must be a singular character")
     # Must be in VALID_ITEMS
-    if not level_info['inventory'] in VALID_ITEMS:
+    if level_info['inventory'] not in VALID_ITEMS:
         raise TypeError("Item in inventory must be a singular character")
 
     # Invalid Input

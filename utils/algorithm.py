@@ -12,7 +12,6 @@ import traceback
 
 import utils.parser as parser
 import utils.movement as movement
-import utils.ui as ui
 
 # === ALGORITHM TO FIND OPTIMAL SOLUTION, IF IT EXISTS ===
 
@@ -59,7 +58,7 @@ def solution_search(filename: str, limit: int|float = float("inf")) -> str:
                 return moves+move
 
             # If game state not yet explore and not yet ended and is still within limits, continue game
-            elif not next_state_hash in visited and not next_level_info["game_end"] and len(moves)+1 < limit:
+            elif next_state_hash not in visited and not next_level_info["game_end"] and len(moves)+1 < limit:
                 frontier.append((next_level_info, next_locations, moves+move))
                 visited.add(next_state_hash)
 
