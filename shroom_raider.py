@@ -1,5 +1,6 @@
 import colorama
 import argparse
+import os
 from colorama import Fore, Style 
 from utils.parser import parse_level
 from utils.parser import parse_output
@@ -9,8 +10,14 @@ from utils.validator import validate_level_info, validate_locations
 from marshal import loads, dumps
 from time import sleep
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 # === MAIN GAME LOOP ===
 def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], moves: str, output_file: str) -> str:
+    # Clear screen
+    clear()
+
     # Record original map stage
     original_level_info = loads(dumps(level_info))
     original_locations = loads(dumps(locations))
@@ -43,7 +50,6 @@ def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[t
             locations = current_locations 
 
             # Check whether the map data is valid
-            print(type(locations))
             validate_locations(*level_info["size"], locations)
             validate_level_info(level_info)
 

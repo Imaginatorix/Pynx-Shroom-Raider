@@ -42,8 +42,7 @@ def spinner(controller, text="Loading"):
     sys.stdout.flush()
 
 def clear():
-    sys.stdout.write("\033[2J\033[H")
-    sys.stdout.flush()
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def login(reference):
     controller = {"stop": False}
