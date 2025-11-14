@@ -8,11 +8,10 @@ from utils.ui import show_screen
 from utils.game_progress import shroom_level_parser_generator
 from time import sleep
 from copy import deepcopy
+from pathlib import Path
 import sys
 import argparse
-import firebase_admin
-from firebase_admin import credentials, db
-import google.auth.transport.requests
+from firebase_admin import credentials, db, initialize_app
 import pwinput
 import survey
 import os
@@ -233,10 +232,7 @@ def unlocked_levels(username = "", reference = ""):
                     print("Play through the \"Story\" mode to unlock levels")
             else:
                 print("Currently playing locally, progress won't be saved")
-                try:
-                    options_list = ["spring - stage1"] + [level.split("\\")[1] + " - " + level.split("\\")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
-                except:
-                    options_list = ["spring - stage1"] + [level.split("/")[1] + " - " + level.split("/")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
+                options_list = ["spring - stage1"] + [Path(level).parts[1] + " - " + Path(level).stem for level in shroom_level_parser_generator()] + ["Return to main menu"]
             input_clear()
             chosen_level = options_list[survey.routines.select("Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if chosen_level == "Return to main menu":
@@ -249,7 +245,7 @@ def unlocked_levels(username = "", reference = ""):
         finally:
             keyboard.unhook_all()
 
-        if type(moves_count) == str:
+        if type(moves_count) is str:
             options_list = ["Try again", "Choose level", "Return to main menu"]
             input_clear()
             answer = options_list[survey.routines.select("Laro gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
@@ -427,10 +423,7 @@ def settings(username, reference):
             else:
                 account_information = reference.child(f"users/{username}").get()
                 print(f"User rank: {account_information["rank"]}")
-                try:
-                    print(f"Story progress: {account_information["story_level"].split("/")[1]} - {account_information["story_level"].split("/")[2][:-4]}")
-                except:
-                    print(f"Story progress: {account_information["story_level"].split("\\")[1]} - {account_information["story_level"].split("\\")[2][:-4]}")
+                print(f"Story progress: {Path(account_information["story_level"]).parts[1]} - {Path(account_information["story_level"]).stem}")
             options_list = ["Change password", "Delete Account", "Return"]
             input_clear()
             answer = options_list[survey.routines.select("Options: ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
@@ -453,11 +446,11 @@ def starting_menu(reference):
         playmode = options_list[survey.routines.select('Welcome to Shroom Raider! ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Login":
             username = login(reference)
-            if username != None:
+            if username:
                 break
         elif playmode == "Sign up":
             username = signup(reference)
-            if username != None:
+            if username:
                 break
         elif playmode == "Play Locally":
             username = ""
@@ -650,7 +643,7 @@ if __name__ == "__main__":
     else:
         if connected_to_internet():
             cred = credentials.Certificate("utils/private_key.json")
-            firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
+            initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
             reference = db.reference("/")
         else: 
             clear()
