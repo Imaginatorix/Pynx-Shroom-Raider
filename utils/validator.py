@@ -18,6 +18,8 @@ def validate_size(size):
         ValueError("r must be between 1 and 30, inclusive")
     if not 1 <= c <= 30:
         ValueError("c must be between 1 and 30, inclusive")
+    if not r*c >= 2:
+        ValueError("Size of map must have at least an area of 2")
 
 
 def validate_locations(r, c, locations):
@@ -44,7 +46,7 @@ def validate_locations(r, c, locations):
     location_tiles = set(locations)
     # Keys must be a subset of the valid tiles
     if not location_tiles <= VALID_TILES:
-        raise ValueError(f"Keys must be one of {VALID_TILES}")
+        raise ValueError("Keys must be valid")
 
     # Locations must always contain Lara (with only one location)
     if not 'L' in location_tiles:
@@ -106,7 +108,7 @@ def validate_level_info(level_info):
 
     # Keys must be LEVEL_INFO_KEYS
     if not set(level_info) == LEVEL_INFO_KEYS:
-        raise ValueError(f"Keys must be {LEVEL_INFO_KEYS}")
+        raise ValueError("Keys must be ['size', 'mushroom_collected', 'mushroom_total', 'game_end', 'inventory', 'invalid_input', 'level_reset']")
 
     # Validate all values
     # Size
@@ -141,7 +143,7 @@ def validate_level_info(level_info):
         raise TypeError("Item in inventory must be a singular character")
     # Must be in VALID_ITEMS
     if not level_info['inventory'] in VALID_ITEMS:
-        raise TypeError("Item in inventory must be a singular character")
+        raise TypeError("Item in inventory must be valid")
 
     # Invalid Input
     # Must be a boolean
