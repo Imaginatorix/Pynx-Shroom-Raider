@@ -2,9 +2,9 @@ import colorama
 import itertools
 import utils.settings as settings
 import shutil
-import os
+import sys
 from wcwidth import wcswidth
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 from utils.storyline import storyline
 from utils.parser import parse_level
 from utils.game_progress import shroom_level_parser_generator
@@ -153,8 +153,8 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], t
     # Function to clear terminal
     def clear():
        #os.system('cls' if os.name == 'nt' else 'clear')
-       print('\033[2J\033[H', end='', flush=True)
-
+       sys.stdout.write('\033[H')
+    
     # Check width of terminal
     if not terminal_columns:
         terminal_columns = shutil.get_terminal_size()[0]
@@ -191,6 +191,7 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], t
     # Clear terminal before printing
     clear()
     output = "\n".join(display)
-    print(output)
+    sys.stdout.write(f"{output}\n")
+    
     return display
 

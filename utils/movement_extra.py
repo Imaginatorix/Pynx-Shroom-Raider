@@ -1,6 +1,3 @@
-from marshal import loads, dumps
-import keyboard
-from time import sleep
 import os
 from copy import deepcopy
 
@@ -117,9 +114,3 @@ def user_input(level_info, locations, original_locations, original_level_info, s
     del _locations
     del _level_info
     return actions
-
-def keyboard_tracker():
-    print("What will you do? ", end = "\r")
-    keyboard_input = keyboard.read_key() 
-    input_clear()
-    return keyboard_input

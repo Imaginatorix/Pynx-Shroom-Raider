@@ -1,8 +1,9 @@
 import colorama
+import socket
 from colorama import Fore, Style
 from utils.parser import parse_level
 from utils.parser import parse_output
-from utils.movement_extra import user_input, keyboard_tracker
+from utils.movement_extra import user_input
 from utils.ui import show_screen
 from utils.game_progress import shroom_level_parser_generator
 from time import sleep
@@ -11,6 +12,7 @@ import sys
 import argparse
 import firebase_admin
 from firebase_admin import credentials, db
+import google.auth.transport.requests
 import pwinput
 import survey
 import os
@@ -32,7 +34,8 @@ global allow_auto_keyboard
 
 def clear():
     #os.system('cls' if os.name == 'nt' else 'clear')
-    print('\033[2J\033[H', end='', flush=True)
+    sys.stdout.write("\033[2J\033[H")
+    sys.stdout.flush()
 
 def login(reference):
     print("Loading data...")
@@ -100,6 +103,7 @@ def signup(reference):
                 return username
                 
 def gameloop(level_info, locations, moves = "", output_file = ""):
+    clear()
     colorama.init(autoreset=True)
 
     original_level_info = deepcopy(level_info)
@@ -112,6 +116,9 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
     else:
         show_screen(level_info, locations)
     if allow_auto_keyboard:
+        print(Fore.RED + Style.BRIGHT + "WARNING: All keyboard inputs have been disabled except valid inputs")
+        print(Fore.RED + Style.BRIGHT + "-> This applies to all processes of the computer\n-> Click 'e' to exit the stage and unlock all keyboard inputs\n")
+        print("What will you do?")
         def key_check(event):
             allowed_keys = {"w", "a", "s", "d", "e", "!", "p", "W", "A", "S", "D", "E", "P"}
             if event.name in allowed_keys:
@@ -123,10 +130,10 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
         if moves:
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
             moves = ""
-        elif allow_auto_keyboard == False:
+        elif not allow_auto_keyboard:
             actions = user_input(level_info, locations, original_locations, original_level_info)
         else:
-            keyboard_input = keyboard_tracker()
+            keyboard_input = keyboard.read_key() 
             input_clear()    
             actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
         for current_locations, current_level_info in actions:
@@ -147,21 +154,26 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
 
             if level_info["level_reset"]:
                 moves_count = 0
-            if not output_file:
-                show_screen(level_info, locations)
-                sleep(0.15)
+
             if level_info["mushroom_collected"] == level_info["mushroom_total"]:
                 if output_file:
                     has_clear = "CLEAR"
                 else:
-                    print(Fore.GREEN + Style.BRIGHT + "You got all mushrooms!")
+                    clear()
+                    show_screen(level_info, locations)
+                    sleep(0.15)
                 break
             elif level_info["game_end"]:
                 if not output_file:
-                    print(Fore.RED + Style.BRIGHT + "You drowned!")
+                    clear()
+                    show_screen(level_info, locations)
                     moves_count = -1
+                    sleep(0.15)
                 break
-
+            elif not output_file:
+                show_screen(level_info, locations)
+                sleep(0.15)
+        
         if output_file:
             parse_output(output_file, locations, level_info, has_clear)
             break
@@ -185,7 +197,7 @@ def story_mode(story_progress):
             moves_count = gameloop(level_info, locations, moves, output_file)
         finally:
             keyboard.unhook_all()
-        if type(moves_count) == str:
+        if type(moves_count)is str:
             options_list = ["Try again", "Return to main menu"]
             input_clear()
             answer = options_list[survey.routines.select("You gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
@@ -226,7 +238,7 @@ def unlocked_levels(username = "", reference = ""):
                 except:
                     options_list = ["spring - stage1"] + [level.split("/")[1] + " - " + level.split("/")[2][:-4] for level in shroom_level_parser_generator()] + ["Return to main menu"]
             input_clear()
-            chosen_level = options_list[survey.routines.select(f"Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            chosen_level = options_list[survey.routines.select("Choose from the following unlocked levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             if chosen_level == "Return to main menu":
                 break
         
@@ -337,7 +349,7 @@ def match(username, reference, room, opponent, gamemode):
         match_result = f"{opponent} didn't finish, you automatically won"
         rank_score = 15
     elif moves_count == -1 or moves_count == "exit":
-        match_result = f"You didn't finish, automatically lost"
+        match_result = "You didn't finish, automatically lost"
         rank_score = -15
     elif moves_count > -1 and moves_count == opponent_moves_count:
         match_result = f"You tied with {opponent}"
@@ -393,10 +405,10 @@ def settings(username, reference):
     global allow_auto_keyboard
     while True:
         clear()
-        options_list = ["Input Method", "Account Information", "Return"]
+        options_list = [f"{"Input Method":<20}| Change how the game handles keyboard input", f"{"Account Information":<20}| See story progress, change password, or delete account", f"{"Return":<20}| Go back to main menu"]
         input_clear()
-        playmode = options_list[survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Input Method":
+        playmode = survey.routines.select('Settings Page ',  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+        if playmode == 0: #Input method is chosen
             clear()
             options_list = ["Automatically input keyboard strokes", "Collect keyboard strokes and click enter to input"]
             input_clear()
@@ -407,7 +419,7 @@ def settings(username, reference):
                 allow_auto_keyboard = False
             if username:
                 reference.child(f"users/{username}/allow_auto_keyboard").set(allow_auto_keyboard)
-        elif playmode == "Account Information":
+        elif playmode == 1: #Input method is chosen
             if not username:
                 print("This is only available for logged in users")
                 survey.routines.select("",  options = ["Return"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
@@ -461,125 +473,18 @@ def starting_menu(reference):
             sys.exit()
     return username
 
-def main_menu(username, reference):
-    continue_game = True
-    while True:
-        clear()
-        #options_list = ["Story", "Unlocked Levels", "Ranked Match", "Unranked Match", "Level Leaderboard", "Rank Leaderboard", "Settings", "Return"] 
-        #condense "Account Information" to settings, story, unlocked levels, level leaderboard to levels, ranked and unranked and leaderboard (spectate - see map, current moves of each player, time, end of game 
-        #find oponent - create room and wait for both players to join and click start for ready other players who join will specate only, find match) to matches
-        options_list = ["Levels", "Online Battle", "Settings", "Return"] 
-        input_clear()
-        playmode = options_list[survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-        if playmode == "Story": #add ending
-            if username:
-                story_data = story_mode(reference.child(f"users/{username}/story_level").get())
-                old_data = reference.child(f"users/{username}/story_data").get()
-                if old_data == None:
-                    old_data = {}
-                new_data = {}
-            else:
-                story_data = story_mode("levels/spring/stage1.txt")
-            if story_data:
-
-                print("Moves done per level:")
-
-                for story_level in story_data:
-                    if "/" in story_level:
-                        story_level_names = story_level.split("/")
-                    else:
-                        story_level_names = story_level.split("\\")
-                    print(f"{story_level_names[1]} - {story_level_names[2][:-4]}: {story_data[story_level]} moves")
-                    if username:
-                        new_data[f"{story_level_names[1]} - {story_level_names[2][:-4]}"] = story_data[story_level]
-
-                if username:
-                    reference.child(f"users/{username}/story_data").update(old_data | new_data)
-
-                    reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
-
-
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-
-                reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
-
-                sys.stdout.flush()
-                options_list[survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-
-        elif playmode == "Settings":
-            settings(username)
-        elif playmode == "Unlocked Levels":
-            if username:
-                unlocked_levels(username, reference)
-            else:
-                unlocked_levels()
-        elif playmode == "Ranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            ...
-        elif playmode == "Unranked Match": #add time limit
-            if not username:
-                print("This is only available for logged in users")
-                input_clear()
-                survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
-                break
-            else:
-                opponent = match(username, reference.child("unranked_match"))
-                reference.child("matches").update({ #find match and lobby name
-                    "test":{
-                        opponent:-2,
-                        username:-2
-                    }
-                })
-                level_info, locations = parse_level("levels/temple/stage6.txt") #get random file from edward
-                moves_count = gameloop(level_info, locations, moves, output_file)
-                reference.child(f"matches/test/{username}").set(moves_count)
-                print(f"You finished in {moves_count} moves")
-                opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                if opponent_moves_count == -2:
-                    print(f"Waiting for {opponent} to finish", end="")
-                    while True:
-                        sleep(1.5)
-                        print(".", end="")
-                        opponent_moves_count = reference.child(f"matches/test/{opponent}").get()
-                        if opponent_moves_count != -2:
-                            print("")
-                            print(f"{opponent} has finished in {opponent_moves_count} moves")
-                            break
-                        sleep(1.5)
-                if moves_count > -1 and moves_count == opponent_moves_count:
-                    print(f"You tied with {opponent}")
-                    break
-                elif  moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've defeated {opponent} by {opponent_moves_count - moves_count}")
-                    break
-                elif moves_count > -1 and moves_count < opponent_moves_count:
-                    print(f"You've lost to {opponent} by {moves_count - opponent_moves_count}")
-                    break
-                else:
-                    print(f"You didn't finish, automatically lost")
-        elif playmode == "Return":
-            continue_game = False
-            break
-    return continue_game
-
 def get_value(item):
     return item[1]
 
 def level_leaderboard(username = "", reference = ""):
     clear()
     if username:
-        leaderboard_data = reference.child(f"level_leaderboard").get()
+        leaderboard_data = reference.child("level_leaderboard").get()
         while True:
             clear()
             options_list = [level for level in leaderboard_data] + ["Return to main menu"]
             input_clear()
-            chosen_level = options_list[survey.routines.select(f"Choose from the following levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+            chosen_level = options_list[survey.routines.select("Choose from the following levels. ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             clear()
             if chosen_level == "Return to main menu":
                 break
@@ -602,9 +507,9 @@ def level_leaderboard(username = "", reference = ""):
 
 def rank_leaderboard(username, reference):
     clear()
-    leaderboard_data = reference.child(f"rank_leaderboard").get()
+    leaderboard_data = reference.child("rank_leaderboard").get()
     leaderboard = dict(sorted(leaderboard_data.items(), key = get_value, reverse = True))
-    print(f"Highest Ranks")
+    print("Highest Ranks")
     count = 0
     for user in leaderboard:
         count += 1
@@ -619,12 +524,12 @@ def levels_mode(username, reference):
         clear()
         options_list = ["Story", "Endless Mode", "Unlocked Levels", "Level Leaderboard", "Return"] 
         input_clear()
-        playmode = options_list[survey.routines.select(f"Levels Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        playmode = options_list[survey.routines.select("Levels Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Story":
             if username:
                 story_data = story_mode(reference.child(f"users/{username}/story_level").get())
                 old_data = reference.child(f"users/{username}/story_data").get()
-                if old_data == None:
+                if old_data is None:
                     old_data = {}
                 new_data = {}
             else:
@@ -664,7 +569,7 @@ def online_battle_mode(username, reference):
         clear()
         options_list = ["Ranked Match", "Unranked Match", "Rank Leaderboard", "Return"] 
         input_clear()
-        playmode = options_list[survey.routines.select(f"Online Battle Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
+        playmode = options_list[survey.routines.select("Online Battle Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
         if playmode == "Ranked Match": #add time limit
             room, opponent = find_match(username, reference.child("ranked_match"))
 
@@ -712,12 +617,26 @@ def main_menu(username, reference):
             break
     return continue_game
 
+def connected_to_internet():
+    try:
+        sock = socket.create_connection(("www.google.com", 80))
+        if sock is not None:
+            print('Clossing socket')
+            sock.close
+        return True
+    except OSError:
+        pass
+    return False
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description = "uhm")
+    # Initialize the parser for system input arguments
+    parser = argparse.ArgumentParser(description = "Shroom Raider with Bonus Features")
     parser.add_argument("-f", type = str, dest="stage_file")
     parser.add_argument("-m", type = str, dest="string_of_moves")
     parser.add_argument("-o", type = str, dest="output_file")
     system_input = parser.parse_args()
+
+    
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 
@@ -729,18 +648,18 @@ if __name__ == "__main__":
         allow_auto_keyboard = False
         gameloop(level_info, locations, moves, output_file)
     else:
-        try:
+        if connected_to_internet():
             cred = credentials.Certificate("utils/private_key.json")
             firebase_admin.initialize_app(cred, {"databaseURL":"https://shroomraider-70f6a-default-rtdb.asia-southeast1.firebasedatabase.app/"})
             reference = db.reference("/")
-        except:
+        else: 
             clear()
-            error_message = "Failed initiating a connection with Firebase. Make sure that you are connected to the internet and the private_key.json file is in the utils folder before running "
+            print(Fore.RED + Style.BRIGHT + "Failed initiating a connection with Firebase. \nMake sure that you are connected to the internet \nand the private_key.json file is in the utils folder before running ")
             reference = ""
-            options_list = ["Continue (only the 'Play Locally' option will be available)", "Exit"]
+            options_list = [f"{"Continue":<10}| Only the 'Play Locally' option will be available)", f"{"Exit":<10}| Close the game"]
             input_clear()
-            answer = options_list[survey.routines.select(error_message,  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
-            if answer == "Exit":
+            answer = survey.routines.select("\r",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
+            if answer == 1: #Exit is chosen
                 sys.exit()
 
         username = starting_menu(reference)
