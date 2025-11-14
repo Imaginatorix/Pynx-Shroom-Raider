@@ -1,6 +1,5 @@
 <!-- Banner here -->
 # 🍄 Pynx-Shroom-Raider
-**Version 0.0.0** *subject to change*
 
 A terminal-based adventure game written in **Python 3**, where you play as **Laro Craft**,  a passionate mushroom collector and daring adventurer exploring a mysterious forest while avoiding dangerous elements that may come his way.
 
@@ -221,8 +220,6 @@ Pynx-Shroom-Raider/
 │   ├── ui.py                               # All screen and UI management
 │   └── validator.py                        #
 │
-├── assets/                             
-│   └── ...
 │
 ├── tests/                              # Testing Game Function with Pytest
 │   ├── __pycache__/
@@ -296,12 +293,29 @@ pytest
 
 <table>
     <tr>
-        <th>Test File</th>
+        <th>Test Directory</th>
         <th>Description</th>
     </tr>
     <tr>
-        <td><code>test_main.py</code></td>
-        <td>Something</td>
+        <td><code>test_movement.py</code></td>
+        <td>Test the user input and fire spread mechanics.</td>
+    </tr>
+    <tr>
+        <td><code>test_parser.py</code></td>
+        <td>Test the level information of the map, test the locations, </br>
+        and test the parse output.</td>
+    </tr>
+    <tr>
+        <td><code>test_ui.py</code></td>
+        <td>Test the game ui.</td>
+    </tr>
+    <tr>
+        <td><code>test_shroom_raider.py</code></td>
+        <td>Test the core game mechanics.</td>
+    </tr>
+    <tr>
+        <td><code>test_validator.py</code></td>
+        <td>Test the validation of game information, and location.</td>
     </tr>
 </table>
 
@@ -381,13 +395,15 @@ The tests:
     </tr>
     </tr>
         </tr>
-        <td>Laro Storyline</td>
-        <td>Something</td>
+        <td>Algorithm to find optimal solution</td>
+        <td>This function identifies the optimal solution for the </br>
+        game stage and generates the appropriate output.</td>
     </tr>
         </tr>
         </tr>
         <td> Fancier user interface</td>
-        <td>Something</td>
+        <td>Calculates the terminal width to determine the screen layout,</br>
+        and adjusts the map based on the available display size.</td>
     </tr>
 </table>
 

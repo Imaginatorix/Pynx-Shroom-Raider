@@ -3,9 +3,9 @@ import colorama
 from utils.parser import parse_level
 from colorama import Fore, Back, Style
 colorama.init(autoreset=True)
-
+"""
 # == GET THE STORYLINE OF THE CURRENT SEASON == 
-def get_season_from_path(path):
+def get_season_from_season(path):
     parts = os.path.normpath(path).split(os.sep)
 
     for part in parts:
@@ -13,9 +13,9 @@ def get_season_from_path(path):
             return part.lower()
     return
 
-
+"""
 # == STORYLINES OF LEVEL SEASON == 
-def storyline(path):
+def storyline(season):
     # == STORYLINES == 
     storylines = {
 
@@ -54,12 +54,13 @@ def storyline(path):
 
         }
 
-    season = get_season_from_path(path)
-    if season in storylines:
-        selected_storyline = storylines[season]
-    return selected_storyline
-        
+    return storylines.get(season, "")
 
+    # season = get_season_from_season(season)
+    # if season in storylines:
+    #     selected_storyline = storylines[season]
+    # return selected_storyline
+        
 
 def game_ending():
     ending_text = (

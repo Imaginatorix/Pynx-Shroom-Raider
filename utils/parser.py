@@ -9,7 +9,7 @@ def get_locations(grid):
         "x": set(),
         "*": set(),
         "+": set(),
-        "L": set(),
+        "L": set()
     }
     for i, line in enumerate(grid):
         for j, c in enumerate(line.strip()):
@@ -17,26 +17,32 @@ def get_locations(grid):
     return locations
 
 # == GAME LEVEL INFO == 
-def get_level_info(size, locations):
+def get_level_info(size, grid, locations):
     return {
         "size": size,
         "mushroom_collected": 0,
         "mushroom_total": len(locations['+']),
         "game_end": False,
         "inventory": "",
-        "invalid_input": False,
-        "level_reset": False,
+        "invalid_input": False
     }
 
 # == PARSE GAME LEVEL == 
 def parse_level(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
+
+        # Get the first line of .txt file
         size_of_stage = lines[0].strip()
+
+        # Get the rest line of .txt file
         grid = lines[1:]
+
+    # get the size as the width and height 
     width, height = map(int, size_of_stage.split())
     size = (height, width)
 
+    
     locations = get_locations(grid)
     level_info = get_level_info(size, grid, locations)
     return (level_info, locations)
@@ -47,7 +53,7 @@ def parse_output(filename, locations, level_info, has_clear):
         if c != "L":
             for coordinate in locations[c]:
                 coordinates[coordinate] = c
-    coordinates[next(iter(locations["L"]))] = "L"
+    coordinates[locations["L"][0]] = "L"
     with open(filename, 'w') as f:
         f.write(has_clear+"\n")
         f.write(f"{level_info["size"][0]} {level_info["size"][1]}\n")
