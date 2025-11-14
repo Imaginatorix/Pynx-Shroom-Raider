@@ -1,6 +1,5 @@
 import colorama
 import argparse
-import os
 from colorama import Fore, Style 
 from utils.parser import parse_level
 from utils.parser import parse_output
@@ -9,10 +8,6 @@ from utils.ui import show_screen
 from utils.validator import validate_level_info, validate_locations
 from marshal import loads, dumps
 from time import sleep
-
-# === CLEAR TERMINAL ===
-def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 # === MAIN GAME LOOP ===
 def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], moves: str, output_file: str) -> str:
