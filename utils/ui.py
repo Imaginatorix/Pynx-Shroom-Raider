@@ -93,7 +93,7 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, in
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-    storylines = storyline(parse_level())
+    storylines = storyline("levels/spring/stage1.txt")
 
     # Header
     header = (
@@ -152,7 +152,8 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], terminal_columns: int|None = None) -> None:
     # Function to clear terminal
     def clear():
-        os.system('cls' if os.name == 'nt' else 'clear')
+       #os.system('cls' if os.name == 'nt' else 'clear')
+       print('\033[2J\033[H', end='', flush=True)
 
     # Check width of terminal
     if not terminal_columns:
@@ -189,6 +190,7 @@ def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], t
 
     # Clear terminal before printing
     clear()
-    print(*display, sep='\n')
+    output = "\n".join(display)
+    print(output)
     return display
 

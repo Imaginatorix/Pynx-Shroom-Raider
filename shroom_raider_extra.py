@@ -31,7 +31,8 @@ def input_clear():
 global allow_auto_keyboard
 
 def clear():
-        os.system('cls' if os.name == 'nt' else 'clear')
+    #os.system('cls' if os.name == 'nt' else 'clear')
+    print('\033[2J\033[H', end='', flush=True)
 
 def login(reference):
     print("Loading data...")
@@ -114,7 +115,6 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
         def key_check(event):
             allowed_keys = {"w", "a", "s", "d", "e", "!", "p", "W", "A", "S", "D", "E", "P"}
             if event.name in allowed_keys:
-                print(event.name)
                 return True  
             else:
                 return False
@@ -125,14 +125,13 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
             moves = ""
         elif allow_auto_keyboard == False:
             actions = user_input(level_info, locations, original_locations, original_level_info)
-            show_screen(level_info, locations)
         else:
             keyboard_input = keyboard_tracker()
             input_clear()    
             actions = user_input(level_info, locations, original_locations, original_level_info, keyboard_input)
-            show_screen(level_info, locations)
         for current_locations, current_level_info in actions:
             if not (current_locations and current_level_info):
+                sleep(0.1)
                 return "exit"
             if current_level_info["invalid_input"]:
                 if not output_file:
@@ -149,8 +148,8 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
             if level_info["level_reset"]:
                 moves_count = 0
             if not output_file:
-                sleep(0.1)
                 show_screen(level_info, locations)
+                sleep(0.15)
             if level_info["mushroom_collected"] == level_info["mushroom_total"]:
                 if output_file:
                     has_clear = "CLEAR"
@@ -168,9 +167,8 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
             break
         elif level_info["game_end"]:
             break
-        del actions
-
     try:
+        del actions
         del level_info
         del locations
         del original_level_info
@@ -501,7 +499,7 @@ def main_menu(username, reference):
                     reference.child(f"users/{username}/story_level").set(next(shroom_level_parser_generator(next(reversed(story_data)))))
 
 
-                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_gee(next(reversed(story_data))))
+                    reference.child(f"users/{username}/story_level").set(shroom_level_parser_generator(next(reversed(story_data))))
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
 
