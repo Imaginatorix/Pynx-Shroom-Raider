@@ -1,6 +1,6 @@
 5 5
-~~~~~
-~.+T~
-~.T.~
-~TLx~
-~~~~~
+TTTTT
+T.+TT
+T.TxT
+TTL.T
+TTTTT

@@ -136,6 +136,7 @@ def gameloop(level_info, locations, moves = "", output_file = ""):
     colorama.init(autoreset=True)
 
     # Check whether the map data is valid
+    print(level_info)
     validate_locations(*level_info["size"], locations)
     validate_level_info(level_info)
 
