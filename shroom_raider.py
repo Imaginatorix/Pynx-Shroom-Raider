@@ -6,51 +6,65 @@ from utils.parser import parse_output
 from utils.movement import user_input
 from utils.ui import show_screen
 from time import sleep
-from copy import deepcopy
+from marshal import loads, dumps
 
 # === MAIN GAME LOOP ===
-def main(level_info, locations, moves, output_file):
-    original_level_info = deepcopy(level_info)
-    original_locations = deepcopy(locations)
+def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], moves: str, output_file: str) -> str:
+    # Record original map stage
+    original_level_info = loads(dumps(level_info))
+    original_locations = loads(dumps(locations))
 
+    # Only print the ui if no output file is given
     if not output_file:
         show_screen(level_info, locations)
 
+    # By default, the clear state is set to NO CLEAR
     has_clear = "NO CLEAR"
 
+    # Game loop -> only breaks if game ends or an output file is given
     while True:
+        # Translates moves into updated locations and level_info data
         if output_file and not moves:
+            # Has an output file but no moves
             actions = user_input(level_info, locations, original_locations, original_level_info, " ")
         elif moves:
+            # No output file but has moves
             actions = user_input(level_info, locations, original_locations, original_level_info, moves)
+            # Delete old moves and allow users to input new moves
             moves = ""
         else:
             actions = user_input(level_info, locations, original_locations, original_level_info)
-        for current_locations, current_level_info in actions: #fix this
+        
+        # Iterate through all map updates based on user's moves
+        for current_locations, current_level_info in actions:
+            # Updates old map info
             level_info = current_level_info
             locations = current_locations 
+
+            # Only print the ui if no output file is given
             if not output_file:
                 sleep(0.1)
                 show_screen(level_info, locations)
-            if level_info["invalid_input"]:
-                if not output_file:
-                    print(Fore.RED + Style.BRIGHT + "Invalid input detected")
-                break
-            if level_info["mushroom_collected"] == level_info["mushroom_total"]:
-                if not output_file:
-                    print(Fore.GREEN + Style.BRIGHT + "You've won!")
+
+            # Tell user an invalid input is given, only prints if no output file is given
+            if level_info["invalid_input"] and not output_file:
+                print(Fore.RED + Style.BRIGHT + "Invalid input detected")
+
+            # When the game ends, check if win or lose 
+            if level_info["game_end"] and level_info["mushroom_collected"] == level_info["mushroom_total"]:
                 has_clear = "CLEAR"
-                level_info["game_end"] = True
                 break
-            elif level_info["game_end"]:
-                if not output_file:
-                    print(Fore.RED  + "𝚈𝚘𝚞'𝚟𝚎 𝚕𝚘𝚜𝚝!")
+            else:
+                has_clear = "NO CLEAR"
                 break
+        
+        # Game loop ends if an output file is given or game has ended
         if output_file:
-            parse_output(output_file, locations, level_info, has_clear)
             break
         elif level_info["game_end"]:
             break
+
+    return has_clear
 
 if __name__ == "__main__":
     # Initialize colorama for adding colors to printed strings
@@ -70,5 +84,9 @@ if __name__ == "__main__":
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 
-    # Start the game loop
-    main(level_info, locations, moves, output_file)
+    # Start the game loop and assigns the clear status
+    has_clear = main(level_info, locations, moves, output_file)
+
+    # Writes to an output file if available
+    if output_file:
+        parse_output(output_file, locations, level_info, has_clear)
