@@ -1,6 +1,7 @@
 # Make higher level directories visible
 import sys
 from os import path, listdir
+from datetime import date
 sys.path.append(path.abspath("."))
 
 from dict_hash import dict_hash
@@ -435,9 +436,11 @@ def generate_map(r: None|int = None, c: None|int = None, limit: int = 100, outpu
     num_generated = generate_raw_maps(r, c, limit, raw_maps_directory, output_directory)
     # Filter maps according to 'Good Game' Heurstic
 
-    all_items = listdir(output_directory)
+    print()
+    all_items = listdir(path.join(output_directory, str(date.today())))
     random_file_name = choice(all_items)
-    random_file_path = path.join(output_directory, random_file_name)
+    random_file_path = path.join(path.join(output_directory, str(date.today())), random_file_name)
+    
 
     #print(f"Generated {num_generated} map(s) at {output_directory}")
 

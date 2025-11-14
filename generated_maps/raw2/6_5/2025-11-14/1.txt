@@ -1,0 +1,7 @@
+6 5
+RRRRR
+RTL.R
+R.TxR
+R..TR
+R.+.R
+RRRRR
