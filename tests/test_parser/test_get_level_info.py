@@ -52,7 +52,7 @@
 # def test_get_level_info_corner_cases_huge(huge_size):
 #     # === Corner Cases (Values that represent extreme or unusual scenarios that could affect the unit or even the system) ===
 #     ## Huge Cases
-#     assert get_level_info(huge_size) == expected
+#     assert get_level_info(huge_size)
 
 
 # def test_get_level_info_invalid_cases_type_errors(nonconform_grid):
