@@ -327,9 +327,9 @@ The tests:
 
 ### ➕ Adding New Tests
 
-<!-- Still studying how pytest works -->
-1. Create a new file under `tests/` starting with `test_`.
-2. Run `pytest` again to verify!
+1. Modify `test_custom/test_user.py` in the function `test_functionality`.
+2. Include all necessary `assert`s in different function so long as it starts with `test_`.
+3. Run `pytest` again to verify!
 
 ---
 
