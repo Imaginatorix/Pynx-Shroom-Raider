@@ -21,21 +21,22 @@ def validate_locations(r, c, locations):
 
     # Locations must be dict[str: set[tuple[int, int]]
     if not isinstance(locations, dict):
-        raise TypeError("Locations must be a dictionary")
+        raise TypeError("Locations must be dict[str: list[tuple[int, int]]] and key must be a singular character")
     
     # Keys must be a singular character and values must be a set of 2-tuple ints
     for key, value in locations.items():
         if not (isinstance(key, str) and len(key) == 1):
-            raise TypeError("Location keys must be a singular character")
+            raise TypeError("Locations must be dict[str: list[tuple[int, int]]] and key must be a singular character")
         if not isinstance(value, set):
-            raise TypeError("Location values must be a set")
+            raise TypeError("Locations must be dict[str: list[tuple[int, int]]] and key must be a singular character")
 
         for val in value:
+            if not (isinstance(val, tuple) and len(val) == 2):
+                raise TypeError("Locations must be dict[str: list[tuple[int, int]]] and key must be a singular character")
+
             a, b = val
-            if not (isinstance(val, tuple) and len(value) == 2):
-                raise TypeError("Location values must contain only tuples length 2 comprising integers")
-            if not (isinstance(a, int) and isinstance(b, int)): 
-                raise TypeError("Coordinate values must be integers")
+            if not (isinstance(a, int) and isinstance(b, int)):
+                raise TypeError("Locations must be dict[str: list[tuple[int, int]]] and key must be a singular character")
 
     location_tiles = set(locations)
     # Keys must be a subset of the valid tiles
@@ -51,7 +52,7 @@ def validate_locations(r, c, locations):
     # Locations must always have at least one mushroom
     if '+' not in location_tiles:
         raise ValueError("Locations must always have at least one mushroom")
-    if not len(locations['L']) > 1:
+    if not len(locations['+']) >= 1:
         raise ValueError("Locations must always have at least one mushroom")
     
     # All cells must be visited only once (except player location)
@@ -63,7 +64,7 @@ def validate_locations(r, c, locations):
     for key, value in locations.items():
         for i, j in value:
             if not (0 <= i < r and 0 <= j < c):
-                raise ValueError("Coordinates fell outside of range")
+                raise ValueError("Coordinates must completely fill the grid range")
 
             if (i, j) == (li, lj):
                 visited.add((i, j))
@@ -71,10 +72,10 @@ def validate_locations(r, c, locations):
             elif (i, j) not in visited:
                 visited.add((i, j))
             else:
-                raise ValueError("All cells must have only one tile (except Lara)")
+                raise ValueError("Coordinates must completely fill the grid range")
 
     if grid != visited:
-        raise ValueError("All cells must have only one tile (except Lara)")
+        raise ValueError("Coordinates must completely fill the grid range")
 
     # Special Case: player location (can have 1-2 or player + with/without item)
     if not len(character_cell) <= 2:
