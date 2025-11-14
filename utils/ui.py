@@ -58,7 +58,7 @@ ASCII_UI_CONVERSIONS = {
 
 
 # === CREATE SCREEN MAP UI ===
-def create_map_ui(size: tuple[int, int], locations: dict[str: list[tuple[int, int]]]) -> tuple[str]:
+def create_map_ui(size: tuple[int, int], locations: dict[str: set[tuple[int, int]]]) -> tuple[str]:
     r, c = size
     if r == 0 or c == 0:
         return [], None
@@ -149,7 +149,7 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
 
 # === CREATE SCREEN ===
-def show_screen(level_info: dict, locations: dict[str: list[tuple[int, int]]], terminal_columns: int|None = None) -> None:
+def show_screen(level_info: dict, locations: dict[str: set[tuple[int, int]]], terminal_columns: int|None = None) -> None:
     # Function to clear terminal
     def clear():
        #os.system('cls' if os.name == 'nt' else 'clear')
