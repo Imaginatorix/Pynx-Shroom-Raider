@@ -336,34 +336,39 @@ The tests:
         <td>Allows users to create accounts or access existing ones.</td>
     </tr>
     <tr>
-        <td style="text-align: left; vertical-align: top;">Ability to exit the game/program via a command.</td>
-        <td>Allows players to quit the game or program at any </br>
-        time using a specific command.</td>
+        <td style="text-align: left; vertical-align: top;">Ability to exit a level via the command ("e").</td>
+        <td>Allows players to quit the level at any </br>
+        time using a specific command ("e").</td>
     </tr>
     <tr>
         <ul>
         <td style="text-align: left; vertical-align: top;">Playmode</td>
         <td>Offers different gameplay options: </br>
-        <li> <b>Play Locally </b> - Can be played without signing in.</li> 
-        <li><b>Unlocked Levels</b> - Stores the levels you have unlocked. </li>
-        <li><b>Story Mode</b> - Start from the beginning of the game’s storyline.</li>
-        <li><b>Endless Mode</b> The game loops continuously without an end.</li> 
+        <li><b>Levels </b> - Can be played without signing in.</li>
+            <ul>
+            <li><b>Story</b> - Start from the beginning of the game’s storyline.</li>
+            <li><b>Random Map</b> - Play through a random map.</li>
+            <li><b>Unlocked Levels</b> - Play through the levels you've done in the story. </li> 
+            </ul> 
         <li><b>Online Battle</b>  Play multiplayer matches online: </li>
             <ul>
-            <li><b>Ranked Match</b></li>
-            <li><b>Unranked Match</b></li>
+            <li><b>Ranked Match</b> - Competitively play agains other players.</li>
+            <li><b>Unranked Match</b> - Casually play agains other players.</li>
             </ul>
         </ul>
         </td>
     </tr>
     <tr>
-        <td style="text-align: left; vertical-align: top;">Leaderboard and Username input</td>
-        <td>Players enter a username to track scores, which </br>
-        are displayed on the leaderboard for ranking.</td>
+        <td style="text-align: left; vertical-align: top;">Leaderboard for competitive rank</td>
+        <td>Tracks the highest ranking players</br>
+    <tr>
+    <tr>
+        <td style="text-align: left; vertical-align: top;">Leaderboard for lowest moves per story level</td>
+        <td>Tracks the players with lowest moves in each story level</br>
     <tr>
         <ul>
         <td style="text-align: left; vertical-align: top;">Persistent leaderboard</td>
-        <td><b>Tracks and displays player scores across sessions.</b>
+        <td><b>Both leaderboards tracks and displays player scores across sessions.</b>
         <li>Tracks level leaderboards across different seasons.</li>
         <li>Stores the moves used to complete each level.</li>
         </td>
@@ -372,7 +377,10 @@ The tests:
         </tr>
         <td style="text-align: left; vertical-align: top;">Game Settings</td>
         <td>Lets players adjust game controls preference </br>
-        (Keyboard or Gamepad Recognition)</td>
+        (Auto input or manual input)
+        <li>Auto input - removes the need to click enter per input</li>
+        <li>Manual input - have to use enter to input moves.</li>
+        </td>
     </tr>
     </tr>
         </tr>
@@ -386,8 +394,10 @@ The tests:
     </tr>
         </tr>
         </tr>
-        <td> Fancier user interface</td>
-        <td>Something</td>
+        <td>Fancier user interface
+        <li>Menu inputs are done through the survey module</li>
+        <li>Loading animation while waiting for the connection to firebase</li>
+        </td>
     </tr>
 </table>
 

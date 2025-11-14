@@ -11,3 +11,7 @@ pytest-timeout==2.4.0
 ruff==0.14.5
 six==1.17.0
 wcwidth==0.2.14
+pwinput==1.0.3
+survey==5.4.2
+keyboard==0.13.5
+firebase_admin==7.1.0
