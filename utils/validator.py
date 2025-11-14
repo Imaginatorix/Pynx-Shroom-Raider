@@ -137,7 +137,7 @@ def validate_level_info(level_info):
     if not (isinstance(level_info['inventory'], str) and (len(level_info['inventory']) == 0 or len(level_info['inventory']) == 1)):
         raise TypeError("Item in inventory must be a singular character")
     # Must be in VALID_ITEMS
-    if level_info['inventory'] not in VALID_ITEMS:
+    if level_info['inventory'] not in VALID_ITEMS and level_info['inventory'] != '':
         raise TypeError("Item in inventory must be a singular character")
 
     # Invalid Input
