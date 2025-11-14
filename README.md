@@ -205,27 +205,71 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 ### 📁 Directory Structure
 
 ```bash
-shroom_raider/
+Pynx-Shroom-Raider/
+├──__pycache__/
+├── generated_maps/ 
+├── shroom_raider.py                    # Shroom Raider: base game points
+├── shroom_raider_extra.py              # Shroom Raider: Additional Feature points
+├── utils/                              # Other helper functions
+│   ├── algorithm.py                        # Algorithm to find optimal solution
+│   ├── game_progress.py                    # Game Level Progression 
+│   ├── movement_extra.py                   # Shroom Raider: Advanced Movement Features
+│   ├── movement.py                         # Shroom Raider: Core Movement Mechanics
+│   ├── parser.py                           # Game Parsing System 
+│   ├── settings.py                         # All global variables
+│   ├── storyline.py                        # Shroom Raider Storyline
+│   ├── ui.py                               # All screen and UI management
+│   └── validator.py                        #
 │
-├── main.py                   # Main entry point
-├── utils/
-│   ├── ui.py                 # All screen and UI management
-│   ├── settings.py           # All global variables
-│   └── utils.py              # Other helper functions
-│
-├── assets/                   # Other assets such as images, fonts, music, etc.
+├── assets/                             
 │   └── ...
 │
-├── tests/
-│   └── ...
+├── tests/                              # Testing Game Function with Pytest
+│   ├── __pycache__/
+│   ├── test_movement/
+│   ├── test_parser/
+│   ├── test_shroom_raider/
+│   ├── test_ui/
+│   └── test_validator/
 │
-├── levels/
-│   └── summer/             # [phase] could be fall, spring, summer, winter, or 
+├── levels/                             # Game levels  
+│   └── fall/                               # FALL  SEASON : Third season of the game
 │       ├── stage1.txt
 │       ├── stage2.txt
-│       └── stage3.txt
+│       ├── stage3.txt
+│       ├── stage4.txt
+│       ├── stage5.txt
+│       └── stage6.txt
+│   └── spring/                             # SPRING  SEASON : First season of the game
+│       ├── stage1.txt
+│       ├── stage2.txt
+│       ├── stage3.txt
+│       ├── stage4.txt
+│       ├── stage5.txt
+│       └── stage6.txt
+│   └── summer/                             # SUMMER  SEASON : Second season of the game
+│       ├── stage1.txt
+│       ├── stage2.txt
+│       ├── stage3.txt
+│       ├── stage4.txt
+│       ├── stage5.txt
+│       └── stage6.txt
+│   └── temple/                             # TEMPLE STAGE : Final level of the game
+│       ├── stage1.txt
+│       ├── stage2.txt
+│       ├── stage3.txt
+│       ├── stage4.txt
+│       ├── stage5.txt
+│       └── stage6.txt
+│   └── winter/                             # WINTER  SEASON : fourth season of the game
+│       ├── stage1.txt
+│       ├── stage2.txt
+│       ├── stage3.txt
+│       ├── stage4.txt
+│       ├── stage5.txt
+│       └── stage6.txt
 │
-├── requirements.txt
+├── requirements.txt                    
 ├── LICENSE
 └── README.md
 ```
@@ -283,7 +327,66 @@ The tests:
         <th>Description</th>
     </tr>
     <tr>
-        <td>Mehehehe</td>
+        <td style="text-align: left; vertical-align: top;">Main Menu</td>
+        <td>A central hub where players can start the game. </br> 
+        The panel includes options to log in, sign up, play locally, or exit.</td>
+    </tr>
+    <tr>
+        <td>Log in and Sign up for player</td>
+        <td>Allows users to create accounts or access existing ones.</td>
+    </tr>
+    <tr>
+        <td style="text-align: left; vertical-align: top;">Ability to exit the game/program via a command.</td>
+        <td>Allows players to quit the game or program at any </br>
+        time using a specific command.</td>
+    </tr>
+    <tr>
+        <ul>
+        <td style="text-align: left; vertical-align: top;">Playmode</td>
+        <td>Offers different gameplay options: </br>
+        <li> <b>Play Locally </b> - Can be played without signing in.</li> 
+        <li><b>Unlocked Levels</b> - Stores the levels you have unlocked. </li>
+        <li><b>Story Mode</b> - Start from the beginning of the game’s storyline.</li>
+        <li><b>Endless Mode</b> The game loops continuously without an end.</li> 
+        <li><b>Online Battle</b>  Play multiplayer matches online: </li>
+            <ul>
+            <li><b>Ranked Match</b></li>
+            <li><b>Unranked Match</b></li>
+            </ul>
+        </ul>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: left; vertical-align: top;">Leaderboard and Username input</td>
+        <td>Players enter a username to track scores, which </br>
+        are displayed on the leaderboard for ranking.</td>
+    <tr>
+        <ul>
+        <td style="text-align: left; vertical-align: top;">Persistent leaderboard</td>
+        <td><b>Tracks and displays player scores across sessions.</b>
+        <li>Tracks level leaderboards across different seasons.</li>
+        <li>Stores the moves used to complete each level.</li>
+        </td>
+        </ul>
+    </tr>
+        </tr>
+        <td style="text-align: left; vertical-align: top;">Game Settings</td>
+        <td>Lets players adjust game controls preference </br>
+        (Keyboard or Gamepad Recognition)</td>
+    </tr>
+    </tr>
+        </tr>
+        <td>Storyline</td>
+        <td>Laro’s game narrative and objectives.</td>
+    </tr>
+    </tr>
+        </tr>
+        <td>Laro Storyline</td>
+        <td>Something</td>
+    </tr>
+        </tr>
+        </tr>
+        <td> Fancier user interface</td>
         <td>Something</td>
     </tr>
 </table>
