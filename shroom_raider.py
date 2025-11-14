@@ -17,11 +17,6 @@ def clear():
 def main(level_info: dict[str: set[tuple[int, int]]], locations: dict[str: set[tuple[int, int]]], moves: str, output_file: str) -> str:
     # Clear screen
     clear()
-
-    # Check whether the map data is valid
-    validate_locations(*level_info["size"], locations)
-    validate_level_info(level_info)
-
     # Record original map stage
     original_level_info = loads(dumps(level_info))
     original_locations = loads(dumps(locations))

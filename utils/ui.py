@@ -41,6 +41,12 @@ ASCII_UI_CONVERSIONS = {
     AXE_ITEM_ASCII: AXE_ITEM_UI,
     FLAMETHROWER_ITEM_ASCII: FLAMETHROWER_ITEM_UI,
 }
+# ui.py
+
+def show_storyline(season: str):
+    text = storyline(season)
+    if text:
+        return  
 
 
 # === CREATE SCREEN MAP UI ===
@@ -79,8 +85,6 @@ def create_map_ui(size: tuple[int, int], locations: dict[str: set[tuple[int, int
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
 
-    storylines = storyline("levels/spring/stage1.txt")
-
     # Header
     header = (
         "=====================",
@@ -93,9 +97,12 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
         "",
         f"{Style.BRIGHT}Weapons/Tools:",
-        f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way. (It is a one-time-use tool.)",
-        f"🪓 {Style.BRIGHT}Axe{Style.RESET_ALL}: Chop down trees blocking your path as you move forward. (It is a one-time-use tool.)",
-        f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile. (It is a one-time-use element.)",
+        f"🔥 {Style.BRIGHT}Flamethrower {Style.RESET_ALL}: Burn down connecting trees to clear the way.",
+        "(It is a one-time-use tool.)",
+        f"🪓 {Style.BRIGHT}Axe{Style.RESET_ALL}: Chop down trees blocking your path as you move forward.",
+        "(It is a one-time-use tool.)",
+        f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile.",
+        "(It is a one-time-use element.)",
         "",
     )
 

@@ -563,7 +563,7 @@ def rank_leaderboard(username, reference):
     survey.routines.select("",  options = [f"{"Return":<10}| Go back to online battle menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
 
 def random_map():
-    call = generate_map(limit=1)
+    call = generate_map(5,5,10)
     while True:
         
         level_info, locations = parse_level(call)
@@ -677,7 +677,7 @@ def main_menu(username, reference):
     continue_game = True
     while True:
         clear()
-        options_list = [f"{"Levels":<15}| Play through preset levels or a random map", f"{"Online Battle":<15}| Compete agains other players online", f"{"Settings":<15}| Change how the game takes input or see account details", f"{"Return":<15}| Go back to starting screen"] 
+        options_list = [f"{"Levels":<15}| Play through preset levels or a", f"{"Online Battle":<15}| Compete agains other players online", f"{"Settings":<15}| Change how the game takes input or see account details", f"{"Return":<15}| Go back to starting screen"] 
         input_clear()
         playmode = survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
         if playmode == 0:

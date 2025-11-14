@@ -1,6 +1,5 @@
 <!-- Banner here -->
 # 🍄 Pynx-Shroom-Raider
-**Version 0.0.0** *subject to change*
 
 A terminal-based adventure game written in **Python 3**, where you play as **Laro Craft**,  a passionate mushroom collector and daring adventurer exploring a mysterious forest while avoiding dangerous elements that may come his way.
 
@@ -221,8 +220,6 @@ Pynx-Shroom-Raider/
 │   ├── ui.py                               # All screen and UI management
 │   └── validator.py                        #
 │
-├── assets/                             
-│   └── ...
 │
 ├── tests/                              # Testing Game Function with Pytest
 │   ├── __pycache__/
@@ -296,12 +293,29 @@ pytest
 
 <table>
     <tr>
-        <th>Test File</th>
+        <th>Test Directory</th>
         <th>Description</th>
     </tr>
     <tr>
-        <td><code>test_main.py</code></td>
-        <td>Something</td>
+        <td><code>test_movement.py</code></td>
+        <td>Test the user input and fire spread mechanics.</td>
+    </tr>
+    <tr>
+        <td><code>test_parser.py</code></td>
+        <td>Test the level information of the map, test the locations, </br>
+        and test the parse output.</td>
+    </tr>
+    <tr>
+        <td><code>test_ui.py</code></td>
+        <td>Test the game ui.</td>
+    </tr>
+    <tr>
+        <td><code>test_shroom_raider.py</code></td>
+        <td>Test the core game mechanics.</td>
+    </tr>
+    <tr>
+        <td><code>test_validator.py</code></td>
+        <td>Test the validation of game information, and location.</td>
     </tr>
 </table>
 
@@ -313,9 +327,9 @@ The tests:
 
 ### ➕ Adding New Tests
 
-<!-- Still studying how pytest works -->
-1. Create a new file under `tests/` starting with `test_`.
-2. Run `pytest` again to verify!
+1. Modify `test_custom/test_user.py` in the function `test_functionality`.
+2. Include all necessary `assert`s in different function so long as it starts with `test_`.
+3. Run `pytest` again to verify!
 
 ---
 
@@ -361,10 +375,11 @@ The tests:
     <tr>
         <td style="text-align: left; vertical-align: top;">Leaderboard for competitive rank</td>
         <td>Tracks the highest ranking players</br>
-    <tr>
+    </tr>
     <tr>
         <td style="text-align: left; vertical-align: top;">Leaderboard for lowest moves per story level</td>
         <td>Tracks the players with lowest moves in each story level</br>
+    </tr>
     <tr>
         <ul>
         <td style="text-align: left; vertical-align: top;">Persistent leaderboard</td>
@@ -374,7 +389,7 @@ The tests:
         </td>
         </ul>
     </tr>
-        </tr>
+    <tr>
         <td style="text-align: left; vertical-align: top;">Game Settings</td>
         <td>Lets players adjust game controls preference </br>
         (Auto input or manual input)
@@ -382,21 +397,32 @@ The tests:
         <li>Manual input - have to use enter to input moves.</li>
         </td>
     </tr>
-    </tr>
-        </tr>
+    <tr>
         <td>Storyline</td>
         <td>Laro’s game narrative and objectives.</td>
     </tr>
-    </tr>
-        </tr>
+    <tr>
         <td>Laro Storyline</td>
         <td>Something</td>
     </tr>
-        </tr>
-        </tr>
-        <td>Fancier user interface
-        <li>Menu inputs are done through the survey module</li>
-        <li>Loading animation while waiting for the connection to firebase</li>
+    <tr>
+        <td>Fancier user interface</td>
+        <td>
+            <li>Menu inputs are done through the survey module</li>
+            <li>Loading animation while waiting for the connection to firebase</li>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Usage of Firebase Database
+        </td>
+        <td>
+        <li>Allows user accounts</li>
+        <li>Keeps track of logged in user's progress</li>
+        <li>Handles when internet is not available</li>
+        <li>Keeps track of the rank leaderboard</li>
+        <li>Keeps track of user's > rank, story progress, game input preference</li>
+        <li>Allows account deletion</li>
         </td>
     </tr>
 </table>
