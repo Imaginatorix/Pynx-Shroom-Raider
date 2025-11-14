@@ -4,22 +4,15 @@ from utils.settings import VALID_TILES, VALID_ITEMS
 
 def validate_size(size):
     # Check type
-    if not (isinstance(size, tuple) and len(size) == 2):
-        TypeError("Size must be a tuple of size 2")
+    if not (isinstance(size, tuple) and len(size) == 2 and isinstance(size[0], int) and isinstance(size[1], int)):
+        raise TypeError("Size must be a tuple of 2 integers")
 
     r, c = size
-    if not isinstance(r, int):
-        TypeError("r must be an integer")
-    if isinstance(c, int):
-        TypeError("c must be an integer")
-
     # Check if it's acceptable
+    if not (1 <= r <= 30 and 1 <= c <= 30):
+        raise ValueError("r and c must be between 1 and 30, inclusive")
     if not r*c >= 2:
-        ValueError("Size of map must have at least an area of 2")
-    if not 1 <= r <= 30:
-        ValueError("r must be between 1 and 30, inclusive")
-    if not 1 <= c <= 30:
-        ValueError("c must be between 1 and 30, inclusive")
+        raise ValueError("Size of map must have at least an area of 2")
 
 
 def validate_locations(r, c, locations):
@@ -27,21 +20,22 @@ def validate_locations(r, c, locations):
     validate_size((r, c))
 
     # Locations must be dict[str: set[tuple[int, int]]
-    assert not isinstance(locations, dict), TypeError("Locations must be a dictionary")
+    if not isinstance(locations, dict):
+        raise TypeError("Locations must be a dictionary")
     
     # Keys must be a singular character and values must be a set of 2-tuple ints
     for key, value in locations.items():
         if not (isinstance(key, str) and len(key) == 1):
-            TypeError("Location keys must be a singular character")
+            raise TypeError("Location keys must be a singular character")
         if not isinstance(value, set):
-            TypeError("Location values must be a set")
+            raise TypeError("Location values must be a set")
 
         for val in value:
             a, b = val
             if not (isinstance(val, tuple) and len(value) == 2):
-                TypeError("Location values must contain only tuples length 2 comprising integers")
+                raise TypeError("Location values must contain only tuples length 2 comprising integers")
             if not (isinstance(a, int) and isinstance(b, int)): 
-                TypeError("Coordinate values must be integers")
+                raise TypeError("Coordinate values must be integers")
 
     location_tiles = set(locations)
     # Keys must be a subset of the valid tiles
