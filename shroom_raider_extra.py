@@ -794,7 +794,7 @@ def rank_leaderboard(username, reference):
     input_clear()
     survey.routines.select("",  options = [f"{"Return":<10}| Go back to online battle menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
 
-def endless_mode():
+def random_map():
     call = generate_map(limit=1)
     while True:
         
@@ -805,39 +805,33 @@ def endless_mode():
             keyboard.unhook_all()
 
         if type(moves_count) is str:
-            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Skip":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Return":<15}| Go back to levels menu"]
             input_clear()
             answer = survey.routines.select("Laro gave up! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
             
             if answer == 1:
-                call = generate_map()
-            elif answer == 2:
                 break
 
         elif moves_count == -1:
-            options_list = [f"{"Try again":<15}| Restart the map and play again",f"{"Skip":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Return":<15}| Go back to levels menu"]
             input_clear()
             answer = survey.routines.select("You died! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
             
             if answer == 1:
-                call = generate_map()
-            elif answer == 2:
                 break
 
         else:
-            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Next Level":<15}| Play a different level", f"{"Return":<15}| Go back to levels menu"]
+            options_list = [f"{"Try again":<15}| Restart the map and play again", f"{"Return":<15}| Go back to levels menu"]
             input_clear()
             answer = options_list[survey.routines.select(f"You've beaten the level with {moves_count} moves!. " if not username else "",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
             
             if answer == 1:
-                call = generate_map()
-            elif answer == 2:
                 break
 
 def levels_mode(username, reference):
     while True:
         clear()
-        options_list = [f"{"Story":<20}| Play through the storyline of Laro's adventure", f"{"Endless Mode":<20}| Keep playing through randomly generated maps", f"{"Unlocked Levels":<20}| Choose from the story levels that you've played through or all (if playing locally)", f"{"Level Leaderboard":<20}| See the top ranking players per level", f"{"Return":<20}| Go back to main menu"]       
+        options_list = [f"{"Story":<20}| Play through the storyline of Laro's adventure", f"{"Random Map":<20}| Play through a random map", f"{"Unlocked Levels":<20}| Choose from the story levels that you've played through or all (if playing locally)", f"{"Level Leaderboard":<20}| See the top ranking players per level", f"{"Return":<20}| Go back to main menu"]       
         input_clear()
 <<<<<<< HEAD
         playmode = options_list[survey.routines.select(f"Levels Mode ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))]
@@ -872,7 +866,7 @@ def levels_mode(username, reference):
                 input_clear()
                 survey.routines.select(" ",  options = ["Return to main menu"],  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
         elif playmode == 1:
-            endless_mode()
+            random_map()
         elif playmode == 2:
             if username:
                 unlocked_levels(username, reference)
@@ -925,7 +919,7 @@ def main_menu(username, reference):
     continue_game = True
     while True:
         clear()
-        options_list = [f"{"Levels":<15}| Play through preset levels or the endless mode", f"{"Online Battle":<15}| Compete agains other players online", f"{"Settings":<15}| Change how the game takes input or see account details", f"{"Return":<15}| Go back to starting screen"] 
+        options_list = [f"{"Levels":<15}| Play through preset levels or a random map", f"{"Online Battle":<15}| Compete agains other players online", f"{"Settings":<15}| Change how the game takes input or see account details", f"{"Return":<15}| Go back to starting screen"] 
         input_clear()
         playmode = survey.routines.select(f"Welcome to Shroom Raider, {username}! ",  options = options_list,  focus_mark = '> ',  evade_color = survey.colors.basic('yellow'))
         if playmode == 0:
