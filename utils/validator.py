@@ -14,12 +14,12 @@ def validate_size(size):
         TypeError("c must be an integer")
 
     # Check if it's acceptable
+    if not r*c >= 2:
+        ValueError("Size of map must have at least an area of 2")
     if not 1 <= r <= 30:
         ValueError("r must be between 1 and 30, inclusive")
     if not 1 <= c <= 30:
         ValueError("c must be between 1 and 30, inclusive")
-    if not r*c >= 2:
-        ValueError("Size of map must have at least an area of 2")
 
 
 def validate_locations(r, c, locations):
