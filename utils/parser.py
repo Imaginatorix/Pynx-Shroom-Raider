@@ -17,7 +17,7 @@ def get_locations(grid):
     return locations
 
 # == GAME LEVEL INFO == 
-def get_level_info(size, grid, locations):
+def get_level_info(size, locations):
     return {
         "size": size,
         "mushroom_collected": 0,
