@@ -439,7 +439,8 @@ def generate_map(r: None|int = None, c: None|int = None, limit: int = 100, outpu
     print(f"Generated {num_generated} map(s) at {output_directory}")
 
 
-# print(solution_search("levels/spring/stage4.txt"))
-for r in range(5, 10):
-    for c in range(5, 10):
-        generate_map(r, c, 10)
+if __name__ == "__main__":
+    # print(solution_search("levels/spring/stage4.txt"))
+    for r in range(5, 10):
+        for c in range(5, 10):
+            generate_map(r, c, 10)
