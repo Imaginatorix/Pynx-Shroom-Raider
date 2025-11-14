@@ -59,3 +59,15 @@ def storyline(path):
         selected_storyline = storylines[season]
     return selected_storyline
         
+
+
+def game_ending():
+    ending_text = (
+        f"{Fore.GREEN}{Style.BRIGHT}CONRGATULATION!",
+        "After braving the trials of Spring, Summer, Fall, and Winter, "
+        "you have conquered the sacred Temple of Kalikasan. "
+        "The journey tested your courage, wisdom, and resilience, "
+        "but now the long‑lost medicine for Laro's lola have been created. "
+        "Your legend will echo through the ages!"
+    )
+    return ending_text
