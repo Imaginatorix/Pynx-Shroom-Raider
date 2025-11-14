@@ -44,7 +44,7 @@ def parse_level(filename):
 
     
     locations = get_locations(grid)
-    level_info = get_level_info(size, grid, locations)
+    level_info = get_level_info(size, locations)
     return (level_info, locations)
 
 def parse_output(filename, locations, level_info, has_clear):

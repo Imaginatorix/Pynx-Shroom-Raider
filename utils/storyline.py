@@ -1,7 +1,7 @@
 import os
 import colorama
 from utils.parser import parse_level
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 colorama.init(autoreset=True)
 """
 # == GET THE STORYLINE OF THE CURRENT SEASON == 

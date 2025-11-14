@@ -6,103 +6,64 @@ from os import path
 sys.path.append(path.abspath("."))
 
 import pytest
-import random
 
 # Import things to test
 # from ... import ...
 
-RANDOM_TEST_CASES = 250
-
 # === TESTING <FUNCTION NAME> FUNCTION FROM <FILENAME>.PY ===
 
 def test_function_name_valid_cases():
-    # Set random seed
-    random.seed(11.11) # Tribute to CS11 Gods
-
     # === Valid/Normal Cases (Regular input values within acceptable limits) ===
     assert ...
 
-    # Randomized valid cases
-    for _ in range(RANDOM_TEST_CASES):
-        assert ...
 
-
-def test_function_name_boundary_cases():
-    # Set random seed
-    random.seed(11.11) # Tribute to CS11 Gods
-
+def test_function_name_boundary_cases_blank():
     # === Boundary Cases (Values at the boundaries of the acceptable limits) ===
     ## Blank Case
     assert ...
 
-    # Randomized blank cases
-    for _ in range(RANDOM_TEST_CASES):
-        assert ...
 
+def test_function_name_boundary_cases_edge():
+    # === Boundary Cases (Values at the boundaries of the acceptable limits) ===
     ## Other Edge Cases
     assert ...
 
-    # Randomized edge cases
-    for _ in range(RANDOM_TEST_CASES):
-        assert ...
 
-
-def test_function_name_corner_cases():
-    # Set random seed
-    random.seed(11.11) # Tribute to CS11 Gods
-
+@pytest.mark.timeout(1)
+def test_function_name_corner_cases_huge():
     # === Corner Cases (Values that represent extreme or unusual scenarios that could affect the unit or even the system) ===
     ## Huge Cases
     assert ...
 
-    # Randomized huge cases
-    for _ in range(RANDOM_TEST_CASES):
-        assert ...
 
+@pytest.mark.timeout(1)
+def test_function_name_corner_cases_difficult():
+    # === Corner Cases (Values that represent extreme or unusual scenarios that could affect the unit or even the system) ===
     ## Difficult Cases
     assert ...
 
-    # Randomized difficult cases
-    for _ in range(RANDOM_TEST_CASES):
-        assert ...
 
-
-def test_function_name_invalid_cases():
-    # Set random seed
-    random.seed(11.11) # Tribute to CS11 Gods
-
+def test_function_name_invalid_cases_type_errors():
     # === Invalid/Error Cases (Values that fall outside the valid range) ===
     ## Type Errors
     with pytest.raises(TypeError, match="test"):
         assert ...
         raise TypeError("test")
-    
-    # Randomized type errors
-    for _ in range(RANDOM_TEST_CASES):
-        with pytest.raises(ValueError, match="test"):
-            assert ...
-            raise ValueError("test")
 
+
+def test_function_name_invalid_cases_value_errors():
+    # === Invalid/Error Cases (Values that fall outside the valid range) ===
     ## Value Errors
     with pytest.raises(ValueError, match="test"):
         assert ...
         raise ValueError("test")
-    
-    # Randomized value errors
-    for _ in range(RANDOM_TEST_CASES):
-        with pytest.raises(ValueError, match="test"):
-            assert ...
-            raise ValueError("test")
 
+
+def test_function_name_invalid_cases_other_errors():
+    # === Invalid/Error Cases (Values that fall outside the valid range) ===
     ## Other Errors
     with pytest.raises(KeyError, match="test"):
         assert ...
         raise KeyError("test")
-    
-    # Randomized other errors
-    for _ in range(RANDOM_TEST_CASES):
-        with pytest.raises(KeyError, match="test"):
-            assert ...
-            raise KeyError("test")
 
 
