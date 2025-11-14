@@ -386,7 +386,7 @@ def generate_raw_maps(r: int, c: int, limit: int, raw_maps_directory: str, outpu
                 # Raw directory
                 directory_name = path.join(raw_maps_directory, str(today))
                 makedirs(directory_name, exist_ok=True)
-                filename = path.join(directory_name, f"{generated}")
+                filename = path.join(directory_name, f"{generated}.txt")
                 write_map(filename, r, c, proposed_grid)
                 print("Generated a raw map...")
 
@@ -397,7 +397,7 @@ def generate_raw_maps(r: int, c: int, limit: int, raw_maps_directory: str, outpu
                 # Write it in the output_directory
                 directory_name = path.join(output_directory, str(today))
                 makedirs(directory_name, exist_ok=True)
-                filename = path.join(directory_name, f"{generated}")
+                filename = path.join(directory_name, f"{generated}.txt")
                 write_map(filename, r, c, proposed_grid)
                 print("Generated a valid map...")
 
