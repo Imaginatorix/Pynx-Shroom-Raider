@@ -9,7 +9,7 @@ EMPTY_TILE = Tile('Empty', '.', SPACE, TileBehaviour.WALKABLE)
 LARO_CRAFT_TILE = Tile('Laro Craft', 'L', '🧑', TileBehaviour.PLAYER)
 TREE_TILE = Tile('Tree', 'T', '🌲', TileBehaviour.OBSTACLE)
 MUSHROOM_TILE = Tile('Mushroom', '+', '🍄', TileBehaviour.GOAL)
-ROCK_TILE = Tile('Rock', 'R', '🪨 ', TileBehaviour.PUSHABLE)
+ROCK_TILE = Tile('Rock', 'R', '🪨', TileBehaviour.PUSHABLE)
 WATER_TILE = Tile('Water', '~', '🟦', TileBehaviour.DANGER)
 PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
 # ITEMS
