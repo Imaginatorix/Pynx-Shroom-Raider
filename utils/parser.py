@@ -1,52 +1,40 @@
-# == GET THE LOCATIONS OF THE GAME ELEMENTS == 
-def get_locations(grid):
+from utils.custom_types import LevelState
+from utils.settings import MUSHROOM_TILE, PLAIN_TO_TILE, VALID_TILES
+
+# === GET THE LOCATIONS OF THE GAME ELEMENTS ===
+def get_tile_locations(grid):
     locations = {
-        ".": set(),
-        "T": set(),
-        "R": set(),
-        "_": set(),
-        "~": set(),
-        "x": set(),
-        "*": set(),
-        "+": set(),
-        "L": set()
+        tile: set()
+        for tile in VALID_TILES
     }
+
     for i, line in enumerate(grid):
         for j, c in enumerate(line.strip()):
-            locations[c].add((i, j))
+            if c not in PLAIN_TO_TILE:
+                raise ValueError("Grid contains an invalid tile!")
+            locations[PLAIN_TO_TILE[c]].add((i, j))
+
     return locations
 
-# == GAME LEVEL INFO == 
-def get_level_info(size, locations):
-    return {
-        "size": size,
-        "mushroom_collected": 0,
-        "mushroom_total": len(locations['+']),
-        "game_end": False,
-        "inventory": "",
-        "invalid_input": False,
-        "level_reset": False
-    }
-
-# == PARSE GAME LEVEL == 
-def parse_level(filename):
+# === PARSE GAME LEVEL ===
+def parse_level_from_file(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
 
         # Get the first line of .txt file
-        size_of_stage = lines[0].strip()
+        stage_size = lines[0].strip()
 
         # Get the rest line of .txt file
         grid = lines[1:]
 
-    # get the size as the width and height 
-    width, height = map(int, size_of_stage.split())
-    size = (height, width)
+    # Get the size as the width and height 
+    r, c = map(int, stage_size.split())
+    size = (r, c)
 
-    
-    locations = get_locations(grid)
-    level_info = get_level_info(size, locations)
-    return (level_info, locations)
+    locations = get_tile_locations(grid)
+    mushroom_total = len(locations[MUSHROOM_TILE])
+
+    return LevelState(size, mushroom_total, locations)
 
 def parse_output(filename, locations, level_info, has_clear):
     coordinates = {}

@@ -1,3 +1,5 @@
+# temporarily deprecated
+
 from utils.settings import VALID_TILES, VALID_ITEMS
 
 # === VALIDATOR TO TEST WHETHER FUNCTION PARAMETERS CONFORM TO THE EXPECTED VALUES ===
