@@ -1,6 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto
+import utils.settings as TILES
+
 # from validator import validate_size, validate_level_info, validate_locations
 
 # ===== CUSTOM CLASSES USED THROUGHOUT THE GAME =====
@@ -78,13 +80,21 @@ class LevelState():
 
     """
 
+    def get_state(self) -> LevelState:
+        """
+        Returns a duplicate of the level state.
+        """
+        clone = LevelState.__new__(LevelState)
+        clone._locations = {k: set(v) for k, v in self._locations.items()}
+        return clone # TODO: test
+
     def __init__(self,
                  size: tuple[int, int],
                  mushroom_total: bool,
                  locations: dict[Tile, set],
-                 mushroom_collected: bool = 0,
+                 mushroom_collected: int = 0,
                  game_end: bool = False,
-                 inventory: str = "",
+                 inventory: Tile = TILES.EMPTY_ITEM,
                  invalid_input: bool = False,
                  level_reset: bool = False,
                 ) -> None:
@@ -101,17 +111,121 @@ class LevelState():
         self._invalid_input = invalid_input
         self._level_reset = level_reset
         self._locations = locations
+        self._original_state = self.get_state()
 
     def __repr__(self) -> str:
         """
         Returns grid representation of the level state.
         """
         r, c = self._size
-        grid = [[None]*c for _ in range(r)]
+        grid = [[""]*c for _ in range(r)]
 
-        for c, coord in self._locations.items():
+        for t, coord in self._locations.items():
             for i, j in coord:
-                if not grid[i][j] or c == 'L':
-                    grid[i][j] = c.ui
+                if not grid[i][j] or t == 'L':
+                    grid[i][j] = t.ui
 
         return '\n'.join([''.join(row) for row in grid])
+    
+    def set_invalid_input(self, val: bool) -> None:
+        self._invalid_input = val
+
+    def get_invalid_input(self) -> bool:
+        return self._invalid_input
+
+    def get_inventory(self) -> Tile:
+        return self._inventory
+    
+    def reset_state(self) -> None:
+        self = self._original_state.get_state() # TODO: Test pa
+    
+    def is_valid_item_tile(self) -> bool:
+         #Check if tile has item and if user has no item
+        return self._inventory == TILES.EMPTY_ITEM and next(iter(self._locations[TILES.LARO_CRAFT_TILE])) in self._locations[TILES.AXE_ITEM] | self._locations[TILES.FLAMETHROWER_ITEM]
+
+    def pick_item(self) -> None:
+        player_location = next(iter(self._locations[TILES.LARO_CRAFT_TILE]))
+        self._inventory = TILES.AXE_ITEM if player_location in self._locations[TILES.AXE_ITEM] else TILES.FLAMETHROWER_ITEM
+        self._locations[self._inventory].remove(player_location)
+
+    def next_player_location(self, action: tuple[int,int]) -> tuple[tuple[int, int], Tile]:
+        new_location = next(iter(self._locations[TILES.LARO_CRAFT_TILE]))[0] + action[0], next(iter(self._locations[TILES.LARO_CRAFT_TILE]))[1] + action[1]
+        new_tile = TILES.EMPTY_TILE
+        for name, s in self._locations.items():
+            if new_location in s and s is not TILES.LARO_CRAFT_TILE:
+                 new_tile = name
+        return new_location, new_tile
+
+    def is_valid_movement(self, action: tuple[int,int]) -> bool:
+        new_player_location, _ = self.next_player_location(action)
+        return ((new_player_location not in self._locations[TILES.TREE_TILE] or 
+                self._inventory != TILES.EMPTY_ITEM) and
+                0<=new_player_location[0]<self._size[0] and 0<=new_player_location[1]<self._size[1])
+    
+    def use_axe(self, new_player_location: tuple[int, int]) -> None:
+        self._locations[TILES.TREE_TILE].remove(new_player_location)
+        self._inventory = TILES.EMPTY_ITEM
+
+    def use_fire(self, new_player_location: tuple[int, int]) -> None:
+        self._inventory = TILES.EMPTY_ITEM
+        kernel = ((-1,0),(0,-1),(1,0),(0,1))
+        frontier = [new_player_location]
+        n = 0
+
+        # Keep removing trees until there are no more adjacent trees
+        while n < len(frontier):
+            i, j = frontier[n]
+            for di, dj in kernel:
+                new = (di + i, dj + j)
+                if new in self._locations[TILES.TREE_TILE]:
+                    self._locations[TILES.TREE_TILE].remove(new)
+            n+=1
+    
+    def push_rock(self, prev_rock_location: tuple[int, int],action: tuple[int,int]) -> None:
+        new_rock_location = (next(iter(self._locations[TILES.LARO_CRAFT_TILE]))[0] + action[0]*2, 
+                             next(iter(self._locations[TILES.LARO_CRAFT_TILE]))[1] + action[1]*2)
+        
+        # Push rock
+        self._locations[TILES.ROCK_TILE].add(new_rock_location)
+        self._locations[TILES.ROCK_TILE].remove(prev_rock_location)
+        
+        if new_rock_location in self._locations[TILES.EMPTY_TILE]:
+            # Remove empty tile in new position
+            self._locations[TILES.EMPTY_TILE].remove(new_rock_location)
+        elif new_rock_location in self._locations[TILES.PAVED_TILE]:
+            pass
+        elif new_rock_location in self._locations[TILES.WATER_TILE]:
+            # Remove water tile in new position and add paved tile
+            self._locations[TILES.WATER_TILE].remove(new_rock_location)
+            self._locations[TILES.ROCK_TILE].remove(new_rock_location)
+            self._locations[TILES.PAVED_TILE].add(new_rock_location)
+        else:
+            # Revert change if new position in other tiles
+            self._locations[TILES.ROCK_TILE].remove(new_rock_location)
+            self._locations[TILES.ROCK_TILE].add(new_rock_location)
+            raise ValueError
+   
+    def game_end(self) -> None:
+        self._game_end == True
+
+    def game_lose(self, new_player_location: tuple[int, int]) -> None:
+        self._locations[TILES.WATER_TILE].remove(new_player_location)
+        self.game_end()
+
+    def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
+        self._locations[TILES.MUSHROOM_TILE].remove(new_player_location)
+        self._mushroom_collected += 1
+
+    def check_win(self) -> bool:
+        return self._mushroom_collected == self._mushroom_total
+    
+    def check_game_end(self) -> bool:
+        return self._game_end
+
+    def set_player_location(self, new_player_location: tuple[int, int]) -> None:
+        self._locations[TILES.EMPTY_TILE].add(next(iter(self._locations[TILES.LARO_CRAFT_TILE])))
+        try:
+            self._locations[TILES.EMPTY_TILE].remove(new_player_location)
+        except KeyError:
+            pass
+        self._locations[TILES.LARO_CRAFT_TILE] = {new_player_location}
