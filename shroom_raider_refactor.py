@@ -1,7 +1,7 @@
 import argparse
 import colorama
 from colorama import Fore, Style 
-from _refactor.parser_refactor import parse_level, parse_output
+from utils.parser import parse_level_from_file, parse_output
 from _refactor.movement_refactor import user_input
 from utils.custom_types import LevelState
 from time import sleep
@@ -10,13 +10,32 @@ from utils.ui import show_screen
 
 # === MAIN GAME LOOP ===
 def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelState, str]:
+    """ 
+    Main game loop. Updates the level state given to it based on the list of level states
+    retrieved from user_input function. If it doesnt have an output file, calls the show_screen 
+    function to display the ui.
 
+    Parameters
+    ----------
+    curr_level: LevelState 
+        Current level information.
+    moves: str
+        Moves passed when the main file is ran.
+    output_file: str
+        File location of the txt file where the last level state will be parsed into
+
+    Returns
+    -------
+    tuple[LevelState, str]
+        Last level state and win status after the game ends.
+    """
+    
     # Only print the ui if no output file is given
     if not output_file:
         show_screen(curr_level)
 
     # By default, the clear state is set to NO CLEAR
-    has_clear = "NO CLEAR"
+    is_clear = "NO CLEAR"
 
     # Game loop -> only breaks if game ends or an output file is given
     while True:
@@ -51,11 +70,8 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
                 print(Fore.RED + Style.BRIGHT + "Invalid input detected")
 
             # When the game ends, check if win or lose 
-            if new_level_state.check_game_end() and new_level_state.check_win():
-                has_clear = "CLEAR"
-                break
-            elif new_level_state.check_game_end():
-                has_clear = "NO CLEAR"
+            if new_level_state.check_game_end():
+                is_clear = "CLEAR" if new_level_state.check_win() else "NO CLEAR"
                 break
         
         # Game loop ends if an output file is given or game has ended
@@ -66,7 +82,7 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
 
     if not output_file:
         show_screen(curr_level)
-    return curr_level, has_clear
+    return curr_level, is_clear
 
 if __name__ == "__main__":
     # Initialize colorama for adding colors to printed strings
@@ -82,13 +98,13 @@ if __name__ == "__main__":
     system_input = parser.parse_args()
 
     # Assign the necesserary variables to run a stage, if no system input arguments -> run a default map with no moves and output file
-    map_level = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage1.txt")
+    curr_level = parse_level_from_file(system_input.stage_file if system_input.stage_file else "levels/fall/stage1.txt")
     moves: str = system_input.string_of_moves
     output_file: str = system_input.output_file
 
     # Start the game loop and assigns the clear status
-    map_level, has_clear = main(map_level, moves, output_file)
+    curr_level, is_clear = main(curr_level, moves, output_file)
 
     # Writes to an output file if available
     if output_file:
-        parse_output(output_file, map_level, has_clear)
+        parse_output(output_file, curr_level, is_clear)
