@@ -1,6 +1,5 @@
 from utils.custom_types import LevelState, Tile
 import utils.settings as TILES
-#TODO: CHANGE DOCU STRING
 
 POSSIBLE_INPUTS: dict[str, tuple[int,int]] = {"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":(0,0), "P":(0,0)}
 
