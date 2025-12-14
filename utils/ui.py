@@ -122,7 +122,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
 
     # Create what needs to be placed in screen
     ## The Map
-    map_ui = state.grid
+    map_ui = state.grid_ui
     ## The Instructions
     instructions = create_instructions(state)
 
