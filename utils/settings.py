@@ -27,7 +27,9 @@ PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
 # ITEMS
 AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
 FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
-EMPTY_ITEM: Tile = Tile("Empty Item", "", "", TileBehaviour.ITEM)
+# NONE PLACEHOLDER
+NONE_TILE: Tile = Tile('None', '?', '?', TileBehaviour.NONE)
+
 
 # SET OF ALL VALID TILES
 """A set containing all tile objects that may appear in a game level."""
