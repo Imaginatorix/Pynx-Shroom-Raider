@@ -2,8 +2,7 @@ import colorama
 import argparse
 import os
 from colorama import Fore, Style 
-from utils.parser import parse_level
-from utils.parser import parse_output
+from utils.parser import parse_level_from_file, parse_output
 from utils.movement import user_input
 from utils.ui import show_screen
 from utils.validator import validate_level_info, validate_locations
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     system_input = parser.parse_args()
 
     # Assign the necesserary variables to run a stage, if no system input arguments -> run a default map with no moves and output file
-    level_info, locations = parse_level(system_input.stage_file if system_input.stage_file else "levels/fall/stage1.txt")
+    level_info, locations = parse_level_from_file(system_input.stage_file if system_input.stage_file else "levels/fall/stage1.txt")
     moves = system_input.string_of_moves
     output_file = system_input.output_file
 

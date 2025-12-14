@@ -13,7 +13,7 @@ class LevelInfo(TypedDict):
     invalid_input: bool
     level_reset: bool
 
-class MapData:
+class MapData: # TODO: change to LevelState, remove level info and place it as properties of levelstate, tiles, levelstate object ipass, locations is still a dict and its keys are dataclass Tiles, remove clear, locations keys are tile dataclass opbjects
     """
     A class representing map states.
 

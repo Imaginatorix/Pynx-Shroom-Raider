@@ -36,7 +36,7 @@ def parse_level_from_file(filename):
 
     return LevelState(size, mushroom_total, locations)
 
-def parse_output(filename, locations, level_info, has_clear):
+def parse_output(filename, locations, level_info, has_clear): #TODO: Update into class methods
     coordinates = {}
     for c in locations:
         if c != "L":
