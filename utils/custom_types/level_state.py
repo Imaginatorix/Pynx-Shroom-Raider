@@ -16,7 +16,6 @@ PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
 # ITEMS
 AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
 FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
-EMPTY_ITEM: Tile = Tile("Empty Item", "", "", TileBehaviour.ITEM)
 
 
 
@@ -171,7 +170,7 @@ class LevelState():
         """
         Returns if the player can pick up an item on the current tile
         """
-        return self._inventory is EMPTY_ITEM and next(iter(self._locations[LARO_CRAFT_TILE])) in self._locations[AXE_ITEM] | self._locations[FLAMETHROWER_ITEM]
+        return self._inventory is None and self._covering is not None and self._covering.behaviour is TileBehaviour.ITEM
 
 
     def pick_item(self) -> None:
@@ -179,7 +178,7 @@ class LevelState():
         Updates the _inventory attribute based on the current tile.
         """
         player_location = next(iter(self._locations[LARO_CRAFT_TILE]))
-        self._inventory = AXE_ITEM if player_location in self._locations[AXE_ITEM] else FLAMETHROWER_ITEM
+        self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
 
 
@@ -200,7 +199,7 @@ class LevelState():
         new_location = next(iter(self._locations[LARO_CRAFT_TILE]))[0] + action[0], next(iter(self._locations[LARO_CRAFT_TILE]))[1] + action[1]
         new_tile = EMPTY_TILE
         for name, s in self._locations.items():
-            if new_location in s and s is not LARO_CRAFT_TILE:
+            if new_location in s and name is not LARO_CRAFT_TILE:
                  new_tile = name
         return new_location, new_tile
 
@@ -219,10 +218,15 @@ class LevelState():
         bool
             True if movement is possible
         """ 
-        new_player_location, _ = self.next_player_location(action)
-        return ((new_player_location not in self._locations[TREE_TILE] or 
-                self._inventory != EMPTY_ITEM) and
-                0<=new_player_location[0]<self._size[0] and 0<=new_player_location[1]<self._size[1])
+        new_player_location, next_tile = self.next_player_location(action)
+        if not (0<=new_player_location[0]<self._size[0] and 0<=new_player_location[1]<self._size[1]):
+            return False
+        elif next_tile.behaviour is not TileBehaviour.OBSTACLE:
+            return True
+        elif next_tile.behaviour is TileBehaviour.OBSTACLE and self._inventory:
+            return True
+        else:
+            return False
     
 
     def use_axe(self, new_player_location: tuple[int, int]) -> None:
@@ -235,7 +239,8 @@ class LevelState():
             New position of the player
         """
         self._locations[TREE_TILE].remove(new_player_location)
-        self._inventory = EMPTY_ITEM
+        self._inventory = None
+        self._covering = None
 
 
     def use_fire(self, new_player_location: tuple[int, int]) -> None:
@@ -247,7 +252,8 @@ class LevelState():
         new_player_location: tuple[int, int] 
             New position of the player
         """
-        self._inventory = EMPTY_ITEM
+        self._inventory = None
+        self._covering = None
         kernel = ((-1,0),(0,-1),(1,0),(0,1))
         frontier = [new_player_location]
         n = 0
@@ -258,7 +264,9 @@ class LevelState():
             for di, dj in kernel:
                 new = (di + i, dj + j)
                 if new in self._locations[TREE_TILE]:
+                    frontier.append(new)
                     self._locations[TREE_TILE].remove(new)
+                    self._locations[EMPTY_TILE].add(new)
             n+=1
 
 
@@ -281,24 +289,20 @@ class LevelState():
         new_rock_location = (next(iter(self._locations[LARO_CRAFT_TILE]))[0] + action[0]*2, 
                              next(iter(self._locations[LARO_CRAFT_TILE]))[1] + action[1]*2)
         
-        # Push rock
-        self._locations[ROCK_TILE].add(new_rock_location)
-        self._locations[ROCK_TILE].remove(curr_rock_location)
-        
         if new_rock_location in self._locations[EMPTY_TILE]:
             # Remove empty tile in new position
+            self._locations[ROCK_TILE].add(new_rock_location)
+            self._locations[ROCK_TILE].remove(curr_rock_location)
             self._locations[EMPTY_TILE].remove(new_rock_location)
         elif new_rock_location in self._locations[PAVED_TILE]:
-            pass
+            self._locations[ROCK_TILE].add(new_rock_location)
+            self._locations[ROCK_TILE].remove(curr_rock_location)
         elif new_rock_location in self._locations[WATER_TILE]:
             # Remove water tile in new position and add paved tile
             self._locations[WATER_TILE].remove(new_rock_location)
-            self._locations[ROCK_TILE].remove(new_rock_location)
+            self._locations[ROCK_TILE].remove(curr_rock_location)
             self._locations[PAVED_TILE].add(new_rock_location)
         else:
-            # Revert change if new position in other tiles
-            self._locations[ROCK_TILE].remove(new_rock_location)
-            self._locations[ROCK_TILE].add(new_rock_location)
             raise ValueError
    
 
@@ -307,7 +311,6 @@ class LevelState():
         Updates the _game_end attribute to True.
         """
         self._game_end = True
-
 
     def game_lose(self, new_player_location: tuple[int, int]) -> None:
         """
@@ -336,7 +339,8 @@ class LevelState():
         """
         Updates the _locations[LARO_CRAFT_TILE] attribute to new player position.
         """
-        self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
+        if not self._covering:
+            self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
         try:
             self._locations[EMPTY_TILE].remove(new_player_location)
         except KeyError:
