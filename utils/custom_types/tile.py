@@ -7,7 +7,7 @@ from .tile_behaviour import TileBehaviour
 @dataclass(frozen=True)
 class Tile():
     """
-    Immutable representation of different tiles found in the game
+    Immutable representation of different tiles found in the game.
 
     Parameters
     ----------

@@ -22,7 +22,7 @@ FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
 # === LEVELSTATE REPRESENTATION ===
 class LevelState():
     """
-    TODO: Representation of state of the level
+    Encapsulates the current state of a level.
 
     Parameters
     ----------
@@ -158,6 +158,19 @@ class LevelState():
 
         return self._grid
 
+    @property
+    def tile_classification(self) -> dict[TileBehaviour, set]:
+        tile_classification = {
+            behaviour: set()
+            for behaviour in TileBehaviour
+        }
+
+        for tile in self._locations:
+            tile_classification[tile.behaviour].add(tile)
+        
+        return tile_classification
+
+    # === END OF GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ====
 
     def reset_state(self) -> None:
         """
@@ -254,7 +267,7 @@ class LevelState():
         """
         self._inventory = None
         self._covering = None
-        kernel = ((-1,0),(0,-1),(1,0),(0,1))
+        kernel = ((-1,0), (0,-1), (1,0), (0,1))
         frontier = [new_player_location]
         n = 0
 
