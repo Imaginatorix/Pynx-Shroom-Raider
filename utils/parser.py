@@ -1,8 +1,46 @@
-from utils.custom_types import LevelState
-from utils.settings import MUSHROOM_TILE, PLAIN_TO_TILE, VALID_TILES, NONE_TILE
+"""
+Utilities for reading and saving the game states from and to memory.
+
+Functions
+---------
+get_tile_locations
+    Extract the grid coordinates of each tile type from an ASCII grid.
+parse_level_from_file
+    Parse a level definition from a text file into a LevelState object.
+save_state
+    Serialize the current level state and write it to a file.
+"""
+
+from utils.custom_types import LevelState, Tile
+from utils.settings import MUSHROOM_TILE, NONE_TILE, PLAIN_TO_TILE, VALID_TILES
 
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
-def get_tile_locations(grid):
+def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
+    """
+    Extract the locations of all tiles in a grid.
+
+    Given an ASCII grid representation of a level, this function maps each
+    valid tile type to the set of coordinates at which it appears.
+
+    Parameters
+    ----------
+    grid : list[str]
+        A list of strings representing the level grid, where each character
+        corresponds to a tile.
+
+    Returns
+    -------
+    dict[Tile, set[tuple[int, int]]]
+        A dictionary mapping each valid tile to a set of coordinates
+        indicating where that tile appears in the grid.
+
+    Raises
+    ------
+    ValueError
+        If the grid contains a character that does not correspond to a valid
+        tile.
+    """
+    
     locations = {
         tile: set()
         for tile in VALID_TILES
@@ -16,8 +54,38 @@ def get_tile_locations(grid):
 
     return locations
 
+
 # === PARSE GAME LEVEL ===
-def parse_level_from_file(filename):
+def parse_level_from_file(filename: str) -> LevelState:
+    """
+    Parse a level definition from a text file.
+
+    The level file is expected to have the following format:
+    - The first line contains two integers specifying the grid dimensions
+      (rows and columns).
+    - The remaining lines define the ASCII grid of the level.
+
+    This function constructs and returns a `LevelState` instance based on the
+    parsed data.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the level definition file.
+
+    Returns
+    -------
+    LevelState
+        The initialized level state corresponding to the file contents.
+
+    Raises
+    ------
+    ValueError
+        If the grid contains invalid tile characters.
+    IOError
+        If the file cannot be opened or read.
+    """
+    
     with open(filename, 'r') as f:
         lines = f.readlines()
 
@@ -36,22 +104,38 @@ def parse_level_from_file(filename):
 
     return LevelState(size, mushroom_total, locations, NONE_TILE, NONE_TILE)
 
-def parse_output(filename, locations, level_info, has_clear): #TODO: Update into class methods
-    coordinates = {}
-    for c in locations:
-        if c != "L":
-            for coordinate in locations[c]:
-                coordinates[coordinate] = c
-    coordinates[locations["L"][0]] = "L"
+
+# === SAVE CURRENT STATE TO A FILE ===
+def save_state(filename: str, state: LevelState, has_cleared: str) -> None:
+    """
+    Save the current game state to a file.
+
+    The output file contains:
+    - A flag indicating whether the level has been cleared
+    - The grid dimensions
+    - The ASCII representation of the current grid
+
+    Parameters
+    ----------
+    filename : str
+        Path to the output file.
+    state : LevelState
+        The current level state to be saved.
+    has_cleared : str
+        A string flag indicating the clear status of the level.
+
+    Returns
+    -------
+    None
+        This function does not return a value.
+    """
+    
+    size = state.size
+    grid = state.grid_ascii
+
     with open(filename, 'w') as f:
-        f.write(has_clear+"\n")
-        f.write(f"{level_info["size"][0]} {level_info["size"][1]}\n")
-        for i in range(level_info["size"][0]):
-            temp = ""
-            for j in range(level_info["size"][1]-1):
-                if (i,j) not in coordinates:
-                    temp += "."
-                else:
-                    temp += coordinates[(i,j)]
-            f.write(temp+("\n" if i != level_info["size"][0]-1 else ""))
-    return
+        f.write(has_cleared+"\n")
+        f.write(f"{size[0]} {size[1]}\n")
+        f.write("\n".join(grid))
+
+    return None

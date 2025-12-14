@@ -1,7 +1,7 @@
 import argparse
 import colorama
-from colorama import Fore, Style 
-from utils.parser import parse_level_from_file, parse_output
+from colorama import Fore, Style
+from utils.parser import parse_level_from_file, save_state
 from utils.movement import user_input
 from utils.custom_types import LevelState
 from time import sleep
@@ -107,4 +107,4 @@ if __name__ == "__main__":
 
     # Writes to an output file if available
     if output_file:
-        parse_output(output_file, curr_level, is_clear)
+        save_state(output_file, curr_level, is_clear)
