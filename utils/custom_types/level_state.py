@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .tile import Tile
 from .tile_behaviour import TileBehaviour
+from copy import deepcopy
 
 # TODO:
 # TILES
@@ -75,47 +76,46 @@ class LevelState():
 
         self._original_state = self.get_state()
 
-        self.modified = True
-        self.grid = None
-        self.draw_grid()
+        self._modified = True
+        self._grid = None
 
 
-    def draw_grid(self) -> str:
+    @property
+    def grid(self) -> str:
         """TODO: Returns grid representation of the level state."""
-        if self.modified or self.grid is None:
-            r, c = self.size
+        if not self._grid:
+            r, c = self._size
             grid = [['']*c for _ in range(r)]
 
-            CHARACTER_TILE = [tile for tile in self.locations if tile.behaviour is TileBehaviour.PLAYER][0]
-            WALKABLE_TILES = set(tile for tile in self.locations if tile.behaviour is TileBehaviour.WALKABLE)
-            character_location = next(iter(self.locations[CHARACTER_TILE]))
+            CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
+            WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
+            character_location = next(iter(self._locations[CHARACTER_TILE]))
 
-            for c, coord in self.locations.items():
+            for c, coord in self._locations.items():
                 for i, j in coord:
-                    if (i, j) == character_location and c not in {(CHARACTER_TILE,)} | WALKABLE_TILES and c.behaviour is TileBehaviour.ITEM:
-                        self.covering = c
+                    if (i, j) == character_location and c not in {(CHARACTER_TILE,)} | WALKABLE_TILES:
+                        self._covering = c
                     # Set cell to higher priority (for now, only character)
                     if not grid[i][j] or c == CHARACTER_TILE:
                         grid[i][j] = c.ui
+            
+            self._grid = [''.join(row) for row in grid]
 
-            self.modified = False
-            self.grid = '\n'.join([''.join(row) for row in grid])
-
-        return self.grid
+        return self._grid
 
 
     def __repr__(self) -> str:
         """TODO: Returns grid representation of the level state."""
-        return self.draw_grid()
+        return '\n'.join(self.grid)
 
 
     def get_state(self) -> LevelState:
         """
         Returns a duplicate of the level state.
         """
-        clone = LevelState.__new__(LevelState)
-        clone._locations = {k: set(v) for k, v in self._locations.items()}
-        return clone # TODO: test
+        # clone = LevelState.__new__(LevelState)
+        # clone._locations = {k: set(v) for k, v in self._locations.items()}
+        return deepcopy(self) # TODO: test
 
     def set_invalid_input(self, val: bool) -> None:
         """

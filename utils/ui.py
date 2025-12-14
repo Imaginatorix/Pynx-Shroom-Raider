@@ -37,7 +37,7 @@ def create_instructions(state: LevelState) -> list[str]:
 
     # Default Instructions
     default_instructions = [
-        f"{state.mushroom_collected} out of {state.mushroom_total} mushroom(s) collected"
+        f"{state._mushroom_collected} out of {state._mushroom_total} mushroom(s) collected"
         "",
         f"[W]{Style.BRIGHT} Move up",
         f"[A]{Style.BRIGHT} Move left",
@@ -46,14 +46,14 @@ def create_instructions(state: LevelState) -> list[str]:
         f"[!]{Style.BRIGHT} Reset",
         f"[E]{Style.BRIGHT} Exit",
         "",
-        "No items here" if not state.covering.ui else f"{Fore.GREEN}[P] Pick up {state.covering.ui}" if not state.inventory else f"{Fore.RED}Cannot pick up {state.covering.ui}",
-        "Not holding anything" if not state.inventory else f"{Fore.BLUE}Currently holding {state.inventory.ui}",
+        "No items here" if not state._covering.ui else f"{Fore.GREEN}[P] Pick up {state._covering.ui}" if not state._inventory else f"{Fore.RED}Cannot pick up {state._covering.ui}",
+        "Not holding anything" if not state._inventory else f"{Fore.BLUE}Currently holding {state._inventory.ui}",
         "",
     ]
 
     # Win instructions
     win_message = [
-        f"You collected all {state.mushroom_total} 🍄 mushroom(s)",
+        f"You collected all {state._mushroom_total} 🍄 mushroom(s)",
         f"{Fore.GREEN}You win!",
     ]
 
@@ -63,8 +63,8 @@ def create_instructions(state: LevelState) -> list[str]:
     ]
     
     
-    if state.game_end:
-        return header+win_message if state.mushroom_collected == state.mushroom_total else header+lose_message
+    if state._game_end:
+        return header+win_message if state._mushroom_collected == state._mushroom_total else header+lose_message
     return header+description+default_instructions
 
 
@@ -73,7 +73,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> list[str]:
     # Function to clear terminal
     def clear():
        os.system('cls' if os.name == 'nt' else 'clear')
-       sys.stdout.write('\033[H')
+    #    sys.stdout.write('\033[H')
     
     # Check width of terminal
     if terminal_columns == -1:
@@ -81,7 +81,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> list[str]:
 
     # Create what needs to be placed in screen
     ## The Map
-    map_ui = state.draw_grid()
+    map_ui = state.grid
     ## The Instructions
     instructions = create_instructions(state)
 
