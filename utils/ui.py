@@ -1,99 +1,49 @@
-import colorama
+"""Terminal display utilities for rendering the game screen and player instructions."""
+
 import itertools
-import utils.settings as settings
+import os
 import shutil
-import sys
-from wcwidth import wcswidth
+
+import colorama
 from colorama import Fore, Style
-from utils.storyline import storyline
-from utils.parser import parse_level
-from utils.game_progress import shroom_level_parser_generator
-from utils.settings import EMPTY_TILE_ASCII, LARO_CRAFT_TILE_ASCII, TREE_TILE_ASCII, MUSHROOM_TILE_ASCII, ROCK_TILE_ASCII, WATER_TILE_ASCII, PAVED_TILE_ASCII, AXE_ITEM_ASCII, FLAMETHROWER_ITEM_ASCII
+from wcwidth import wcswidth
+
+import utils.settings as settings
+from utils.custom_types import LevelState
 
 
 colorama.init(autoreset=True)
 
-# === UI ===
-# TILES
-EMPTY_TILE_UI = settings.SPACE
-LARO_CRAFT_TILE_UI = '🧑'
-TREE_TILE_UI = '🌲'
-MUSHROOM_TILE_UI = '🍄'
-ROCK_TILE_UI = '🪨'
-WATER_TILE_UI = '🟦'
-PAVED_TILE_UI = '⬜'
-# ITEMS
-AXE_ITEM_UI = '🪓'
-FLAMETHROWER_ITEM_UI = '🔥'
-
-
-# === ASCII-UI MAP ===
-ASCII_UI_CONVERSIONS = {
-    # TILES
-    LARO_CRAFT_TILE_ASCII: LARO_CRAFT_TILE_UI,
-    EMPTY_TILE_ASCII: EMPTY_TILE_UI,
-    TREE_TILE_ASCII: TREE_TILE_UI,
-    MUSHROOM_TILE_ASCII: MUSHROOM_TILE_UI,
-    ROCK_TILE_ASCII: ROCK_TILE_UI,
-    WATER_TILE_ASCII: WATER_TILE_UI,
-    PAVED_TILE_ASCII: PAVED_TILE_UI,
-    # ITEMS
-    AXE_ITEM_ASCII: AXE_ITEM_UI,
-    FLAMETHROWER_ITEM_ASCII: FLAMETHROWER_ITEM_UI,
-}
-# ui.py
-
-def show_storyline(season: str):
-    text = storyline(season)
-    if text:
-        return  
-
-
-# === CREATE SCREEN MAP UI ===
-def create_map_ui(size: tuple[int, int], locations: dict[str: set[tuple[int, int]]]) -> tuple[str]:
-    r, c = size
-    if r == 0 or c == 0:
-        return [], None
-    if r < 0 or c < 0:
-        raise ValueError("Map size cannot be negative")
-    if r > 30 or c > 30:
-        raise ValueError("Map size cannot exceed 30 by 30")
-
-    # Generate empty map
-    map_ui = []
-    for i in range(r):
-        map_ui.append([""]*c)
-
-    # Record overlays (specifically, those on character cell which information is lost upon UI creation)
-    character_location = next(iter(locations['L']))
-    character_cell = None
-    for c, coord in locations.items():
-        for i, j in coord:
-            if (i, j) == character_location and c not in {'L', '_'}:
-                character_cell = ASCII_UI_CONVERSIONS[c]
-            # Set cell to higher priority (for now, only character)
-            if not map_ui[i][j] or c == 'L':
-                map_ui[i][j] = ASCII_UI_CONVERSIONS[c]
-
-    # Join row completely to a string
-    for i in range(r):
-        map_ui[i] = ''.join(map_ui[i])
-
-    return map_ui, character_cell
-
-
 # === CREATE SCREEN INSTRUCTIONS ===
-def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
+def create_instructions(state: LevelState) -> list[str]:
+    """
+    Create the appropriate instructions for the current game state.
 
+    Depending on the state, this function returns:
+    - Standard gameplay instructions
+    - A win message
+    - A lose message
+
+    Parameters
+    ----------
+    state : LevelState
+        The state of the game
+
+    Returns
+    -------
+    list[str]
+        A list of formatted instruction lines to be displayed to the player.
+    """
     # Header
-    header = (
+    header = [
         "=====================",
         f"🍄 {Fore.BLUE}𝗦𝗛𝗥𝗢𝗢𝗠 {Style.RESET_ALL}{Fore.RED}𝗥𝗔𝗜𝗗𝗘𝗥{Style.RESET_ALL} 🍄",
         "=====================",
         "",
-    )
-    # In-game item description
-    description = (
+    ]
+
+    # Item Descriptions
+    description = [
         f"✅ {Fore.GREEN}GOAL{Style.RESET_ALL}: Collect all the mushrooms to proceed to the next level!",
         "",
         f"{Style.BRIGHT}Weapons/Tools:",
@@ -104,11 +54,11 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"🪨  {Style.BRIGHT}Rock{Style.RESET_ALL}: This can be used to block the river and create a walkable tile.",
         "(It is a one-time-use element.)",
         "",
-    )
+    ]
 
-    # Default instructions
-    default_instructions = (
-        f"{level_info['mushroom_collected']} out of {level_info['mushroom_total']} mushroom(s) collected"
+    # Default Instructions
+    default_instructions = [
+        f"{state._mushroom_collected} out of {state._mushroom_total} mushroom(s) collected"
         "",
         f"[W]{Style.BRIGHT} Move up",
         f"[A]{Style.BRIGHT} Move left",
@@ -117,46 +67,64 @@ def create_instructions(level_info: dict, character_cell: str) -> tuple[str]:
         f"[!]{Style.BRIGHT} Reset",
         f"[E]{Style.BRIGHT} Exit",
         "",
-        "No items here" if not character_cell else f"{Fore.GREEN}[P] Pick up {character_cell}" if not level_info['inventory'] else f"{Fore.RED}Cannot pick up {character_cell}",
-        "Not holding anything" if not level_info['inventory'] else f"{Fore.BLUE}Currently holding {ASCII_UI_CONVERSIONS[level_info['inventory']]}",
+        "No items here" if not state._covering.ui else f"{Fore.GREEN}[P] Pick up {state._covering.ui}" if not state._inventory else f"{Fore.RED}Cannot pick up {state._covering.ui}",
+        "Not holding anything" if not state._inventory else f"{Fore.BLUE}Currently holding {state._inventory.ui}",
         "",
-    )
+    ]
 
     # Win instructions
-    win_message = (
-        f"You collected {level_info['mushroom_collected']} 🍄 out of {level_info['mushroom_total']} 🍄 mushroom(s)",
+    win_message = [
+        f"You collected all {state._mushroom_total} 🍄 mushroom(s)",
         f"{Fore.GREEN}You win!",
-    )
+    ]
 
     # Lose instructions
-    lose_message = (
+    lose_message = [
         f"{Fore.RED}𝙸'𝚖 𝚜𝚘𝚛𝚛𝚢. 𝚃𝚛𝚢 𝚊𝚐𝚊𝚒𝚗 𝚗𝚎𝚡𝚝 𝚝𝚒𝚖𝚎!",
-    )
+    ]
     
     
-    if level_info['game_end']:
-        return header+win_message if level_info["mushroom_collected"] == level_info["mushroom_total"] else header+lose_message
+    if state._game_end:
+        return header+win_message if state._mushroom_collected == state._mushroom_total else header+lose_message
     return header+description+default_instructions
 
 
-
-
 # === CREATE SCREEN ===
-def show_screen(level_info: dict, locations: dict[str: set[tuple[int, int]]], terminal_columns: int|None = None) -> None:
+def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
+    """
+    Print and return the screen containing the map and its corresponding instructions.
+
+    The layout adapts to the available terminal width. If the combined width of the
+    map and instructions exceeds the terminal width, they are displayed vertically;
+    otherwise, they are displayed side by side. The terminal is cleared before
+    printing.
+    
+    Parameters
+    ----------
+    state : LevelState
+        The current state of the game.
+    terminal_columns: int, default=-1
+        The width of the terminal in columns. If set to -1, the terminal width is detected automatically.
+
+    Returns
+    -------
+    str
+        The full string that is printed to the terminal.
+    """
+
     # Function to clear terminal
     def clear():
-       #os.system('cls' if os.name == 'nt' else 'clear')
-       sys.stdout.write('\033[H')
+       os.system('cls' if os.name == 'nt' else 'clear')
     
     # Check width of terminal
-    if not terminal_columns:
+    if terminal_columns == -1:
         terminal_columns = shutil.get_terminal_size()[0]
 
     # Create what needs to be placed in screen
     ## The Map
-    map_ui, character_cell = create_map_ui(level_info["size"], locations)
+    map_ui = state.grid_ui
     ## The Instructions
-    instructions = create_instructions(level_info, character_cell)
+    instructions = create_instructions(state)
 
     # Calculate width to determine screen arrangement
     map_width = wcswidth(map_ui[0])
@@ -183,8 +151,8 @@ def show_screen(level_info: dict, locations: dict[str: set[tuple[int, int]]], te
 
     # Clear terminal before printing
     clear()
-    output = "\n".join(display)
-    sys.stdout.write(f"{output}\n")
-    
-    return display
+    output = '\n'.join(display)
+    print(output)
+
+    return output
 

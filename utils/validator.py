@@ -1,10 +1,7 @@
-# temporarily deprecated
+# Temporarily Deprecated
 
-from utils.settings import VALID_TILES, VALID_ITEMS
-
-# === VALIDATOR TO TEST WHETHER FUNCTION PARAMETERS CONFORM TO THE EXPECTED VALUES ===
-
-def validate_size(size):
+# === VALIDATOR TOOLS TO TEST WHETHER FUNCTION PARAMETERS CONFORM TO THE EXPECTED VALUES ===
+def validate_size(size: tuple[int, int]) -> bool:
     # Check type
     if not (isinstance(size, tuple) and len(size) == 2 and isinstance(size[0], int) and isinstance(size[1], int)):
         raise TypeError("Size must be a tuple of 2 integers")
@@ -15,6 +12,8 @@ def validate_size(size):
         raise ValueError("r and c must be between 1 and 30, inclusive")
     if not r*c >= 2:
         raise ValueError("Size of map must have at least an area of 2")
+
+    return True
 
 
 def validate_locations(r, c, locations):
@@ -109,7 +108,7 @@ def validate_level_info(level_info):
 
     # Validate all values
     # Size
-    validate_size(level_info['size'])
+    LevelState.validate_size(level_info['size'])
 
     # Mushroom Total
     # Must be an integer at least 1
@@ -151,5 +150,4 @@ def validate_level_info(level_info):
     # Must be a boolean
     if not isinstance(level_info['level_reset'], bool):
         raise TypeError("level_reset must be a boolean")
-
 
