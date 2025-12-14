@@ -15,8 +15,8 @@ Constants used in the game including:
     Items:
         - AXE_ITEM (🪓)
         - FLAMETHROWER_ITEM (🔥)
-- VALID_TILES: the set of all usable tiles
-- PLAIN_TO_TILE: mapping from plaintext grid characters to their corresponding Tile objects.
+- VALID_TILES: The set of all usable tiles
+- PLAIN_TO_TILE: Mapping from plaintext grid characters to their corresponding Tile objects.
 """
 
 from utils.custom_types import Tile, TileBehaviour
