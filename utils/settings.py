@@ -1,13 +1,13 @@
 from utils.custom_types import Tile, TileBehaviour
 
-"""Definitions for all tile types used in the game grid. These includes the 
-objects, items, and their associated behaviors.  
+#Definitions for all tile types used in the game grid. These include the 
+#objects, items, and their associated behaviors.  
 
-This module provides:
-- Tile instances for every valid game element.
-- A set of all valid tiles for validation and parsing.
-- A mapping from plaintext characters to Tile objects.
-"""
+#This module provides:
+#- Tile instances for every valid game element.
+#- A set of all valid tiles for validation and parsing.
+#- A mapping from plaintext characters to Tile objects.
+
 
 MAP_INSTRUCTIONS_GAP = 5
 SPACE = '\U00003000'
