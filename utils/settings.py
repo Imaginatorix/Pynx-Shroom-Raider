@@ -28,7 +28,7 @@ PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
 AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
 FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
 # NONE PLACEHOLDER
-NONE_TILE: Tile = Tile('None', '?', '?', TileBehaviour.NONE)
+NONE_TILE: Tile = Tile('', '', '', TileBehaviour.NONE)
 
 
 # SET OF ALL VALID TILES

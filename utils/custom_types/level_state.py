@@ -75,7 +75,7 @@ class LevelState():
 
         self._original_state = self.get_state()
 
-        self._modified = True
+        # self._modified = True
 
     # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
 
@@ -138,23 +138,23 @@ class LevelState():
     @property
     def grid(self) -> str:
         """TODO: Returns grid representation of the level state."""
-        if self.modified:
-            r, c = self._size
-            grid = [['']*c for _ in range(r)]
+        # if self.modified:
+        r, c = self._size
+        grid = [['']*c for _ in range(r)]
 
-            CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
-            WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
-            character_location = next(iter(self._locations[CHARACTER_TILE]))
+        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
+        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
+        character_location = next(iter(self._locations[CHARACTER_TILE]))
 
-            for c, coord in self._locations.items():
-                for i, j in coord:
-                    if (i, j) == character_location and c not in {CHARACTER_TILE,} | WALKABLE_TILES:
-                        self._covering = c
-                    # Set cell to higher priority (for now, only character)
-                    if not grid[i][j] or c == CHARACTER_TILE:
-                        grid[i][j] = c.ui
-            
-            self._grid = [''.join(row) for row in grid]
+        for c, coord in self._locations.items():
+            for i, j in coord:
+                if (i, j) == character_location and c not in {CHARACTER_TILE,} | WALKABLE_TILES and c.behaviour is TileBehaviour.ITEM:
+                    self._covering = c
+                # Set cell to higher priority (for now, only character)
+                if not grid[i][j] or c == CHARACTER_TILE:
+                    grid[i][j] = c.ui
+        
+        self._grid = [''.join(row) for row in grid]
 
         return self._grid
 

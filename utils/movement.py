@@ -60,11 +60,11 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
             # TODO: add the dot tile after next tile
             new_player_location, next_tile = curr_level.next_player_location(POSSIBLE_INPUTS[action])
             
-            if next_tile is TILES.TREE_TILE and curr_level.get_inventory() is TILES.AXE_ITEM:
+            if next_tile is TILES.TREE_TILE and curr_level.inventory is TILES.AXE_ITEM:
                 # Remove a tree and clear inventory
                 curr_level.use_axe(new_player_location)
 
-            elif next_tile is TILES.TREE_TILE and curr_level.get_inventory() is TILES.FLAMETHROWER_ITEM:
+            elif next_tile is TILES.TREE_TILE and curr_level.inventory is TILES.FLAMETHROWER_ITEM:
                 # Spread a fire and clear inventory
                 curr_level.use_fire(new_player_location)
 

@@ -1,5 +1,5 @@
 from utils.custom_types import LevelState
-from utils.settings import MUSHROOM_TILE, PLAIN_TO_TILE, VALID_TILES
+from utils.settings import MUSHROOM_TILE, PLAIN_TO_TILE, VALID_TILES, NONE_TILE
 
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
 def get_tile_locations(grid):
@@ -34,7 +34,7 @@ def parse_level_from_file(filename):
     locations = get_tile_locations(grid)
     mushroom_total = len(locations[MUSHROOM_TILE])
 
-    return LevelState(size, mushroom_total, locations)
+    return LevelState(size, mushroom_total, locations, NONE_TILE, NONE_TILE)
 
 def parse_output(filename, locations, level_info, has_clear): #TODO: Update into class methods
     coordinates = {}
