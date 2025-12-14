@@ -2,7 +2,7 @@ import argparse
 import colorama
 from colorama import Fore, Style 
 from utils.parser import parse_level_from_file, parse_output
-from _refactor.movement_refactor import user_input
+from utils.movement import user_input
 from utils.custom_types import LevelState
 from time import sleep
 from utils.ui import show_screen
