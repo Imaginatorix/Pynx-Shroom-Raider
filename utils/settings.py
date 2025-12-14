@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-from utils.custom_types import Tile, TileBehaviour
-
-#Definitions for all tile types used in the game grid. These include the 
-#objects, items, and their associated behaviors.  
-
-#This module provides:
-#- Tile instances for every valid game element.
-#- A set of all valid tiles for validation and parsing.
-#- A mapping from plaintext characters to Tile objects.
-
-=======
 """
 Constants used in the game including:
 
@@ -30,7 +18,6 @@ Constants used in the game including:
 - VALID_TILES: The set of all usable tiles
 - PLAIN_TO_TILE: Mapping from plaintext grid characters to their corresponding Tile objects.
 """
->>>>>>> 8813525055aa539e197764595ca71010adad5a7b
 
 from utils.custom_types import Tile, TileBehaviour
 

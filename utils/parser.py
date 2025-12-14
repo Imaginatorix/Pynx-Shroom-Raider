@@ -15,28 +15,6 @@ from utils.custom_types import LevelState, Tile
 from utils.settings import MUSHROOM_TILE, NONE_TILE, PLAIN_TO_TILE, VALID_TILES
 
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
-<<<<<<< HEAD
-def get_tile_locations(grid):
-    """Scans the textual grid representation, validates characters
-    against the mapping in PLAIN_TO_TILE, and groups coordinates by tile type.
-
-    Parameters
-    ----------
-        grid (list[str]): A list of strings representing the game grid, where
-            each character corresponds to a tile.
-
-    Returns
-    -------
-        dict[str, set[tuple[int, int]]]: A dictionary mapping each tile type
-        in VALID_TILES to a set of (row, column) coordinate pairs.
-
-    Raises
-    ------
-        ValueError: If the grid contains a character not found in
-            PLAIN_TO_TILE.
-    """
-
-=======
 def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
     """
     Extract the locations of all tiles in a grid.
@@ -63,7 +41,6 @@ def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
         tile.
     """
     
->>>>>>> 8813525055aa539e197764595ca71010adad5a7b
     locations = {
         tile: set()
         for tile in VALID_TILES
@@ -79,30 +56,6 @@ def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
 
 
 # === PARSE GAME LEVEL ===
-<<<<<<< HEAD
-def parse_level_from_file(filename):
-    """Parse a level file and create the corresponding LevelState.
-
-    The level file contain a first line with two integers
-    specifying the grid size, followed by lines representing the stage layout.
-
-    Parameters
-    ----------
-        filename : str
-            Path to the level file.
-
-    Returns
-    -------
-        LevelState: 
-            The grid size, total number of mushrooms, and the mapping of tile locations.
-
-    Raises
-    ------
-        ValueError:
-            From 'get_tile_locations' if the file contains invalid tile characters.
-    """
-
-=======
 def parse_level_from_file(filename: str) -> LevelState:
     """
     Parse a level definition from a text file.
@@ -133,7 +86,6 @@ def parse_level_from_file(filename: str) -> LevelState:
         If the file cannot be opened or read.
     """
     
->>>>>>> 8813525055aa539e197764595ca71010adad5a7b
     with open(filename, 'r') as f:
         lines = f.readlines()
 
@@ -181,37 +133,6 @@ def save_state(filename: str, state: LevelState, has_cleared: str) -> None:
     size = state.size
     grid = state.grid_ascii
 
-<<<<<<< HEAD
-def parse_output(filename, locations, level_info, has_clear):
-    """Writes the level output file using the provided tile locations and data.
-
-    The function reconstructs a textual grid from the given tile coordinates
-    and writes it—along with level status information—to an output file.
-
-    Parameters
-    ----------
-        filename : str 
-            Path of the output file to write.
-        locations : dict[str, list[tuple[int, int]]]
-            Mapping of tile types to their coordinate lists.
-        level_info : str
-            The LevelState instance containing size information for the grid.
-        has_clear : str
-            A string indicating whether the level is cleared.
-
-    Returns
-    -------
-        None
-    """
-
-    coordinates = {}
-    for c in locations:
-        if c != "L":
-            for coordinate in locations[c]:
-                coordinates[coordinate] = c
-    coordinates[locations["L"][0]] = "L"
-=======
->>>>>>> 8813525055aa539e197764595ca71010adad5a7b
     with open(filename, 'w') as f:
         f.write(has_cleared+"\n")
         f.write(f"{size[0]} {size[1]}\n")
