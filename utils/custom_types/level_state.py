@@ -51,7 +51,7 @@ class LevelState():
 
     def __init__(self,
                  size: tuple[int, int],
-                 mushroom_total: 0,
+                 mushroom_total: int,
                  locations: dict[Tile, set],
                  covering: Tile,
                  inventory: Tile,
@@ -88,14 +88,23 @@ class LevelState():
 
     @property
     def size(self) -> tuple[int, int]:
+        """
+        Returns the size of map (row, col).
+        """
         return self._size
 
     @property
     def mushroom_collected(self) -> int:
+        """
+        Returns how many mushroom the player has retrieved.
+        """
         return self._mushroom_collected
 
     @property
     def mushroom_total(self) -> int:
+        """
+        Returns how many mushroom is in the map.
+        """
         return self._mushroom_total
 
     @property
@@ -108,13 +117,9 @@ class LevelState():
     @game_end.setter
     def game_end(self, val: bool) -> None:
         """
-        Updates the _game_end attribute to True.
+        Updates the _game_end attribute.
         """
         self._game_end = val
-
-    @property
-    def covering(self) -> Tile:
-        return self._covering
 
     @property
     def inventory(self) -> Tile:
@@ -125,35 +130,44 @@ class LevelState():
 
     @property
     def invalid_input(self) -> bool:
-        """Returns the value of _invalid_input attribute."""
+        """
+        Returns the value of _invalid_input attribute.
+        """
         return self._invalid_input
 
     @invalid_input.setter
     def invalid_input(self, val: bool) -> None:
         """
         Updates the _invalid_input attribute.
-
-        Parameters
-        ----------
-        val: bool 
-            The bool value that will be assigned to _invalid_input
         """ 
         self._invalid_input = val
-
+    
     @property
     def covering(self) -> Tile:
+        """
+        Returns the tile the player is on.
+        """
         return self._covering
     
     @covering.setter
     def covering(self, val: Tile) -> None:
+        """
+        Updates the _covering attribute.
+        """
         self._covering = val
 
     @property
     def level_reset(self) -> bool:
+        """
+        Returns the _level_reset attribute.
+        """
         return self._level_reset
 
     @property
     def locations(self) -> dict[Tile, set[tuple[int, int]]]:
+        """
+        Returns the _locations dictionary containing all locations of tiles.
+        """
         return self._locations
 
     @property
@@ -373,6 +387,7 @@ class LevelState():
         return deepcopy(self)
 
     def reset_state(self, orig_state: LevelState) -> None:
+        """Resets the level state to its original state."""
         self.__dict__ = deepcopy(orig_state.__dict__)
 
     def __repr__(self) -> str:
