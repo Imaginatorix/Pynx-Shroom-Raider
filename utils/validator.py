@@ -405,7 +405,7 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
 
     Parameters
     ----------
-    size : tuple of int
+    size : tuple[int, int]
         The `(rows, columns)` dimensions of the grid.
     locations : dict[Tile, tuple[int, int]]
         Mapping from tile types to the set of grid coordinates they occupy.
