@@ -7,28 +7,62 @@ from colorama import Style, Fore, init
 
 
 def clear():
+    """Clear the terminal screen."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 init(autoreset=True)
 @dataclass
 class LevelLeaderboard:
-    """Represents a leaderboard for a level."""
+    """Represents a leaderboard for a level.
+    
+     Attributes
+     ----------
+        level_stage : str
+            Name or identifier of the level.
+        scores : dict
+            Mapping of player names to their score/move count.
+    """
     level_stage: str
     scores: dict
 
 
 @dataclass
 class LevelLeaderboardData:
-    """Holds leaderboard data for levels."""
+    """Container for all level leaderboards.
+
+    Attributes
+    ----------
+        levels : dict
+            Mapping of level names to LevelLeaderboard instances.
+    """
     levels: dict
 
     def __init__(self, levels: dict = None):
+        """Initialize LevelLeaderboardData with optional level data.
+
+        Paramater:
+            levels : (dict, optional) 
+                Dictionary of level leaderboards. Defaults to empty dict.
+        """
         self.levels = levels or {}
 
 
     @classmethod
     def initial_data(cls, leaderboard_data: dict = None) -> "LevelLeaderboardData":
-        """Load levels from a dictionary of level scores."""
+        """Create LevelLeaderboardData from a dictionary of leaderboard info.
+
+        Parameter
+        ----------
+            leaderboard_data : (dict, optional)
+                Dictionary where keys are level names and values are 
+                dictionaries containing 'scores'. Defaults to None.
+
+        Returns
+        -------
+            LevelLeaderboardData: 
+                Initialized leaderboard data object.
+        """
+
         levels = {}
         if leaderboard_data:
             for _level, scores_obj in leaderboard_data.items():
@@ -39,6 +73,18 @@ class LevelLeaderboardData:
 
     @classmethod
     def leaderboard_from_json(cls, json_data: str) -> "LevelLeaderboardData":
+        """Load leaderboard data from a JSON string.
+
+        Parameter
+        ---------
+            json_data : str
+                JSON-formatted string representing leaderboard data.
+
+        Returns
+        -------
+            LevelLeaderboardData: 
+                Loaded leaderboard data object.
+        """
         data = json.loads(json_data)
         levels = {}
         for level_name, level_obj in data.get("levels", {}).items():
@@ -48,11 +94,29 @@ class LevelLeaderboardData:
 
 
     def leaderboard_to_json(self) -> str:
-        """Convert all level leaderboard data to JSON."""
+        """Convert all level leaderboard data to JSON.
+
+        Returns
+        -------
+            str: 
+                JSON-formatted string of all leaderboard data.
+        """
         return json.dumps(asdict(self), indent=2)
 
 
 def retrieve_username(players_name: str = "") -> str:
+    """Prompt the user to enter their name if not provided.
+
+    Parameter
+    ---------
+        players_name : (str, optional)
+            Pre-filled player name. Defaults to "".
+
+    Returns
+    -------
+        str: 
+            Validated player name.
+    """
     while not players_name:
         players_name = input("Enter your name: ").strip()
         if not players_name:
@@ -61,7 +125,24 @@ def retrieve_username(players_name: str = "") -> str:
 
 
 def showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData:
-    """Load the leaderboard from a JSON file and print top 10 for each level."""
+    """Display the top 10 leaderboard entries for each level.
+
+    -Loads the leaderboard from a JSON file
+    -prints the formatted top 10 scores for each level
+    -highlights the current player.
+
+    Parameter
+    ---------
+        filename : str
+            Base filename of the leaderboard (without .json extension).
+        name : (str, optional)
+            Player name to highlight. If empty, user is prompted.
+
+    Returns
+    -------
+        LevelLeaderboardData: 
+            The loaded leaderboard data.
+    """
     _filename = f"{filename}.json"
     current_player = retrieve_username(name)
 
@@ -95,7 +176,27 @@ def showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData:
 
 
 def updateleaderboard(filename: str, move_count: int, name: str = "") -> None:
-    """Update leaderboard for a level."""
+    """Update the leaderboard for a given level and save to JSON.
+
+    -Loads the existing leaderboard
+    -updates the score for the current player
+    -saves the updated leaderboard
+    -displays the new leaderboard.
+
+    Parameter
+    ---------
+        filename : str
+            Base filename of the leaderboard (without .json extension).
+        move_count : int
+            Player's move count for the level.
+        name : str, optional
+            Player name. If empty, user is prompted.
+
+    Returns
+    -------
+        LevelLeaderboardData: Updated leaderboard data.
+    """
+
     json_filename = f"{filename}.json"
     level_name = filename
 
