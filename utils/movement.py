@@ -1,3 +1,5 @@
+"""Convert user input into interactions and movement within the game."""
+
 from utils.custom_types import LevelState, TileBehaviour
 import utils.settings as TILES
 
@@ -13,6 +15,8 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
     ----------
     curr_level: LevelState 
         Current level information.
+    orig_level: LevelState 
+        Original level information.
     sys_input: str, optional
         Moves passed when the main file is ran. Defaults to ""
 

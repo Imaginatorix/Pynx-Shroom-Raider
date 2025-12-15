@@ -19,6 +19,8 @@ def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file
     ----------
     curr_level: LevelState 
         Current level information.
+    orig_level: LevelState 
+        Original level information.
     moves: str
         Moves passed when the main file is ran.
     output_file: str
