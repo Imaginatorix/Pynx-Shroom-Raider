@@ -32,7 +32,7 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
 
     # When commands are empty, mark as invalid input
     if not commands:
-        curr_level.set_invalid_input(True)
+        curr_level.invalid_input = True
         actions.append(curr_level.get_state())
         return actions
     
@@ -41,7 +41,7 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
 
         # When action is invalid, stop the iteration
         if action not in POSSIBLE_INPUTS:
-            curr_level.set_invalid_input(True)
+            curr_level.invalid_input = True
             actions.append(curr_level.get_state())
             break
 

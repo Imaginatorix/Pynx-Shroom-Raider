@@ -49,11 +49,11 @@ class LevelState():
 
     def __init__(self,
                  size: tuple[int, int],
-                 mushroom_total: bool,
+                 mushroom_total: 0,
                  locations: dict[Tile, set],
                  covering: Tile,
                  inventory: Tile,
-                 mushroom_collected: bool = 0,
+                 mushroom_collected: int = 0,
                  game_end: bool = False,
                  invalid_input: bool = False,
                  level_reset: bool = False,
@@ -256,7 +256,7 @@ class LevelState():
             return False
         elif next_tile.behaviour is not TileBehaviour.OBSTACLE:
             return True
-        elif next_tile.behaviour is TileBehaviour.OBSTACLE and self._inventory:
+        elif next_tile.behaviour is TileBehaviour.OBSTACLE and self._inventory.behaviour is TileBehaviour.ITEM:
             return True
         else:
             return False
@@ -339,7 +339,7 @@ class LevelState():
             raise ValueError
    
 
-    def game_end(self) -> None:
+    def endgame(self) -> None:
         """
         Updates the _game_end attribute to True.
         """
@@ -350,7 +350,7 @@ class LevelState():
         Remove the water tile on new player location and call game_end method
         """
         self._locations[WATER_TILE].remove(new_player_location)
-        self.game_end()
+        self.endgame()
 
 
     def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
@@ -372,7 +372,8 @@ class LevelState():
         """
         Updates the _locations[LARO_CRAFT_TILE] attribute to new player position.
         """
-        if not self._covering:
+        if (self._covering.behaviour is not TileBehaviour.ITEM and 
+            next(iter(self._locations[LARO_CRAFT_TILE])) not in self._locations[PAVED_TILE]):
             self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
         try:
             self._locations[EMPTY_TILE].remove(new_player_location)

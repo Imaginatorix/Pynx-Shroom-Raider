@@ -50,9 +50,9 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
             # Delete old moves and allow users to input new moves
             moves = ""
         else:
-            show_screen(curr_level)
+            # Get new user input
+            curr_level.invalid_input = False
             actions = user_input(curr_level)
-            
         
         # Iterate through all map updates based on user's moves
         for new_level_state in actions:
@@ -61,14 +61,6 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
             if not output_file:
                 sleep(0.1)
                 show_screen(new_level_state)
-
-            # Tell user an invalid input is given, only prints if no output file is given
-            if new_level_state.invalid_input and not output_file:
-                new_level_state.set_invalid_input(False)
-                sleep(0.1)
-                show_screen(new_level_state)
-                print(Fore.RED + Style.BRIGHT + "Invalid input detected")
-
             # When the game ends, check if win or lose 
             if new_level_state.game_end:
                 is_clear = "CLEAR" if new_level_state.check_win() else "NO CLEAR"
