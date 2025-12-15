@@ -68,6 +68,8 @@ def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
     if not leaderboard.levels:
         return leaderboard
 
+    clear()
+
     for level_name, level in leaderboard.levels.items():
         if isinstance(level, dict):
             level = LevelLeaderboard(level_name, level)
@@ -83,8 +85,8 @@ def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
 
             print(Style.BRIGHT + Fore.GREEN + "-" * 40)
         
-        clear()
-        return leaderboard
+
+    return leaderboard
 
 
 def updateleaderboard(filename: str, move_count: int, name: str = None):
@@ -108,5 +110,5 @@ def updateleaderboard(filename: str, move_count: int, name: str = None):
         f.write(leaderboard.leaderboard_to_json())
 
     clear()
-    print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations! {players_name}")
+    print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations, {players_name}!")
 
