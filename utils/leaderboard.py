@@ -1,3 +1,35 @@
+"""
+Utilities for leaderboard management and display.
+
+This provides terminal-based leaderboard functionality for Laro-craft. 
+It supports both rank-based and level-based leaderboards,
+retrieved from a Firebase Database and displayed.
+
+Classes
+-------
+RankLeaderboard
+    Represents a rank leaderboard based on points. 
+
+LevelLeaderboard
+    Represents leaderboard data for a single level.
+
+LevelLeaderboardData
+    Holds leaderboard data for multiple levels.
+
+Functions
+---------
+clear
+    Clear the terminal screen.
+input_clear
+    Flush pending keyboard input.
+rank_leaderboard
+    Display the top-ranked users by points.
+level_leaderboard
+    Display move-based leaderboards for individual levels.
+
+"""
+
+
 import colorama
 import json
 import os
@@ -20,6 +52,7 @@ def clear():
 
 
 def input_clear():
+    """Flush pending keyboard input."""
     if os.name == 'nt':
         while msvcrt.kbhit():
             msvcrt.getch()
