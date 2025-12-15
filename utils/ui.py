@@ -68,7 +68,7 @@ def create_instructions(state: LevelState) -> list[str]:
         f"[E]{Style.BRIGHT} Exit",
         "",
         "No items here" if not state._covering.ui else f"{Fore.GREEN}[P] Pick up {state._covering.ui}" if not state._inventory else f"{Fore.RED}Cannot pick up {state._covering.ui}",
-        "Not holding anything" if not state._inventory else f"{Fore.BLUE}Currently holding {state._inventory.ui}",
+        "Not holding anything" if not state._inventory.ui else f"{Fore.BLUE}Currently holding {state._inventory.ui}",
         "",
     ]
 
