@@ -5,12 +5,10 @@ import string
 
 from pytest import Metafunc
 
-
-# Set random seed
-random.seed(11.11) # Tribute to CS11 Gods
 RANDOM_TEST_CASES = 100
 
 import data_generator.grid as grid_data
+import data_generator.size as size_data
 import data_generator.locations as locations_data
 
 PARAMS = {
@@ -20,7 +18,7 @@ PARAMS = {
     "edge_grid": grid_data.EDGE,
     "huge_grid": grid_data.HUGE,
     "type_errors_grid": grid_data.TYPE_ERRORS,
-    "value_errors_grid_improper": grid_data.VALUE_ERRORS_IMPOPER,
+    "value_errors_grid_improper": grid_data.VALUE_ERRORS_IMPROPER,
     "value_errors_grid_mutated": grid_data.VALUE_ERRORS_MUTATED,
     # LOCATIONS
     "valid_locations": locations_data.VALID,
@@ -28,6 +26,14 @@ PARAMS = {
     "edge_locations": locations_data.EDGE,
     "huge_locations": locations_data.HUGE,
     "type_errors_locations": locations_data.TYPE_ERRORS,
+    # SIZE
+    "valid_size": size_data.VALID,
+    "blank_size": size_data.BLANK,
+    "edge_size": size_data.EDGE,
+    "edge_size_expected": size_data.EDGE_EXPECTED,
+    "huge_size": size_data.HUGE,
+    "type_errors_size": size_data.TYPE_ERRORS,
+    "value_errors_size": size_data.VALUE_ERRORS,
 }
 
 
@@ -40,92 +46,7 @@ def pytest_generate_tests(metafunc: Metafunc):
             zip(*(PARAMS[n] for n in names)),
         )
 
-    # === SIZE ===
-    # VALID SIZE
-    current_param = "valid_size"
-    if current_param in metafunc.fixturenames:
-        curated = [
-            (10, 10),
-            (1, 2),
-            (2, 1),
-        ]
-
-        randomized = []
-        for _ in range(RANDOM_TEST_CASES):
-            # Randomized valid sizes
-            randomized.append((random.randrange(1, 31), random.randrange(1, 31)))
-        metafunc.parametrize(current_param, curated + randomized)
-
-    # BLANK SIZE
-    current_param = "blank_size"
-    if current_param in metafunc.fixturenames:
-        blank_size = (0, 0)
-        metafunc.parametrize(current_param, [blank_size])
-
-    # EDGE SIZE
-    current_param = "edge_size"
-    if current_param in metafunc.fixturenames:
-        assert_pairs = [(
-            (0, 0), # 1x1
-            "ValueError"
-        ), (
-            (30, 30),
-            None
-        )]
-        metafunc.parametrize(f"{current_param},expected", assert_pairs)
-
-    # HUGE SIZE
-    current_param = "huge_size"
-    if current_param in metafunc.fixturenames:
-        huge_size = (30, 30)
-        metafunc.parametrize(current_param, [huge_size])
-
-    # NONCONFORM SIZE
-    current_param = "nonconform_size"
-    if current_param in metafunc.fixturenames:
-        curated = [
-            (20, 20, 10),
-            [20, 20],
-            {20, 20},
-            frozenset([20, 20]),
-            ("10", 10),
-            [2, 3],
-            (2, -1, 3),
-            (),
-            2,
-            (2,),
-            set((3,)),
-            frozenset((3,)),
-            {},
-            "sdf",
-        ]
-        metafunc.parametrize(current_param, curated)
-
-    # IMPROPER GRID
-    current_param = "improper_size"
-    if current_param in metafunc.fixturenames:
-        curated = [
-            (2, -1),
-            (-1, 1),
-            (-1, -1),
-            (1, 31),
-            (31, 1),
-            (31, 31),
-        ]
-
-        randomized = []
-        for _ in range(RANDOM_TEST_CASES):
-            # Randomized negative cases
-            randomized.append((random.randrange(-sys.maxsize-1, 0), random.randrange(1, sys.maxsize)))
-            randomized.append((random.randrange(1, sys.maxsize), random.randrange(-sys.maxsize-1, 0)))
-            randomized.append((random.randrange(-sys.maxsize-1, 0), random.randrange(-sys.maxsize-1, 0)))
-            # Randomized excess cases
-            randomized.append((random.randrange(31, sys.maxsize), random.randrange(1, sys.maxsize)))
-            randomized.append((random.randrange(1, sys.maxsize), random.randrange(31, sys.maxsize)))
-            randomized.append((random.randrange(31, sys.maxsize), random.randrange(31, sys.maxsize)))
-
-        metafunc.parametrize(current_param, curated + randomized)
-
+    return
 
     # === LOCATIONS ===
     # VALID LOCATIONS

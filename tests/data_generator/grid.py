@@ -198,7 +198,7 @@ TYPE_ERRORS = [
     ([1, 2, 3], ("1", "2", "3")),
 ]
 ## Value Errors
-VALUE_ERRORS_IMPOPER = [
+VALUE_ERRORS_IMPROPER = [
     ['...L...', '...+...', '...+..'],
     ['...L...', '...+...', '...+....'],
     ['L', '.+', '.'],
