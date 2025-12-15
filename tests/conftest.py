@@ -3,11 +3,14 @@ import random
 import sys
 import string
 
-def pytest_generate_tests(metafunc):
+from pytest import Metafunc
+
+
+def pytest_generate_tests(metafunc: Metafunc):
     # Set random seed
     random.seed(11.11) # Tribute to CS11 Gods
     RANDOM_TEST_CASES = 250
-    
+
     # === GRID ===
     # VALID GRID LOCATIONS
     current_param = "valid_grid_locations"
