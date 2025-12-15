@@ -100,7 +100,7 @@ if __name__ == "__main__":
     system_input = parser.parse_args()
 
     # Assign the necesserary variables to run a stage, if no system input arguments -> run a default map with no moves and output file
-    curr_level = parse_level_from_file(system_input.stage_file if system_input.stage_file else "levels/stage1.txt")
+    curr_level = parse_level_from_file(system_input.stage_file if system_input.stage_file else "levels/stage0.txt")
     moves: str = system_input.string_of_moves
     output_file: str = system_input.output_file
 

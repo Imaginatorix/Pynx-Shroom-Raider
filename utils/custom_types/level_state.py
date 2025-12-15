@@ -72,7 +72,17 @@ class LevelState():
         self._level_reset = level_reset
         self._locations = locations
 
-        # self._modified = True
+        # Other Attributes used within internal methods
+        # === SET UP TILE ===
+        self.TILE_DISPLAY_PRIORITY = {
+            TileBehaviour.NONE: 0,
+            TileBehaviour.WALKABLE: 1,
+            TileBehaviour.DANGER: 2,
+            TileBehaviour.ITEM: 3,
+            TileBehaviour.PUSHABLE: 4,
+            TileBehaviour.PLAYER: 5,
+            TileBehaviour.OBSTACLE: 6,
+        }
 
     # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
 
@@ -161,60 +171,38 @@ class LevelState():
         return self._locations
 
     @property
-    def grid_ui(self) -> str:
+    def grid_ui(self) -> list[str]:
         """TODO: Returns grid representation of the level state."""
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
+        grid_tile = [[Tile('', '', '', TileBehaviour.NONE)]*c for _ in range(r)]
 
-        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
-        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
-        character_location = next(iter(self._locations[CHARACTER_TILE]))
-        self._covering = NONE_TILE
-
-        for t, coord in self._locations.items():
+        for tile, coord in self._locations.items():
             for i, j in coord:
-                if (i, j) == character_location and t not in {CHARACTER_TILE,} | WALKABLE_TILES and t.behaviour is TileBehaviour.ITEM:
-                    self._covering = t
                 # Set cell to higher priority (for now, only character)
-                if not grid[i][j] or t == CHARACTER_TILE:
-                    grid[i][j] = t.ui
+                if not grid[i][j] or self.TILE_DISPLAY_PRIORITY[tile.behaviour] > self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]:
+                    grid_tile[i][j] = tile
+                    grid[i][j] = tile.ui
         
         return [''.join(row) for row in grid]
 
     @property
-    def grid_ascii(self) -> str:
+    def grid_ascii(self) -> list[str]:
         """TODO: Returns grid representation of the level state."""
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
+        grid_tile = [[Tile('', '', '', TileBehaviour.NONE)]*c for _ in range(r)]
 
-        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
-        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
-        character_location = next(iter(self._locations[CHARACTER_TILE]))
-        self._covering = NONE_TILE
-
-        for t, coord in self._locations.items():
+        for tile, coord in self._locations.items():
             for i, j in coord:
-                if (i, j) == character_location and t not in {CHARACTER_TILE,} | WALKABLE_TILES and t.behaviour is TileBehaviour.ITEM:
-                    self._covering = t
                 # Set cell to higher priority (for now, only character)
-                if not grid[i][j] or t == CHARACTER_TILE:
-                    grid[i][j] = t.plain
-        
+                if not grid[i][j] or self.TILE_DISPLAY_PRIORITY[tile.behaviour] > self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]:
+                    grid_tile[i][j] = tile
+                    grid[i][j] = tile.plain
+
         return [''.join(row) for row in grid]
-
-    @property
-    def tile_classification(self) -> dict[TileBehaviour, set]:
-        tile_classification = {
-            behaviour: set()
-            for behaviour in TileBehaviour
-        }
-
-        for tile in self._locations:
-            tile_classification[tile.behaviour].add(tile)
-        
-        return tile_classification
 
     # === END OF GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ====
 
@@ -404,4 +392,4 @@ class LevelState():
 
     def __repr__(self) -> str:
         """Returns grid-like string representation of the level state separated by endlines."""
-        return '\n'.join(self.grid)
+        return '\n'.join(self.grid_ui)
