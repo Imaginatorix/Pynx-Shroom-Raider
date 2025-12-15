@@ -83,8 +83,9 @@ def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
 
             print(Style.BRIGHT + Fore.GREEN + "-" * 40)
         
+        clear()
         return leaderboard
-    clear()
+
 
 
 
@@ -107,6 +108,7 @@ def updateleaderboard(filename: str, move_count: int, name: str = None):
     # Save 
     with open(json_filename, "w") as f:
         f.write(leaderboard.leaderboard_to_json())
+
     clear()
     print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations! {players_name}")
 
