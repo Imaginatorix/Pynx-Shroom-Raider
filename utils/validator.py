@@ -182,7 +182,6 @@ def validate_state_internals(state: LevelState) -> None:
     covering = state.covering
     inventory = state.inventory
     invalid_input = state.invalid_input
-    level_reset = state.level_reset
     locations = state.locations
 
     # Check each internal
@@ -193,7 +192,6 @@ def validate_state_internals(state: LevelState) -> None:
     validate_covering(covering)
     validate_inventory(inventory)
     validate_invalid_input(invalid_input)
-    validate_level_reset(level_reset)
     validate_locations(size, locations)
 
     # Cross-field checks
@@ -397,30 +395,6 @@ def validate_invalid_input(invalid_input: bool) -> None:
     validate_type(invalid_input, bool, "invalid_input")
 
 
-# == VALIDATE LEVEL RESET ==
-def validate_level_reset(level_reset: bool) -> None:
-    """
-    Validate the level_reset flag.
-
-    Parameters
-    ----------
-    level_reset : bool
-        Whether the level has been reset.
-
-    Returns
-    -------
-    None
-        This function does not return a value.
-
-    Raises
-    ------
-    TypeError
-        If `level_reset` is not a boolean.
-    """
-    # Check type
-    validate_type(level_reset, bool, "level_reset")
-
-
 # == VALIDATE LOCATIONS ==
 def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[int, int]]]) -> None:
     """
@@ -453,9 +427,10 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
     validate_type(locations, dict[Tile, set[tuple[int, int]]], "locations")
 
     # Locations must have only one Lara
-    CHARACTER_TILES = [tile for tile in locations]
+    CHARACTER_TILES = [tile for tile in locations if tile.behaviour is TileBehaviour.PLAYER]
     CHARACTER_TILE = CHARACTER_TILES[0]
-    if len(CHARACTER_TILES) != 1 and len(locations[CHARACTER_TILE]):
+    if len(CHARACTER_TILES) != 1 and len(locations[CHARACTER_TILE]) != 1:
+        print(CHARACTER_TILES, locations[CHARACTER_TILE])
         raise ValueError("Game must have only one player.")
     
     # All cells must be visited only once (except player location)
