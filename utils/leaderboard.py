@@ -52,11 +52,18 @@ class LevelLeaderboardData:
         return json.dumps(asdict(self), indent=2)
 
 
+def retrieve_username(players_name: str = "") -> str:
+    while not players_name:
+        players_name = input("Enter your name: ").strip()
+        if not players_name:
+            print("Invalid player name.")
+    return players_name
 
-def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
+
+def showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData:
     """Load the leaderboard from a JSON file and print top 10 for each level."""
     _filename = f"{filename}.json"
-    current_player = name or input("Enter your name: ").strip() or None
+    current_player = retrieve_username(name)
 
     try:
         with open(_filename, "r") as f:
@@ -89,17 +96,14 @@ def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
     return leaderboard
 
 
-def updateleaderboard(filename: str, move_count: int, name: str = None):
+def updateleaderboard(filename: str, move_count: int, name: str = "") -> None:
     """Update leaderboard for a level."""
     json_filename = f"{filename}.json"
     level_name = filename
 
-    players_name = name or input("Enter your name: ").strip()
-    if not players_name:
-        print("Invalid player name.")
-        return
+    players_name = retrieve_username(name)
 
-    leaderboard = showleaderboard(filename, name=players_name)
+    leaderboard = showleaderboard(filename, name = players_name)
     if level_name not in leaderboard.levels:
         leaderboard.levels[level_name] = LevelLeaderboard(level_name, {})
 
