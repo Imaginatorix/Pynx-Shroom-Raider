@@ -156,6 +156,7 @@ class LevelState():
         player_location = next(iter(self._locations[LARO_CRAFT_TILE]))
         self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
+        self._locations[EMPTY_TILE].add(player_location)
 
     def next_player_location(self, action: tuple[int,int]) -> tuple[tuple[int, int], Tile]:
         """
