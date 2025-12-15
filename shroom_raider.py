@@ -133,7 +133,7 @@ if __name__ == "__main__":
         # Writes to an output file if available
         if output_file:
             save_state(output_file, curr_level, is_clear)
-
-        updateleaderboard(system_input.stage_file
-                          if system_input.stage_file else "levels/stage0.txt",
-                          move_count)
+        elif is_clear == "CLEAR":
+            updateleaderboard(system_input.stage_file if
+                              system_input.stage_file else "levels/stage0.txt",
+                              move_count)
