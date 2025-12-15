@@ -178,6 +178,7 @@ class LevelState():
         """Updates the _inventory attribute based on the current tile."""
         player_location = next(iter(self._locations[self.LARO_CRAFT_TILE]))
         self._inventory = self._covering
+        self._covering = NONE_TILE
         self._locations[self._inventory].remove(player_location)
         self._locations[self.EMPTY_TILE].add(player_location)
 
