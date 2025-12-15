@@ -177,4 +177,3 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
     print(output)
 
     return output
-
