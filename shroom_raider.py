@@ -134,5 +134,6 @@ if __name__ == "__main__":
         if output_file:
             save_state(output_file, curr_level, is_clear)
 
-        updateleaderboard(move_count, system_input.stage_file
-              if system_input.stage_file else "levels/stage0.txt")
+        updateleaderboard(system_input.stage_file
+                          if system_input.stage_file else "levels/stage0.txt",
+                          move_count)
