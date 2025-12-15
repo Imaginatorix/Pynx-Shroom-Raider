@@ -1,4 +1,37 @@
-"""Utilities for leaderboard management and display."""
+"""Utilities for managing and displaying level-based leaderboards.
+
+This module provides data structures and helper functions to:
+- Track player scores per level.
+- Load and save leaderboard data to JSON files.
+- Display leaderboards in the terminal with highlighted current player.
+- Prompt for player names and update scores.
+
+Classes
+-------
+LevelLeaderboard
+    Represents the leaderboard for a single level, storing player scores.
+    
+LevelLeaderboardData
+    Container for all level leaderboards, with methods to load from 
+    JSON or initialize from a dictionary.
+
+Functions
+---------
+clear()
+    Clears the terminal screen.
+
+retrieve_username(players_name: str = "") -> str
+    Prompts the user for their name if not provided.
+
+showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData
+    Displays the top 10 leaderboard entries for each level, highlighting
+    the current player.
+
+updateleaderboard(filename: str, move_count: int, name: str = "") -> LevelLeaderboardData
+    Updates the leaderboard with a new score for a player, saves it to 
+    JSON, and displays the updated leaderboard.
+"""
+
 import json
 import os
 from dataclasses import dataclass, asdict
