@@ -13,7 +13,7 @@ save_state
 
 from utils.custom_types import LevelState, Tile
 from utils.settings import MUSHROOM_TILE, NONE_TILE, PLAIN_TO_TILE, VALID_TILES
-from utils.validator import validate_type, validate_locations
+from utils.validator import validate_type, validate_locations, validate_size
 
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
 def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
