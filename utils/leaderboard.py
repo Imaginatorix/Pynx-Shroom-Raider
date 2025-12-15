@@ -1,8 +1,13 @@
+"""Utilities for leaderboard management and display."""
 import json
+import os
 from dataclasses import dataclass, asdict
 from dacite import from_dict
 from colorama import Style, Fore, init
 
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 init(autoreset=True)
 @dataclass
@@ -67,7 +72,8 @@ def showleaderboard(filename: str) -> LevelLeaderboardData:
             print(f"{rank}: {user} - {moves} moves{suffix}")
 
         print(Style.BRIGHT + Fore.GREEN + "-" * 40)
-
+        
+    clear()
     return leaderboard
 
 
@@ -91,5 +97,5 @@ def updateleaderboard(filename: str, move_count: int):
     # Save 
     with open(json_filename, "w") as f:
         f.write(leaderboard.leaderboard_to_json())
-
-    print(Fore.GREEN + "Congratulatoins!")
+    clear()
+    print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations! {players_name}")
