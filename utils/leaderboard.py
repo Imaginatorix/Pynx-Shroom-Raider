@@ -87,8 +87,6 @@ def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
         return leaderboard
 
 
-
-
 def updateleaderboard(filename: str, move_count: int, name: str = None):
     """Update leaderboard for a level."""
     json_filename = f"{filename}.json"
@@ -99,7 +97,7 @@ def updateleaderboard(filename: str, move_count: int, name: str = None):
         print("Invalid player name.")
         return
 
-    leaderboard = showleaderboard(filename)
+    leaderboard = showleaderboard(filename, name=players_name)
     if level_name not in leaderboard.levels:
         leaderboard.levels[level_name] = LevelLeaderboard(level_name, {})
 
