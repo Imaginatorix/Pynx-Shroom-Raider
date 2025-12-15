@@ -79,16 +79,16 @@ def showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData:
     clear()
     for level_name, level in leaderboard.levels.items():
         leaderboard.levels[level_name] = level
-        formatted_level = level_name.replace("_", " ").upper()
-        print(f"\n{formatted_level} Leaderboard Top 10")
-        print("-" * 40)
+        formatted_level = level_name.replace("/", " ").upper()
+        print(f"{Style.BRIGHT}\n{formatted_level} Leaderboard Top 10")
+        print(Style.BRIGHT + Fore.RED +  "-" * 40)
 
         sorted_scores = sorted(level.scores.items(), key=lambda x: x[1])
         for rank, (user, moves) in enumerate(sorted_scores[:10], start=1):
-            suffix = (f"{Style.BRIGHT} (you){Style.RESET_ALL}" if current_player and user == current_player else "")
+            suffix = (f"{Style.BRIGHT}(you){Style.RESET_ALL}" if current_player and user == current_player else "")
             print(f"{rank}: {user} - {moves} moves{suffix}")
 
-        print(Style.BRIGHT + Fore.GREEN + "-" * 40)
+        print(Style.BRIGHT + Fore.RED + "-" * 40)
         
 
     return leaderboard
@@ -111,6 +111,8 @@ def updateleaderboard(filename: str, move_count: int, name: str = "") -> None:
     with open(json_filename, "w") as f:
         f.write(leaderboard.leaderboard_to_json())
 
+    
+    leaderboard = showleaderboard(filename, name = players_name)
     print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations, {players_name}!")
 
     return leaderboard
