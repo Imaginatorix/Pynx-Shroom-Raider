@@ -6,6 +6,7 @@ from utils.custom_types import LevelState
 from time import sleep
 from utils.ui import show_screen
 from utils.validator import validate_state_internals
+from utils.leaderboard import showleaderboard, updateleaderboard
 
 
 # === MAIN GAME LOOP ===
@@ -123,7 +124,7 @@ if __name__ == "__main__":
                                      system_input.stage_file):
         raise TypeError("use ONLY -l flag to show leaderboard")
     elif system_input.leaderboard:
-        print(system_input.leaderboard)
+        showleaderboard(system_input.leaderboard)
     else:
         # Start the game loop and assigns the clear status
         curr_level, is_clear, move_count = main(
@@ -133,5 +134,5 @@ if __name__ == "__main__":
         if output_file:
             save_state(output_file, curr_level, is_clear)
 
-        print(move_count, system_input.stage_file
+        updateleaderboard(move_count, system_input.stage_file
               if system_input.stage_file else "levels/stage0.txt")
