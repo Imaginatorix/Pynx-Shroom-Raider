@@ -61,9 +61,6 @@ class LevelState():
                  level_reset: bool = False,
                 ) -> None:
 
-        # Validate input
-        ...
-
         # Set into private attributes
         self._size = size
         self._mushroom_collected = mushroom_collected
