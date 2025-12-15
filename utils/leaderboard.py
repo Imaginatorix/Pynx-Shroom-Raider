@@ -1,300 +1,85 @@
-"""
-Utilities for leaderboard management and display.
+"""Utilities for leaderboard management and display."""
 
-This provides terminal-based leaderboard functionality for Laro-craft. 
-It supports both rank-based and level-based leaderboards,
-retrieved from a Firebase Database and displayed.
-
-Classes
--------
-RankLeaderboard
-    Represents a rank leaderboard based on points. 
-
-LevelLeaderboard
-    Represents leaderboard data for a single level.
-
-LevelLeaderboardData
-    Holds leaderboard data for multiple levels.
-
-Functions
----------
-clear
-    Clear the terminal screen.
-input_clear
-    Flush pending keyboard input.
-rank_leaderboard
-    Display the top-ranked users by points.
-level_leaderboard
-    Display move-based leaderboards for individual levels.
-
-"""
-
-
-import colorama
 import json
-import os
-import survey
-import sys
-from colorama import Fore, Style
-from dacite import from_dict
 from dataclasses import dataclass, asdict
-from firebase_admin import credentials, db, initialize_app
+from dacite import from_dict
+from colorama import Style, Fore, init
 
 
-if os.name == 'nt':
-    import msvcrt
-else:
-    import termios
-
-def clear():
-    """Clear the terminal screen."""
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
-def input_clear():
-    """Flush pending keyboard input."""
-    if os.name == 'nt':
-        while msvcrt.kbhit():
-            msvcrt.getch()
-    else:
-        termios.tcflush(sys.stdin, termios.TCIFLUSH)
-
-
-
-@dataclass
-class RankLeaderboard:
-    """Represents a rank leaderboard based on points.
-
-    Attributes
-    ----------
-        scores : dict[str, int]
-            Mapping of usernames to their rank points.
-    """
-    scores: dict[str, int]  # username -> rank points
-
-    @classmethod
-    def initial_data(cls, leaderboard_data: dict[str, int] | None):
-        """Create a RankLeaderboard instance from initial dictionary data.
-
-        Paramaters
-        ----------
-            leaderboard_data (dict[str, int] | None): Raw scores data.
-
-        Returns
-        -------
-            RankLeaderboard: Initialized leaderboard object.
-        """
-        return cls(scores=leaderboard_data or {})
-
-    def leaderboard_to_json(self) -> str:
-        """Convert the leaderboard to a JSON string.
-
-        Returns
-        -------
-            str: JSON-formatted leaderboard.
-        """
-        return json.dumps(asdict(self), indent=2)
-
-
-
-    @classmethod
-    def leaderboard_from_json(cls, json_data: str) -> "RankLeaderboard":
-        """Create a RankLeaderboard instance from a JSON string.
-
-        Paramaters
-        ----------
-            json_data : str
-                JSON-formatted leaderboard string.
-
-        Returns
-        -------
-            RankLeaderboard: Initialized leaderboard object.
-        """
-        data = json.loads(json_data)
-        return from_dict(cls, data)
-
-
-colorama.init(autoreset=True)
-def rank_leaderboard(username: str, reference):
-    """Display the top-ranked users in the rank leaderboard.
-
-    Get leaderboard data from a reference (firebase), sorts it,
-    and prints the top 10 users with their points. Highlights the current user.
-
-    Paramaters
-    ----------
-        username : str
-            Current user's username.
-        reference: 
-            Data reference object with a `.child().get()` method.
-    """
-    clear()
-    leaderboard_data = reference.child("rank_leaderboard").get() or {}
-    leaderboard = RankLeaderboard.initial_data(leaderboard_data)
-
-    sorted_scores = sorted(
-        leaderboard.scores.items(),
-        key=lambda item: item[1],
-        reverse=True
-    )
-
-    print("Highest Ranks")
-    for i, (user, points) in enumerate(sorted_scores[:10], start=1):
-        suffix = Style.BRIGHT + " (you)" if user == username else ""
-        print(f"{i}: {user} with {points} points{suffix}")
-
-    input_clear()
-    survey.routines.select(
-        "",
-        options=[f"{'Return':<10}| Go back to online battle menu"],
-        focus_mark="> ",
-        evade_color=survey.colors.basic('yellow')
-    )
-
-
+init(autoreset=True)
 @dataclass
 class LevelLeaderboard:
-    """Represents a leaderboard for a single level.
-
-    Attributes
-    ----------
-        level_name : str 
-            Name of the level.
-        scores : dict[str, int] 
-            Mapping of usernames to moves taken.
-    """
-    level_name: str
-    scores: dict[str, int]  # username mapped to moves
+    """Represents a leaderboard for a level."""
+    level_stage: str
+    scores: dict
 
 
 @dataclass
 class LevelLeaderboardData:
-    """Holds leaderboard data for multiple levels.
+    """Holds leaderboard data for levels."""
+    levels: dict
 
-    Attributes
-    ----------
-        levels : dict[str, LevelLeaderboard] 
-            Mapping of level names to LevelLeaderboard objects.
-    """
-    levels: dict[str, LevelLeaderboard]
-
-    def __init__(self, levels: dict[str, LevelLeaderboard] | None = None):
-        """Initialize LevelLeaderboardData with optional levels.
-
-        Paramaters
-        ----------
-            levels : dict[str, LevelLeaderboard] | None 
-                Predefined level data.
-        """
+    def __init__(self, levels: dict = None):
         self.levels = levels or {}
 
-
     @classmethod
-    def initial_data(cls, leaderboard_data: dict) -> "LevelLeaderboardData":
-        """Load levels from raw dictionary data.
-
-        Paramaters
-        ----------
-            leaderboard_data : dict 
-                initial leaderboard data.
-
-        Returns
-        -------
-            LevelLeaderboardData: 
-                Player completed levels
-        """
-        levels = {
-            level_name: LevelLeaderboard(level_name, scores)
-            for level_name, scores in (leaderboard_data or {}).items()
-        }
+    def initial_data(cls, leaderboard_data: dict = None) -> "LevelLeaderboardData":
+        """Load levels from a dictionary of level scores."""
+        levels = {}
+        if leaderboard_data:
+            for _level, scores in leaderboard_data.items():
+                levels[_level] = LevelLeaderboard(_level, scores)
         return cls(levels)
 
-    def leaderboard_to_json(self) -> str:
-        """Convert all level leaderboard data to JSON.
+    @classmethod
+    def leaderboard_from_json(cls, json_data: str) -> "LevelLeaderboardData":
+        """Load LevelLeaderboardData from a JSON string using dacite."""
+        data = json.loads(json_data)
+        return from_dict(cls, data)
 
-        Returns
-        -------
-            str: JSON-formatted leaderboard data.
-        """
+    def leaderboard_to_json(self) -> str:
+        """Convert all level leaderboard data to JSON."""
         return json.dumps(asdict(self), indent=2)
 
-    def leaderboard_from_json(self, json_data: str) -> "LevelLeaderboardData":
-        """Load LevelLeaderboardData from a JSON string.
 
-        Paramaters
-        ----------
-            json_data : str
-                JSON-formatted leaderboard data.
-
-        Returns
-        -------
-            LevelLeaderboardData: 
-                Player completed levels.
-        """
-        data = json.loads(json_data)
-        obj = from_dict(LevelLeaderboardData, data)
-        self.levels = obj.levels
-        return self
+def showleaderboard(filename: str, current_player: str = None) -> LevelLeaderboardData:
+    """Load the leaderboard from a JSON file and print top 10 for each level."""
+    try:
+        with open(filename, "r") as f:
+            json_data = f.read()
+        leaderboard = LevelLeaderboardData.leaderboard_from_json(json_data)
+    except FileNotFoundError:
+        leaderboard = LevelLeaderboardData()
 
 
-def level_leaderboard(username: str, reference):
-    """Display move-based leaderboards for individual levels.
+    if not leaderboard.levels:
+        return leaderboard
 
-    Allows the user to select a level and see the top 10 scores. Highlights
-    the current user and provides navigation options.
+    for level_name, level in leaderboard.levels.items():
+        # Format 
+        formatted_level = level_name.replace("_", " ").upper()
+        print(f"\n{formatted_level} Leaderboard Top 10")
+        print("-" * 40)
 
-    Paramaters
-    ----------
-        username : str 
-            Current user's username.
-        reference : str 
-            Data reference object with a `.child().get()` method.
-    """
-    if username:
-        raw_data = reference.child("level_leaderboard").get() or {}
-        leaderboard_data = LevelLeaderboardData.initial_data(raw_data)
+        sorted_scores = sorted(level.scores.items(), key=lambda x: x[1])
+        # Print 
+        for rank, (user, moves) in enumerate(sorted_scores[:10], start=1):
+            suffix = f"{Style.BRIGHT} (you){Style.RESET_ALL}" if user == current_player else ""
+            print(f"{rank}: {user} - {moves} moves{suffix}")
+        print(Style.BRIGHT + Fore.GREEN + "-" * 40)
 
-        while True:
-            clear()
-            options_list = list(leaderboard_data.levels.keys()) + ["Return to main menu"]
-            input_clear()
+    return leaderboard
 
-            chosen_index = survey.routines.select(
-                "Choose from the following levels: ",
-                options=options_list,
-                focus_mark="> ",
-                evade_color=survey.colors.basic("yellow")
-            )
-            chosen_level = options_list[chosen_index]
 
-            if chosen_level == "Return to main menu":
-                break
+def updateleaderboard(filename: str, move_count: int, level_name: str, players_name: str):
+    leaderboard = showleaderboard(filename)
+    if level_name not in leaderboard.levels:
+        leaderboard.levels[level_name] = LevelLeaderboard(level_name, {})
 
-            clear()
-            level = leaderboard_data.levels[chosen_level]
-
-            print(f"Moves Leaderboard for {chosen_level}")
-            sorted_scores = sorted(level.scores.items(), key=lambda x: x[1])
-
-            for i, (user, moves) in enumerate(sorted_scores[:10], start=1):
-                suffix = Style.BRIGHT + " (you)" if user == username else ""
-                print(f"{i}: {user} with {moves} moves{suffix}")
-
-            input_clear()
-            answer = survey.routines.select(
-                "",
-                options=["Choose Level | Check another leaderboard", "Return | Go back"],
-                focus_mark="> ",
-                evade_color=survey.colors.basic("yellow")
-            )
-
-            if answer == 1:
-                break
+    current_score = leaderboard.levels[level_name].scores.get(players_name, float('inf'))
+    if move_count < current_score:
+        leaderboard.levels[level_name].scores[players_name] = move_count
+        with open(filename, "w") as f:
+            f.write(leaderboard.leaderboard_to_json())
     else:
-        print("This is only available for logged-in users.")
-        survey.routines.select(
-            "",
-            options=[f"{'Return':<10}| Go back to levels menu"],
-            focus_mark="> ",
-            evade_color=survey.colors.basic('yellow')
-        )
+        return
