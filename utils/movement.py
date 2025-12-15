@@ -68,7 +68,7 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
                 # Spread a fire and clear inventory
                 curr_level.use_fire(new_player_location)
 
-            elif next_tile is TILES.ROCK_TILE:
+            elif next_tile is TILES.ROCK_TILE or new_player_location in curr_level.locations[TILES.ROCK_TILE]:
                 # Try to push the rock
                 try:
                     curr_level.push_rock(new_player_location, POSSIBLE_INPUTS[action])
