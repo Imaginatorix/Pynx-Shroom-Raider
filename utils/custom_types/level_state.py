@@ -202,7 +202,8 @@ class LevelState():
         """
         Returns if the player can pick up an item on the current tile
         """
-        return self._inventory is None and self._covering is not None and self._covering.behaviour is TileBehaviour.ITEM
+        print(self._covering)
+        return self._inventory.behaviour is not TileBehaviour.NONE and self._covering is not None and self._covering.behaviour is TileBehaviour.ITEM
 
 
     def pick_item(self) -> None:
@@ -210,6 +211,7 @@ class LevelState():
         Updates the _inventory attribute based on the current tile.
         """
         player_location = next(iter(self._locations[LARO_CRAFT_TILE]))
+        print(self._covering)
         self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
         self._locations[EMPTY_TILE].add(player_location)
@@ -372,7 +374,7 @@ class LevelState():
         """
         Updates the _locations[LARO_CRAFT_TILE] attribute to new player position.
         """
-        if (self._covering.behaviour is not TileBehaviour.ITEM and 
+        if (self._covering.behaviour is not TileBehaviour.ITEM or 
             next(iter(self._locations[LARO_CRAFT_TILE])) not in self._locations[PAVED_TILE]):
             self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
         try:

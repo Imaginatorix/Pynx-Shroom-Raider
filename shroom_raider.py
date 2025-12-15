@@ -46,6 +46,7 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
         elif moves:
             # No output file but has moves
             show_screen(curr_level)
+            curr_level.invalid_input = False
             actions = user_input(curr_level, moves)
             # Delete old moves and allow users to input new moves
             moves = ""
@@ -54,6 +55,10 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
             curr_level.invalid_input = False
             actions = user_input(curr_level)
         
+        if not actions:
+            sleep(0.1)
+            show_screen(curr_level)
+
         # Iterate through all map updates based on user's moves
         for new_level_state in actions:
 
