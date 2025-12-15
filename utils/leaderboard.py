@@ -116,3 +116,4 @@ def updateleaderboard(filename: str, move_count: int, name: str = "") -> None:
     clear()
     print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations, {players_name}!")
 
+    return leaderboard
