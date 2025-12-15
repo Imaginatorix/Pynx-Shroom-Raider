@@ -9,7 +9,7 @@ from utils.ui import show_screen
 
 
 # === MAIN GAME LOOP ===
-def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file: str) -> tuple[LevelState, str]:
+def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file: str) -> tuple[LevelState, str, int]:
     """ 
     Main game loop. Updates the level state given to it based on the list of level states
     retrieved from user_input function. If it doesnt have an output file, calls the show_screen 
@@ -37,25 +37,27 @@ def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file
         show_screen(curr_level)
 
     # By default, the clear state is set to NO CLEAR
-    is_clear = "NO CLEAR"
+    is_clear: str = "NO CLEAR"
+
+    move_count: int = 0
 
     # Game loop -> only breaks if game ends or an output file is given
     while True:
         # Translates moves into updated locations and level_info data
         if output_file and not moves:
             # Has an output file but no moves
-            actions = user_input(curr_level, orig_level, " ")
+            actions, move_count = user_input(curr_level, orig_level, move_count, " ")
         elif moves:
             # No output file but has moves
             show_screen(curr_level)
             curr_level.invalid_input = False
-            actions = user_input(curr_level, orig_level, moves)
+            actions, move_count = user_input(curr_level, orig_level, move_count, moves)
             # Delete old moves and allow users to input new moves
             moves = ""
         else:
             # Get new user input
             curr_level.invalid_input = False
-            actions = user_input(curr_level, orig_level)
+            actions, move_count = user_input(curr_level, orig_level, move_count)
         
         if not actions:
             sleep(0.1)
@@ -81,7 +83,7 @@ def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file
 
     if not output_file:
         show_screen(curr_level)
-    return curr_level, is_clear
+    return curr_level, is_clear, move_count
 
 if __name__ == "__main__":
     # Initialize colorama for adding colors to printed strings
@@ -93,6 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", type = str, dest="stage_file")
     parser.add_argument("-m", type = str, dest="string_of_moves")
     parser.add_argument("-o", type = str, dest="output_file")
+    parser.add_argument("-l", type = str, dest="leaderboard")
     # Retrieves the flags given
     system_input = parser.parse_args()
 
@@ -101,9 +104,16 @@ if __name__ == "__main__":
     moves: str = system_input.string_of_moves
     output_file: str = system_input.output_file
 
-    # Start the game loop and assigns the clear status
-    curr_level, is_clear = main(curr_level, curr_level.get_state(), moves, output_file)
+    if system_input.leaderboard and (moves or output_file or system_input.stage_file):
+        raise TypeError("use ONLY -l to show leaderboard")
+    elif system_input.leaderboard:
+        ... #show leaderboard
+    else:
+        # Start the game loop and assigns the clear status
+        curr_level, is_clear, move_count = main(curr_level, curr_level.get_state(), moves, output_file)
 
-    # Writes to an output file if available
-    if output_file:
-        save_state(output_file, curr_level, is_clear)
+        # Writes to an output file if available
+        if output_file:
+            save_state(output_file, curr_level, is_clear)
+
+        print(move_count)

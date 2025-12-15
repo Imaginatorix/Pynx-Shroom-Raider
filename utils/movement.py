@@ -6,7 +6,7 @@ import utils.settings as TILES
 POSSIBLE_INPUTS: dict[str, tuple[int,int]] = {"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":(0,0), "P":(0,0)}
 
 # === USE USER INPUT TO UPDATE MAP DATA ===
-def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = "") -> list[LevelState]:
+def user_input(curr_level: LevelState, orig_level: LevelState, move_count: int, sys_input: str = "") -> tuple[list[LevelState], int]:
     """ 
     Retrieves user input using the input function or from the moves passed when the main file is ran.
     Uses the input to update map information.
@@ -17,6 +17,8 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
         Current level information.
     orig_level: LevelState 
         Original level information.
+    move_count: int 
+        Number of moves the user has inputted.
     sys_input: str, optional
         Moves passed when the main file is ran. Defaults to ""
 
@@ -38,7 +40,7 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
     if not commands:
         curr_level.invalid_input = True
         actions.append(curr_level.get_state())
-        return actions
+        return actions, move_count
     
     # Iterate through each character of commands
     for action in commands:
@@ -52,6 +54,7 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
         # Revert to original state of the level
         elif action == "!":
             curr_level.reset_state(orig_level)
+            move_count = -1
 
         # Try to pick up an item
         elif action == "P" and curr_level.is_valid_item_tile():
@@ -63,29 +66,29 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
             # Retrieve the new possible player location and tile object after moving
             # TODO: add the dot tile after next tile
             new_player_location, next_tile = curr_level.next_player_location(POSSIBLE_INPUTS[action])
-            
-            if next_tile is TILES.TREE_TILE and curr_level.inventory is TILES.AXE_ITEM:
+
+            if next_tile == TILES.TREE_TILE and curr_level.inventory == TILES.AXE_ITEM:
                 # Remove a tree and clear inventory
                 curr_level.use_axe(new_player_location)
 
-            elif next_tile is TILES.TREE_TILE and curr_level.inventory is TILES.FLAMETHROWER_ITEM:
+            elif next_tile == TILES.TREE_TILE and curr_level.inventory == TILES.FLAMETHROWER_ITEM:
                 # Spread a fire and clear inventory
                 curr_level.use_fire(new_player_location)
 
-            elif next_tile is TILES.ROCK_TILE or new_player_location in curr_level.locations[TILES.ROCK_TILE]:
+            elif next_tile == TILES.ROCK_TILE or new_player_location in curr_level.locations[TILES.ROCK_TILE]:
                 # Try to push the rock
                 try:
                     curr_level.push_rock(new_player_location, POSSIBLE_INPUTS[action])
                 except ValueError:
                     continue
                 
-            elif next_tile is TILES.WATER_TILE:
+            elif next_tile == TILES.WATER_TILE:
                 # End the game -> lose
                 curr_level.game_lose(new_player_location)
                 curr_level.set_player_location(new_player_location)
                 break
             
-            elif next_tile is TILES.MUSHROOM_TILE:
+            elif next_tile == TILES.MUSHROOM_TILE:
                 # Collect the mushroom
                 curr_level.collect_mushroom(new_player_location)
             
@@ -99,7 +102,7 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
             # Update Laro's location
             curr_level.set_player_location(new_player_location)
 
-            if next_tile.behaviour is TileBehaviour.ITEM:
+            if next_tile.behaviour == TileBehaviour.ITEM:
                 curr_level.covering = next_tile
             else:
                 curr_level.covering = TILES.NONE_TILE
@@ -107,7 +110,9 @@ def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = 
         else:
             continue
         
+        move_count += 1
         actions.append(curr_level.get_state())
     if curr_level.game_end:
+        move_count += 1
         actions.append(curr_level.get_state())
-    return actions
+    return actions, move_count
