@@ -6,6 +6,7 @@ from utils.movement import user_input
 from utils.custom_types import LevelState
 from time import sleep
 from utils.ui import show_screen
+from utils.validator import validate_state_internals
 
 
 # === MAIN GAME LOOP ===
@@ -66,6 +67,8 @@ def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file
         # Iterate through all map updates based on user's moves
         for new_level_state in actions:
 
+            validate_state_internals(new_level_state)
+
             # Only print the ui if no output file is given
             if not output_file:
                 sleep(0.1)
@@ -107,7 +110,7 @@ if __name__ == "__main__":
     if system_input.leaderboard and (moves or output_file or system_input.stage_file):
         raise TypeError("use ONLY -l to show leaderboard")
     elif system_input.leaderboard:
-        ... #show leaderboard
+        print(system_input.leaderboard)
     else:
         # Start the game loop and assigns the clear status
         curr_level, is_clear, move_count = main(curr_level, curr_level.get_state(), moves, output_file)
