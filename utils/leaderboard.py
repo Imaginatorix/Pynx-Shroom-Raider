@@ -25,31 +25,38 @@ class LevelLeaderboardData:
     def __init__(self, levels: dict = None):
         self.levels = levels or {}
 
+
     @classmethod
     def initial_data(cls, leaderboard_data: dict = None) -> "LevelLeaderboardData":
         """Load levels from a dictionary of level scores."""
         levels = {}
         if leaderboard_data:
-            for _level, scores in leaderboard_data.items():
+            for _level, scores_obj in leaderboard_data.items():
+                scores = scores_obj.get("scores", {})
                 levels[_level] = LevelLeaderboard(_level, scores)
         return cls(levels)
 
+
     @classmethod
     def leaderboard_from_json(cls, json_data: str) -> "LevelLeaderboardData":
-        try:
-            data = json.loads(json_data)
-            return from_dict(cls, data)
-        except Exception:
-            return cls()
+        data = json.loads(json_data)
+        levels = {}
+        for level_name, level_obj in data.get("levels", {}).items():
+            scores = level_obj.get("scores", {})
+            levels[level_name] = LevelLeaderboard(level_name, scores)
+        return cls(levels)
+
 
     def leaderboard_to_json(self) -> str:
         """Convert all level leaderboard data to JSON."""
         return json.dumps(asdict(self), indent=2)
 
-def showleaderboard(filename: str) -> LevelLeaderboardData:
+
+
+def showleaderboard(filename: str, name: str = None) -> LevelLeaderboardData:
     """Load the leaderboard from a JSON file and print top 10 for each level."""
     _filename = f"{filename}.json"
-    current_player = input("Enter your name: ").strip() or None
+    current_player = name or input("Enter your name: ").strip() or None
 
     try:
         with open(_filename, "r") as f:
@@ -62,28 +69,31 @@ def showleaderboard(filename: str) -> LevelLeaderboardData:
         return leaderboard
 
     for level_name, level in leaderboard.levels.items():
-        formatted_level = level_name.replace("_", " ").upper()
-        print(f"\n{formatted_level} Leaderboard Top 10")
-        print("-" * 40)
+        if isinstance(level, dict):
+            level = LevelLeaderboard(level_name, level)
+            leaderboard.levels[level_name] = level
+            formatted_level = level_name.replace("_", " ").upper()
+            print(f"\n{formatted_level} Leaderboard Top 10")
+            print("-" * 40)
 
-        sorted_scores = sorted(level.scores.items(), key=lambda x: x[1])
-        for rank, (user, moves) in enumerate(sorted_scores[:10], start=1):
-            suffix = (f"{Style.BRIGHT} (you){Style.RESET_ALL}" if current_player and user == current_player else "")
-            print(f"{rank}: {user} - {moves} moves{suffix}")
+            sorted_scores = sorted(level.scores.items(), key=lambda x: x[1])
+            for rank, (user, moves) in enumerate(sorted_scores[:10], start=1):
+                suffix = (f"{Style.BRIGHT} (you){Style.RESET_ALL}" if current_player and user == current_player else "")
+                print(f"{rank}: {user} - {moves} moves{suffix}")
 
-        print(Style.BRIGHT + Fore.GREEN + "-" * 40)
+            print(Style.BRIGHT + Fore.GREEN + "-" * 40)
         
+        return leaderboard
     clear()
-    return leaderboard
 
 
 
-def updateleaderboard(filename: str, move_count: int):
+def updateleaderboard(filename: str, move_count: int, name: str = None):
     """Update leaderboard for a level."""
     json_filename = f"{filename}.json"
     level_name = filename
 
-    players_name = input("Enter your name: ").strip()
+    players_name = name or input("Enter your name: ").strip()
     if not players_name:
         print("Invalid player name.")
         return
@@ -99,3 +109,4 @@ def updateleaderboard(filename: str, move_count: int):
         f.write(leaderboard.leaderboard_to_json())
     clear()
     print(f"{Fore.GREEN}{Style.BRIGHT}Congratulations! {players_name}")
+
