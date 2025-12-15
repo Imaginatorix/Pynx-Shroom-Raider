@@ -1,18 +1,39 @@
-import colorama
+"""Terminal display utilities for rendering the game screen and player instructions."""
+
 import itertools
-import utils.settings as settings
-import shutil
-import sys
 import os
-from utils.custom_types import LevelState
-from wcwidth import wcswidth
+import shutil
+
+import colorama
 from colorama import Fore, Style
+from wcwidth import wcswidth
+
+import utils.settings as settings
+from utils.custom_types import LevelState
+
 
 colorama.init(autoreset=True)
 
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(state: LevelState) -> list[str]:
+    """
+    Create the appropriate instructions for the current game state.
 
+    Depending on the state, this function returns:
+    - Standard gameplay instructions
+    - A win message
+    - A lose message
+
+    Parameters
+    ----------
+    state : LevelState
+        The state of the game
+
+    Returns
+    -------
+    list[str]
+        A list of formatted instruction lines to be displayed to the player.
+    """
     # Header
     header = [
         "=====================",
@@ -69,11 +90,31 @@ def create_instructions(state: LevelState) -> list[str]:
 
 
 # === CREATE SCREEN ===
-def show_screen(state: LevelState, terminal_columns: int = -1) -> list[str]:
+def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
+    """
+    Print and return the screen containing the map and its corresponding instructions.
+
+    The layout adapts to the available terminal width. If the combined width of the
+    map and instructions exceeds the terminal width, they are displayed vertically;
+    otherwise, they are displayed side by side. The terminal is cleared before
+    printing.
+    
+    Parameters
+    ----------
+    state : LevelState
+        The current state of the game.
+    terminal_columns: int, default=-1
+        The width of the terminal in columns. If set to -1, the terminal width is detected automatically.
+
+    Returns
+    -------
+    str
+        The full string that is printed to the terminal.
+    """
+
     # Function to clear terminal
     def clear():
        os.system('cls' if os.name == 'nt' else 'clear')
-    #    sys.stdout.write('\033[H')
     
     # Check width of terminal
     if terminal_columns == -1:
@@ -81,7 +122,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> list[str]:
 
     # Create what needs to be placed in screen
     ## The Map
-    map_ui = state.grid
+    map_ui = state.grid_ui
     ## The Instructions
     instructions = create_instructions(state)
 
@@ -111,7 +152,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> list[str]:
     # Clear terminal before printing
     clear()
     output = '\n'.join(display)
-    sys.stdout.write(f'{output}\n')
-    
-    return display
+    print(output)
+
+    return output
 

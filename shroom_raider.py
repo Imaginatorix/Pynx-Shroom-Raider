@@ -1,7 +1,7 @@
 import argparse
 import colorama
-from colorama import Fore, Style 
-from utils.parser import parse_level_from_file, parse_output
+from colorama import Fore, Style
+from utils.parser import parse_level_from_file, save_state
 from utils.movement import user_input
 from utils.custom_types import LevelState
 from time import sleep
@@ -63,21 +63,21 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
                 show_screen(new_level_state)
 
             # Tell user an invalid input is given, only prints if no output file is given
-            if new_level_state.get_invalid_input() and not output_file:
+            if new_level_state.invalid_input and not output_file:
                 new_level_state.set_invalid_input(False)
                 sleep(0.1)
                 show_screen(new_level_state)
                 print(Fore.RED + Style.BRIGHT + "Invalid input detected")
 
             # When the game ends, check if win or lose 
-            if new_level_state.check_game_end():
+            if new_level_state.game_end:
                 is_clear = "CLEAR" if new_level_state.check_win() else "NO CLEAR"
                 break
         
         # Game loop ends if an output file is given or game has ended
         if output_file:
             break
-        elif curr_level.check_game_end():
+        elif curr_level.game_end:
             break
 
     if not output_file:
@@ -107,4 +107,4 @@ if __name__ == "__main__":
 
     # Writes to an output file if available
     if output_file:
-        parse_output(output_file, curr_level, is_clear)
+        save_state(output_file, curr_level, is_clear)

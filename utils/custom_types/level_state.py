@@ -22,7 +22,7 @@ FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
 # === LEVELSTATE REPRESENTATION ===
 class LevelState():
     """
-    TODO: Representation of state of the level
+    Encapsulates the current state of a level.
 
     Parameters
     ----------
@@ -51,10 +51,10 @@ class LevelState():
                  size: tuple[int, int],
                  mushroom_total: bool,
                  locations: dict[Tile, set],
+                 covering: Tile,
+                 inventory: Tile,
                  mushroom_collected: bool = 0,
                  game_end: bool = False,
-                 covering: Tile | None = None,
-                 inventory: Tile | None = None,
                  invalid_input: bool = False,
                  level_reset: bool = False,
                 ) -> None:
@@ -75,46 +75,47 @@ class LevelState():
 
         self._original_state = self.get_state()
 
-        self._modified = True
-        self._grid = None
+        # self._modified = True
 
+    # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
 
     @property
-    def grid(self) -> str:
-        """TODO: Returns grid representation of the level state."""
-        r, c = self._size
-        grid = [['']*c for _ in range(r)]
+    def size(self) -> tuple[int, int]:
+        return self._size
 
-        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
-        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
-        character_location = next(iter(self._locations[CHARACTER_TILE]))
-        self._covering = None
+    @property
+    def mushroom_collected(self) -> int:
+        return self._mushroom_collected
 
-        for c, coord in self._locations.items():
-            for i, j in coord:
-                if (i, j) == character_location and c not in {CHARACTER_TILE} | WALKABLE_TILES:
-                    self._covering = c
-                # Set cell to higher priority (for now, only character)
-                if not grid[i][j] or c == CHARACTER_TILE:
-                    grid[i][j] = c.ui
-        self._grid = [''.join(row) for row in grid]
-        return self._grid
+    @property
+    def mushroom_total(self) -> int:
+        return self._mushroom_total
 
-
-    def __repr__(self) -> str:
-        """TODO: Returns grid representation of the level state."""
-        return '\n'.join(self.grid)
-
-
-    def get_state(self) -> LevelState:
+    @property
+    def game_end(self) -> bool:
         """
-        Returns a duplicate of the level state.
+        Returns if the game has ended.
         """
-        # clone = LevelState.__new__(LevelState)
-        # clone._locations = {k: set(v) for k, v in self._locations.items()}
-        return deepcopy(self) # TODO: test
+        return self._game_end
 
-    def set_invalid_input(self, val: bool) -> None:
+    @property
+    def covering(self) -> Tile:
+        return self._covering
+
+    @property
+    def inventory(self) -> Tile:
+        """
+        Returns the value of _inventory attribute.
+        """
+        return self._inventory
+
+    @property
+    def invalid_input(self) -> bool:
+        """Returns the value of _invalid_input attribute."""
+        return self._invalid_input
+
+    @invalid_input.setter
+    def invalid_input(self, val: bool) -> None:
         """
         Updates the _invalid_input attribute.
 
@@ -125,29 +126,84 @@ class LevelState():
         """ 
         self._invalid_input = val
 
-    def get_invalid_input(self) -> bool:
-        """
-        Returns the value of _invalid_input attribute.
-        """
-        return self._invalid_input
 
-    def get_inventory(self) -> Tile:
-        """
-        Returns the value of _inventory attribute.
-        """
-        return self._inventory
-    
+    @property
+    def level_reset(self) -> bool:
+        return self._level_reset
+
+    @property
+    def locations(self) -> dict[Tile, set[tuple[int, int]]]:
+        return self._locations
+
+    @property
+    def grid_ui(self) -> str:
+        """TODO: Returns grid representation of the level state."""
+        # if self.modified:
+        r, c = self._size
+        grid = [['']*c for _ in range(r)]
+
+        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
+        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
+        character_location = next(iter(self._locations[CHARACTER_TILE]))
+
+        for c, coord in self._locations.items():
+            for i, j in coord:
+                if (i, j) == character_location and c not in {CHARACTER_TILE,} | WALKABLE_TILES and c.behaviour is TileBehaviour.ITEM:
+                    self._covering = c
+                # Set cell to higher priority (for now, only character)
+                if not grid[i][j] or c == CHARACTER_TILE:
+                    grid[i][j] = c.ui
+        
+        return [''.join(row) for row in grid]
+
+    @property
+    def grid_ascii(self) -> str:
+        """TODO: Returns grid representation of the level state."""
+        # if self.modified:
+        r, c = self._size
+        grid = [['']*c for _ in range(r)]
+
+        CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
+        WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
+        character_location = next(iter(self._locations[CHARACTER_TILE]))
+
+        for c, coord in self._locations.items():
+            for i, j in coord:
+                if (i, j) == character_location and c not in {CHARACTER_TILE,} | WALKABLE_TILES and c.behaviour is TileBehaviour.ITEM:
+                    self._covering = c
+                # Set cell to higher priority (for now, only character)
+                if not grid[i][j] or c == CHARACTER_TILE:
+                    grid[i][j] = c.plain
+        
+        return [''.join(row) for row in grid]
+
+    @property
+    def tile_classification(self) -> dict[TileBehaviour, set]:
+        tile_classification = {
+            behaviour: set()
+            for behaviour in TileBehaviour
+        }
+
+        for tile in self._locations:
+            tile_classification[tile.behaviour].add(tile)
+        
+        return tile_classification
+
+    # === END OF GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ====
+
     def reset_state(self) -> None:
         """
         Revert the LevelState object into its original state.
         """
         self = self._original_state.get_state() # TODO: Test pa
-    
+
+
     def is_valid_item_tile(self) -> bool:
         """
         Returns if the player can pick up an item on the current tile
         """
         return self._inventory is None and self._covering is not None and self._covering.behaviour is TileBehaviour.ITEM
+
 
     def pick_item(self) -> None:
         """
@@ -157,6 +213,7 @@ class LevelState():
         self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
         self._locations[EMPTY_TILE].add(player_location)
+
 
     def next_player_location(self, action: tuple[int,int]) -> tuple[tuple[int, int], Tile]:
         """
@@ -178,6 +235,7 @@ class LevelState():
             if new_location in s and name is not LARO_CRAFT_TILE:
                  new_tile = name
         return new_location, new_tile
+
 
     def is_valid_movement(self, action: tuple[int,int]) -> bool:
         """
@@ -203,6 +261,7 @@ class LevelState():
         else:
             return False
     
+
     def use_axe(self, new_player_location: tuple[int, int]) -> None:
         """
         Remove single tree on the new player location.
@@ -216,6 +275,7 @@ class LevelState():
         self._inventory = None
         self._covering = None
 
+
     def use_fire(self, new_player_location: tuple[int, int]) -> None:
         """
         Remove affected trees on the new player location.
@@ -227,7 +287,7 @@ class LevelState():
         """
         self._inventory = None
         self._covering = None
-        kernel = ((-1,0),(0,-1),(1,0),(0,1))
+        kernel = ((-1,0), (0,-1), (1,0), (0,1))
         frontier = [new_player_location]
         n = 0
 
@@ -241,7 +301,8 @@ class LevelState():
                     self._locations[TREE_TILE].remove(new)
                     self._locations[EMPTY_TILE].add(new)
             n+=1
-    
+
+
     def push_rock(self, curr_rock_location: tuple[int, int],action: tuple[int,int]) -> None:
         """
         Try to push a rock.
@@ -277,6 +338,7 @@ class LevelState():
         else:
             raise ValueError
    
+
     def game_end(self) -> None:
         """
         Updates the _game_end attribute to True.
@@ -290,6 +352,7 @@ class LevelState():
         self._locations[WATER_TILE].remove(new_player_location)
         self.game_end()
 
+
     def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
         """
         Removes the retrieved mushroom and increase the _mushroom_collected attribute.
@@ -297,17 +360,13 @@ class LevelState():
         self._locations[MUSHROOM_TILE].remove(new_player_location)
         self._mushroom_collected += 1
 
+
     def check_win(self) -> bool:
         """
         Returns if the player has won.
         """
         return self._mushroom_collected == self._mushroom_total
-    
-    def check_game_end(self) -> bool:
-        """
-        Returns if the game has ended.
-        """
-        return self._game_end
+
 
     def set_player_location(self, new_player_location: tuple[int, int]) -> None:
         """
@@ -320,3 +379,13 @@ class LevelState():
         except KeyError:
             pass
         self._locations[LARO_CRAFT_TILE] = {new_player_location}
+
+
+    def get_state(self) -> LevelState:
+        """Returns a duplicate of the level state."""
+        return deepcopy(self)
+
+
+    def __repr__(self) -> str:
+        """Returns grid-like string representation of the level state separated by endlines."""
+        return '\n'.join(self.grid)
