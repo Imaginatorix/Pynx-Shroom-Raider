@@ -4,8 +4,6 @@ from .tile import Tile
 from .tile_behaviour import TileBehaviour
 from copy import deepcopy
 
-from utils.settings import EMPTY_TILE, LARO_CRAFT_TILE, TREE_TILE, MUSHROOM_TILE, ROCK_TILE, WATER_TILE, PAVED_TILE, NONE_TILE
-
 
 # === LEVELSTATE REPRESENTATION ===
 class LevelState():
@@ -64,6 +62,19 @@ class LevelState():
             TileBehaviour.OBSTACLE: 7,
         }
 
+        # TILES
+        self.EMPTY_TILE = Tile('Empty', '.', '\U00003000', TileBehaviour.WALKABLE)
+        self.LARO_CRAFT_TILE = Tile('Laro Craft', 'L', '🧑', TileBehaviour.PLAYER)
+        self.TREE_TILE = Tile('Tree', 'T', '🌲', TileBehaviour.OBSTACLE)
+        self.MUSHROOM_TILE = Tile('Mushroom', '+', '🍄', TileBehaviour.GOAL)
+        self.ROCK_TILE = Tile('Rock', 'R', '🪨', TileBehaviour.PUSHABLE)
+        self.WATER_TILE = Tile('Water', '~', '🟦', TileBehaviour.DANGER)
+        self.PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
+        # ITEMS
+        self.AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
+        self.FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
+        # NONE PLACEHOLDER
+        self.NONE_TILE = Tile('', '', '', TileBehaviour.NONE)
 
     # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
 
@@ -128,7 +139,7 @@ class LevelState():
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
-        grid_tile = [[NONE_TILE]*c for _ in range(r)]
+        grid_tile = [[self.NONE_TILE]*c for _ in range(r)]
 
         for tile, coord in self._locations.items():
             for i, j in coord:
@@ -145,7 +156,7 @@ class LevelState():
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
-        grid_tile = [[NONE_TILE]*c for _ in range(r)]
+        grid_tile = [[self.NONE_TILE]*c for _ in range(r)]
 
         for tile, coord in self._locations.items():
             for i, j in coord:
@@ -165,10 +176,10 @@ class LevelState():
 
     def pick_item(self) -> None:
         """Updates the _inventory attribute based on the current tile."""
-        player_location = next(iter(self._locations[LARO_CRAFT_TILE]))
+        player_location = next(iter(self._locations[self.LARO_CRAFT_TILE]))
         self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
-        self._locations[EMPTY_TILE].add(player_location)
+        self._locations[self.EMPTY_TILE].add(player_location)
 
 
     def next_player_location(self, action: tuple[int,int]) -> tuple[tuple[int, int], Tile]:
@@ -185,10 +196,10 @@ class LevelState():
         tuple[tuple[int, int], Tile]
             New player position and the next tile the player is on after moving.
         """ 
-        new_location = next(iter(self._locations[LARO_CRAFT_TILE]))[0] + action[0], next(iter(self._locations[LARO_CRAFT_TILE]))[1] + action[1]
-        new_tile = EMPTY_TILE
+        new_location = next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0], next(iter(self._locations[self.LARO_CRAFT_TILE]))[1] + action[1]
+        new_tile = self.EMPTY_TILE
         for name, s in self._locations.items():
-            if new_location in s and name is not LARO_CRAFT_TILE:
+            if new_location in s and name is not self.LARO_CRAFT_TILE:
                  new_tile = name
         return new_location, new_tile
 
@@ -227,9 +238,9 @@ class LevelState():
         new_player_location: tuple[int, int] 
             New position of the player
         """
-        self._locations[TREE_TILE].remove(new_player_location)
-        self._inventory = NONE_TILE
-        self._covering = NONE_TILE
+        self._locations[self.TREE_TILE].remove(new_player_location)
+        self._inventory = self.NONE_TILE
+        self._covering = self.NONE_TILE
 
 
     def use_fire(self, new_player_location: tuple[int, int]) -> None:
@@ -241,8 +252,8 @@ class LevelState():
         new_player_location: tuple[int, int] 
             New position of the player
         """
-        self._inventory = NONE_TILE
-        self._covering = NONE_TILE
+        self._inventory = self.NONE_TILE
+        self._covering = self.NONE_TILE
         kernel = ((-1,0), (0,-1), (1,0), (0,1))
         frontier = [new_player_location]
         n = 0
@@ -252,10 +263,10 @@ class LevelState():
             i, j = frontier[n]
             for di, dj in kernel:
                 new = (di + i, dj + j)
-                if new in self._locations[TREE_TILE]:
+                if new in self._locations[self.TREE_TILE]:
                     frontier.append(new)
-                    self._locations[TREE_TILE].remove(new)
-                    self._locations[EMPTY_TILE].add(new)
+                    self._locations[self.TREE_TILE].remove(new)
+                    self._locations[self.EMPTY_TILE].add(new)
             n+=1
 
 
@@ -275,32 +286,32 @@ class LevelState():
         ValueError
             If the new rock position is invalid
         """
-        new_rock_location = (next(iter(self._locations[LARO_CRAFT_TILE]))[0] + action[0]*2, 
-                             next(iter(self._locations[LARO_CRAFT_TILE]))[1] + action[1]*2)
-        if new_rock_location in self._locations[WATER_TILE]:
+        new_rock_location = (next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0]*2, 
+                             next(iter(self._locations[self.LARO_CRAFT_TILE]))[1] + action[1]*2)
+        if new_rock_location in self._locations[self.WATER_TILE]:
             # Remove water tile in new position and add paved tile
-            self._locations[WATER_TILE].remove(new_rock_location)
-            self._locations[ROCK_TILE].remove(curr_rock_location)
-            self._locations[PAVED_TILE].add(new_rock_location)
-        elif new_rock_location in self._locations[PAVED_TILE]:
-            self._locations[ROCK_TILE].add(new_rock_location)
-            self._locations[ROCK_TILE].remove(curr_rock_location)
-        elif new_rock_location in self._locations[EMPTY_TILE]:
+            self._locations[self.WATER_TILE].remove(new_rock_location)
+            self._locations[self.ROCK_TILE].remove(curr_rock_location)
+            self._locations[self.PAVED_TILE].add(new_rock_location)
+        elif new_rock_location in self._locations[self.PAVED_TILE]:
+            self._locations[self.ROCK_TILE].add(new_rock_location)
+            self._locations[self.ROCK_TILE].remove(curr_rock_location)
+        elif new_rock_location in self._locations[self.EMPTY_TILE]:
             # Remove empty tile in new position
-            self._locations[ROCK_TILE].add(new_rock_location)
-            self._locations[ROCK_TILE].remove(curr_rock_location)
-            self._locations[EMPTY_TILE].remove(new_rock_location)
+            self._locations[self.ROCK_TILE].add(new_rock_location)
+            self._locations[self.ROCK_TILE].remove(curr_rock_location)
+            self._locations[self.EMPTY_TILE].remove(new_rock_location)
         else:
             raise ValueError
    
     def game_lose(self, new_player_location: tuple[int, int]) -> None:
         """Remove the water tile on new player location and call game_end method"""
-        self._locations[WATER_TILE].remove(new_player_location)
+        self._locations[self.WATER_TILE].remove(new_player_location)
         self._game_end = True
 
     def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
         """Removes the retrieved mushroom and increase the _mushroom_collected attribute."""
-        self._locations[MUSHROOM_TILE].remove(new_player_location)
+        self._locations[self.MUSHROOM_TILE].remove(new_player_location)
         self._mushroom_collected += 1
 
 
@@ -312,13 +323,13 @@ class LevelState():
     def set_player_location(self, new_player_location: tuple[int, int]) -> None:
         """Updates the _locations[LARO_CRAFT_TILE] attribute to new player position."""
         if (self._covering.behaviour is not TileBehaviour.ITEM and 
-            next(iter(self._locations[LARO_CRAFT_TILE])) not in self._locations[PAVED_TILE]):
-            self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
+            next(iter(self._locations[self.LARO_CRAFT_TILE])) not in self._locations[self.PAVED_TILE]):
+            self._locations[self.EMPTY_TILE].add(next(iter(self._locations[self.LARO_CRAFT_TILE])))
         try:
-            self._locations[EMPTY_TILE].remove(new_player_location)
+            self._locations[self.EMPTY_TILE].remove(new_player_location)
         except KeyError:
             pass
-        self._locations[LARO_CRAFT_TILE] = {new_player_location}
+        self._locations[self.LARO_CRAFT_TILE] = {new_player_location}
 
     # === STATE OPERATORS ===
 
