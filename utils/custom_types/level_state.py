@@ -16,6 +16,8 @@ PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
 # ITEMS
 AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
 FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
+# NONE PLACEHOLDER
+NONE_TILE: Tile = Tile('', '', '', TileBehaviour.NONE)
 
 
 
@@ -73,8 +75,6 @@ class LevelState():
         self._level_reset = level_reset
         self._locations = locations
 
-        self._original_state = self.get_state()
-
         # self._modified = True
 
     # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
@@ -97,6 +97,13 @@ class LevelState():
         Returns if the game has ended.
         """
         return self._game_end
+    
+    @game_end.setter
+    def game_end(self, val: bool) -> None:
+        """
+        Updates the _game_end attribute to True.
+        """
+        self._game_end = val
 
     @property
     def covering(self) -> Tile:
@@ -126,6 +133,13 @@ class LevelState():
         """ 
         self._invalid_input = val
 
+    @property
+    def covering(self) -> Tile:
+        return self._covering
+    
+    @covering.setter
+    def covering(self, val: Tile) -> None:
+        self._covering = val
 
     @property
     def level_reset(self) -> bool:
@@ -145,6 +159,7 @@ class LevelState():
         CHARACTER_TILE = [tile for tile in self._locations if tile.behaviour is TileBehaviour.PLAYER][0]
         WALKABLE_TILES = set(tile for tile in self._locations if tile.behaviour is TileBehaviour.WALKABLE)
         character_location = next(iter(self._locations[CHARACTER_TILE]))
+        self._covering = NONE_TILE
 
         for c, coord in self._locations.items():
             for i, j in coord:
@@ -191,19 +206,11 @@ class LevelState():
 
     # === END OF GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ====
 
-    def reset_state(self) -> None:
-        """
-        Revert the LevelState object into its original state.
-        """
-        self = self._original_state.get_state() # TODO: Test pa
-
-
     def is_valid_item_tile(self) -> bool:
         """
         Returns if the player can pick up an item on the current tile
         """
-        print(self._covering)
-        return self._inventory.behaviour is not TileBehaviour.NONE and self._covering is not None and self._covering.behaviour is TileBehaviour.ITEM
+        return self._inventory.behaviour is TileBehaviour.NONE and self._covering.behaviour is TileBehaviour.ITEM
 
 
     def pick_item(self) -> None:
@@ -274,8 +281,8 @@ class LevelState():
             New position of the player
         """
         self._locations[TREE_TILE].remove(new_player_location)
-        self._inventory = None
-        self._covering = None
+        self._inventory = NONE_TILE
+        self._covering = NONE_TILE
 
 
     def use_fire(self, new_player_location: tuple[int, int]) -> None:
@@ -287,8 +294,8 @@ class LevelState():
         new_player_location: tuple[int, int] 
             New position of the player
         """
-        self._inventory = None
-        self._covering = None
+        self._inventory = NONE_TILE
+        self._covering = NONE_TILE
         kernel = ((-1,0), (0,-1), (1,0), (0,1))
         frontier = [new_player_location]
         n = 0
@@ -323,37 +330,28 @@ class LevelState():
         """
         new_rock_location = (next(iter(self._locations[LARO_CRAFT_TILE]))[0] + action[0]*2, 
                              next(iter(self._locations[LARO_CRAFT_TILE]))[1] + action[1]*2)
-        
-        if new_rock_location in self._locations[EMPTY_TILE]:
-            # Remove empty tile in new position
-            self._locations[ROCK_TILE].add(new_rock_location)
-            self._locations[ROCK_TILE].remove(curr_rock_location)
-            self._locations[EMPTY_TILE].remove(new_rock_location)
-        elif new_rock_location in self._locations[PAVED_TILE]:
-            self._locations[ROCK_TILE].add(new_rock_location)
-            self._locations[ROCK_TILE].remove(curr_rock_location)
-        elif new_rock_location in self._locations[WATER_TILE]:
+        if new_rock_location in self._locations[WATER_TILE]:
             # Remove water tile in new position and add paved tile
             self._locations[WATER_TILE].remove(new_rock_location)
             self._locations[ROCK_TILE].remove(curr_rock_location)
             self._locations[PAVED_TILE].add(new_rock_location)
+        elif new_rock_location in self._locations[PAVED_TILE]:
+            self._locations[ROCK_TILE].add(new_rock_location)
+            self._locations[ROCK_TILE].remove(curr_rock_location)
+        elif new_rock_location in self._locations[EMPTY_TILE]:
+            # Remove empty tile in new position
+            self._locations[ROCK_TILE].add(new_rock_location)
+            self._locations[ROCK_TILE].remove(curr_rock_location)
+            self._locations[EMPTY_TILE].remove(new_rock_location)
         else:
             raise ValueError
    
-
-    def endgame(self) -> None:
-        """
-        Updates the _game_end attribute to True.
-        """
-        self._game_end = True
-
     def game_lose(self, new_player_location: tuple[int, int]) -> None:
         """
         Remove the water tile on new player location and call game_end method
         """
         self._locations[WATER_TILE].remove(new_player_location)
-        self.endgame()
-
+        self._game_end = True
 
     def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
         """
@@ -374,7 +372,7 @@ class LevelState():
         """
         Updates the _locations[LARO_CRAFT_TILE] attribute to new player position.
         """
-        if (self._covering.behaviour is not TileBehaviour.ITEM or 
+        if (self._covering.behaviour is not TileBehaviour.ITEM and 
             next(iter(self._locations[LARO_CRAFT_TILE])) not in self._locations[PAVED_TILE]):
             self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
         try:
@@ -388,6 +386,8 @@ class LevelState():
         """Returns a duplicate of the level state."""
         return deepcopy(self)
 
+    def reset_state(self, orig_state: LevelState) -> None:
+        self.__dict__ = deepcopy(orig_state.__dict__)
 
     def __repr__(self) -> str:
         """Returns grid-like string representation of the level state separated by endlines."""
