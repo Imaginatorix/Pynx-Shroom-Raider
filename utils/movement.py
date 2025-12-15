@@ -1,10 +1,10 @@
-from utils.custom_types import LevelState
+from utils.custom_types import LevelState, TileBehaviour
 import utils.settings as TILES
 
 POSSIBLE_INPUTS: dict[str, tuple[int,int]] = {"W":(-1,0), "A":(0,-1), "S":(1,0), "D":(0,1), "!":(0,0), "P":(0,0)}
 
 # === USE USER INPUT TO UPDATE MAP DATA ===
-def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
+def user_input(curr_level: LevelState, orig_level: LevelState, sys_input: str = "") -> list[LevelState]:
     """ 
     Retrieves user input using the input function or from the moves passed when the main file is ran.
     Uses the input to update map information.
@@ -32,7 +32,7 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
 
     # When commands are empty, mark as invalid input
     if not commands:
-        curr_level.set_invalid_input(True)
+        curr_level.invalid_input = True
         actions.append(curr_level.get_state())
         return actions
     
@@ -41,13 +41,13 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
 
         # When action is invalid, stop the iteration
         if action not in POSSIBLE_INPUTS:
-            curr_level.set_invalid_input(True)
+            curr_level.invalid_input = True
             actions.append(curr_level.get_state())
             break
 
         # Revert to original state of the level
         elif action == "!":
-            curr_level.reset_state()
+            curr_level.reset_state(orig_level)
 
         # Try to pick up an item
         elif action == "P" and curr_level.is_valid_item_tile():
@@ -75,10 +75,11 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
                 except ValueError:
                     continue
                 
-
             elif next_tile is TILES.WATER_TILE:
                 # End the game -> lose
                 curr_level.game_lose(new_player_location)
+                curr_level.set_player_location(new_player_location)
+                break
             
             elif next_tile is TILES.MUSHROOM_TILE:
                 # Collect the mushroom
@@ -86,12 +87,23 @@ def user_input(curr_level: LevelState, sys_input: str = "") -> list[LevelState]:
             
             if curr_level.check_win():
                 # End the game -> win
-                curr_level.game_end()
+                curr_level.game_end = True
+                curr_level.set_player_location(new_player_location)
+                break
+            
             
             # Update Laro's location
             curr_level.set_player_location(new_player_location)
+
+            if next_tile.behaviour is TileBehaviour.ITEM:
+                curr_level.covering = next_tile
+            else:
+                curr_level.covering = TILES.NONE_TILE
+
         else:
             continue
         
+        actions.append(curr_level.get_state())
+    if curr_level.game_end:
         actions.append(curr_level.get_state())
     return actions

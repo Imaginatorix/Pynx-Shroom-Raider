@@ -9,7 +9,7 @@ from utils.ui import show_screen
 
 
 # === MAIN GAME LOOP ===
-def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelState, str]:
+def main(curr_level: LevelState, orig_level: LevelState, moves: str, output_file: str) -> tuple[LevelState, str]:
     """ 
     Main game loop. Updates the level state given to it based on the list of level states
     retrieved from user_input function. If it doesnt have an output file, calls the show_screen 
@@ -42,18 +42,23 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
         # Translates moves into updated locations and level_info data
         if output_file and not moves:
             # Has an output file but no moves
-            actions = user_input(curr_level, " ")
+            actions = user_input(curr_level, orig_level, " ")
         elif moves:
             # No output file but has moves
             show_screen(curr_level)
-            actions = user_input(curr_level, moves)
+            curr_level.invalid_input = False
+            actions = user_input(curr_level, orig_level, moves)
             # Delete old moves and allow users to input new moves
             moves = ""
         else:
-            show_screen(curr_level)
-            actions = user_input(curr_level)
-            
+            # Get new user input
+            curr_level.invalid_input = False
+            actions = user_input(curr_level, orig_level)
         
+        if not actions:
+            sleep(0.1)
+            show_screen(curr_level)
+
         # Iterate through all map updates based on user's moves
         for new_level_state in actions:
 
@@ -61,14 +66,6 @@ def main(curr_level: LevelState, moves: str, output_file: str) -> tuple[LevelSta
             if not output_file:
                 sleep(0.1)
                 show_screen(new_level_state)
-
-            # Tell user an invalid input is given, only prints if no output file is given
-            if new_level_state.invalid_input and not output_file:
-                new_level_state.set_invalid_input(False)
-                sleep(0.1)
-                show_screen(new_level_state)
-                print(Fore.RED + Style.BRIGHT + "Invalid input detected")
-
             # When the game ends, check if win or lose 
             if new_level_state.game_end:
                 is_clear = "CLEAR" if new_level_state.check_win() else "NO CLEAR"
@@ -103,7 +100,7 @@ if __name__ == "__main__":
     output_file: str = system_input.output_file
 
     # Start the game loop and assigns the clear status
-    curr_level, is_clear = main(curr_level, moves, output_file)
+    curr_level, is_clear = main(curr_level, curr_level.get_state(), moves, output_file)
 
     # Writes to an output file if available
     if output_file:
