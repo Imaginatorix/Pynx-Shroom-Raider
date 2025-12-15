@@ -13,6 +13,7 @@ save_state
 
 from utils.custom_types import LevelState, Tile
 from utils.settings import MUSHROOM_TILE, NONE_TILE, PLAIN_TO_TILE, VALID_TILES
+from utils.validator import validate_type, validate_locations
 
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
 def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
@@ -36,21 +37,31 @@ def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
 
     Raises
     ------
+    TypeError
+        If the grid does not conform to expected type.
     ValueError
         If the grid contains a character that does not correspond to a valid
         tile.
     """
-    
+    validate_type(grid, list[str], "grid")
+
     locations = {
         tile: set()
         for tile in VALID_TILES
     }
 
+    row = -1
+    col = -1
     for i, line in enumerate(grid):
         for j, c in enumerate(line.strip()):
             if c not in PLAIN_TO_TILE:
-                raise ValueError("Grid contains an invalid tile!")
+                print(c)
+                raise ValueError("Tiles must be valid")
             locations[PLAIN_TO_TILE[c]].add((i, j))
+            row = max(row, i+1)
+            col = max(col, j+1)
+
+    validate_locations((row, col), locations)
 
     return locations
 
@@ -98,6 +109,7 @@ def parse_level_from_file(filename: str) -> LevelState:
     # Get the size as the row and column 
     r, c = map(int, stage_size.split())
     size = (r, c)
+    validate_size(size)
 
     locations = get_tile_locations(grid)
     mushroom_total = len(locations[MUSHROOM_TILE])
