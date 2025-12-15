@@ -4,51 +4,11 @@ from .tile import Tile
 from .tile_behaviour import TileBehaviour
 from copy import deepcopy
 
-# TODO:
-# TILES
-EMPTY_TILE = Tile('Empty', '.', '\U00003000', TileBehaviour.WALKABLE)
-LARO_CRAFT_TILE = Tile('Laro Craft', 'L', '🧑', TileBehaviour.PLAYER)
-TREE_TILE = Tile('Tree', 'T', '🌲', TileBehaviour.OBSTACLE)
-MUSHROOM_TILE = Tile('Mushroom', '+', '🍄', TileBehaviour.GOAL)
-ROCK_TILE = Tile('Rock', 'R', '🪨', TileBehaviour.PUSHABLE)
-WATER_TILE = Tile('Water', '~', '🟦', TileBehaviour.DANGER)
-PAVED_TILE = Tile('Pave', '_', '⬜', TileBehaviour.WALKABLE)
-# ITEMS
-AXE_ITEM = Tile('Axe', 'x', '🪓', TileBehaviour.ITEM)
-FLAMETHROWER_ITEM = Tile('Flamethrower', '*', '🔥', TileBehaviour.ITEM)
-# NONE PLACEHOLDER
-NONE_TILE: Tile = Tile('', '', '', TileBehaviour.NONE)
-
+from utils.settings import EMPTY_TILE, LARO_CRAFT_TILE, TREE_TILE, MUSHROOM_TILE, ROCK_TILE, WATER_TILE, PAVED_TILE, NONE_TILE
 
 
 # === LEVELSTATE REPRESENTATION ===
 class LevelState():
-    """
-    Encapsulates the current state of a level.
-
-    Parameters
-    ----------
-    size : tuple[int, int]
-        The size of the map.
-    mushroom_total : int
-        The number of mushroom needed to be collected to win the game.
-    locations : dict[Tile, set]
-        Maps the Tile to the set of coordinates where it is found.
-    mushroom_collected: int, default=0
-        The number of mushroom collected so far.
-    game_end : bool, default=False
-        Whether the game is already over.
-    covering: Tile, default=Tile(name='None', plain='?', ui='?', behaviour=TileBehaviour.NONE),
-        The current item the player is on top of.
-    inventory : Tile, default=Tile(name='None', plain='?', ui='?', behaviour=TileBehaviour.NONE)
-        The current item in the player's inventory.
-    invalid_input : bool, default=False
-        Whether the player has made an invalid input.
-    level_reset : bool, default=False
-        Whether the level has been resetted.
-
-    """
-
     def __init__(self,
                  size: tuple[int, int],
                  mushroom_total: int,
@@ -58,9 +18,29 @@ class LevelState():
                  mushroom_collected: int = 0,
                  game_end: bool = False,
                  invalid_input: bool = False,
-                 level_reset: bool = False,
                 ) -> None:
+        """
+        Encapsulates the current state of a level.
 
+        Parameters
+        ----------
+        size : tuple[int, int]
+            The size of the map.
+        mushroom_total : int
+            The number of mushroom needed to be collected to win the game.
+        locations : dict[Tile, set]
+            Maps the Tile to the set of coordinates where it is found.
+        mushroom_collected: int, default=0
+            The number of mushroom collected so far.
+        game_end : bool, default=False
+            Whether the game is already over.
+        covering: Tile, default=Tile(name='None', plain='?', ui='?', behaviour=TileBehaviour.NONE),
+            The current item the player is on top of.
+        inventory : Tile, default=Tile(name='None', plain='?', ui='?', behaviour=TileBehaviour.NONE)
+            The current item in the player's inventory.
+        invalid_input : bool, default=False
+            Whether the player has made an invalid input.
+        """
         # Set into private attributes
         self._size = size
         self._mushroom_collected = mushroom_collected
@@ -69,7 +49,6 @@ class LevelState():
         self._covering = covering
         self._inventory = inventory
         self._invalid_input = invalid_input
-        self._level_reset = level_reset
         self._locations = locations
 
         # Other Attributes used within internal methods
@@ -79,104 +58,77 @@ class LevelState():
             TileBehaviour.WALKABLE: 1,
             TileBehaviour.DANGER: 2,
             TileBehaviour.ITEM: 3,
-            TileBehaviour.PUSHABLE: 4,
-            TileBehaviour.PLAYER: 5,
-            TileBehaviour.OBSTACLE: 6,
+            TileBehaviour.GOAL: 4,
+            TileBehaviour.PUSHABLE: 5,
+            TileBehaviour.PLAYER: 6,
+            TileBehaviour.OBSTACLE: 7,
         }
+
 
     # === GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ===
 
     @property
     def size(self) -> tuple[int, int]:
-        """
-        Returns the size of map (row, col).
-        """
+        """Returns the size of map (row, col)."""
         return self._size
 
     @property
     def mushroom_collected(self) -> int:
-        """
-        Returns how many mushroom the player has retrieved.
-        """
+        """Returns how many mushroom the player has retrieved."""
         return self._mushroom_collected
 
     @property
     def mushroom_total(self) -> int:
-        """
-        Returns how many mushroom is in the map.
-        """
+        """Returns how many mushroom is in the map."""
         return self._mushroom_total
 
     @property
     def game_end(self) -> bool:
-        """
-        Returns if the game has ended.
-        """
+        """Returns if the game has ended."""
         return self._game_end
     
     @game_end.setter
     def game_end(self, val: bool) -> None:
-        """
-        Updates the _game_end attribute.
-        """
+        """Updates the _game_end attribute."""
         self._game_end = val
 
     @property
     def inventory(self) -> Tile:
-        """
-        Returns the value of _inventory attribute.
-        """
+        """Returns the value of _inventory attribute."""
         return self._inventory
 
     @property
     def invalid_input(self) -> bool:
-        """
-        Returns the value of _invalid_input attribute.
-        """
+        """Returns the value of _invalid_input attribute."""
         return self._invalid_input
 
     @invalid_input.setter
     def invalid_input(self, val: bool) -> None:
-        """
-        Updates the _invalid_input attribute.
-        """ 
+        """Updates the _invalid_input attribute.""" 
         self._invalid_input = val
     
     @property
     def covering(self) -> Tile:
-        """
-        Returns the tile the player is on.
-        """
+        """Returns the tile the player is on."""
         return self._covering
     
     @covering.setter
     def covering(self, val: Tile) -> None:
-        """
-        Updates the _covering attribute.
-        """
+        """Updates the _covering attribute."""
         self._covering = val
 
     @property
-    def level_reset(self) -> bool:
-        """
-        Returns the _level_reset attribute.
-        """
-        return self._level_reset
-
-    @property
     def locations(self) -> dict[Tile, set[tuple[int, int]]]:
-        """
-        Returns the _locations dictionary containing all locations of tiles.
-        """
+        """Returns the _locations dictionary containing all locations of tiles."""
         return self._locations
 
     @property
     def grid_ui(self) -> list[str]:
-        """TODO: Returns grid representation of the level state."""
+        """Returns ASCII grid representation of the level state."""
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
-        grid_tile = [[Tile('', '', '', TileBehaviour.NONE)]*c for _ in range(r)]
+        grid_tile = [[NONE_TILE]*c for _ in range(r)]
 
         for tile, coord in self._locations.items():
             for i, j in coord:
@@ -189,11 +141,11 @@ class LevelState():
 
     @property
     def grid_ascii(self) -> list[str]:
-        """TODO: Returns grid representation of the level state."""
+        """Returns UI grid representation of the level state."""
         # if self.modified:
         r, c = self._size
         grid = [['']*c for _ in range(r)]
-        grid_tile = [[Tile('', '', '', TileBehaviour.NONE)]*c for _ in range(r)]
+        grid_tile = [[NONE_TILE]*c for _ in range(r)]
 
         for tile, coord in self._locations.items():
             for i, j in coord:
@@ -207,18 +159,13 @@ class LevelState():
     # === END OF GETTERS AND SETTERS FOR THE ATTRIBUTES OF LEVELSTATE ====
 
     def is_valid_item_tile(self) -> bool:
-        """
-        Returns if the player can pick up an item on the current tile
-        """
+        """Returns if the player can pick up an item on the current tile"""
         return self._inventory.behaviour is TileBehaviour.NONE and self._covering.behaviour is TileBehaviour.ITEM
 
 
     def pick_item(self) -> None:
-        """
-        Updates the _inventory attribute based on the current tile.
-        """
+        """Updates the _inventory attribute based on the current tile."""
         player_location = next(iter(self._locations[LARO_CRAFT_TILE]))
-        print(self._covering)
         self._inventory = self._covering
         self._locations[self._inventory].remove(player_location)
         self._locations[EMPTY_TILE].add(player_location)
@@ -347,31 +294,23 @@ class LevelState():
             raise ValueError
    
     def game_lose(self, new_player_location: tuple[int, int]) -> None:
-        """
-        Remove the water tile on new player location and call game_end method
-        """
+        """Remove the water tile on new player location and call game_end method"""
         self._locations[WATER_TILE].remove(new_player_location)
         self._game_end = True
 
     def collect_mushroom(self, new_player_location: tuple[int, int]) -> None:
-        """
-        Removes the retrieved mushroom and increase the _mushroom_collected attribute.
-        """
+        """Removes the retrieved mushroom and increase the _mushroom_collected attribute."""
         self._locations[MUSHROOM_TILE].remove(new_player_location)
         self._mushroom_collected += 1
 
 
     def check_win(self) -> bool:
-        """
-        Returns if the player has won.
-        """
+        """Returns if the player has won."""
         return self._mushroom_collected == self._mushroom_total
 
 
     def set_player_location(self, new_player_location: tuple[int, int]) -> None:
-        """
-        Updates the _locations[LARO_CRAFT_TILE] attribute to new player position.
-        """
+        """Updates the _locations[LARO_CRAFT_TILE] attribute to new player position."""
         if (self._covering.behaviour is not TileBehaviour.ITEM and 
             next(iter(self._locations[LARO_CRAFT_TILE])) not in self._locations[PAVED_TILE]):
             self._locations[EMPTY_TILE].add(next(iter(self._locations[LARO_CRAFT_TILE])))
@@ -381,6 +320,7 @@ class LevelState():
             pass
         self._locations[LARO_CRAFT_TILE] = {new_player_location}
 
+    # === STATE OPERATORS ===
 
     def get_state(self) -> LevelState:
         """Returns a duplicate of the level state."""
@@ -389,6 +329,8 @@ class LevelState():
     def reset_state(self, orig_state: LevelState) -> None:
         """Resets the level state to its original state."""
         self.__dict__ = deepcopy(orig_state.__dict__)
+
+    # === END OF STATE OPERATORS ===
 
     def __repr__(self) -> str:
         """Returns grid-like string representation of the level state separated by endlines."""

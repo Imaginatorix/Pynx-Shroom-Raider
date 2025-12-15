@@ -8,10 +8,10 @@ of `LevelState` objects are consistent
 """
 
 from numbers import Number
-from typing import Any, Iterable, TypeAlias, Union
+from typing import Any, TypeAlias, Union
 from typing import get_args, get_origin
 
-from custom_types import LevelState, Tile, TileBehaviour
+from utils.custom_types import LevelState, Tile, TileBehaviour
 
 # === VALIDATOR TOOLS TO TEST WHETHER FUNCTION PARAMETERS CONFORM TO THE EXPECTED VALUES ===
 
