@@ -18,6 +18,7 @@ from utils.custom_types import LevelState, Tile, TileBehaviour
 
 TypeHint: TypeAlias = Any
 
+
 def format_hint(hint: TypeHint) -> str:
     """
     Format a runtime type hint into a readable string.
@@ -101,16 +102,15 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
             return False
         return True
 
-
     if not _validate_type(value, hint):
         raise TypeError(f"{variable_name} must be {format_hint(hint)}")
 
 
 # == VALIDATE RANGE (INCLUSIVE) ==
-def validate_range(value: int | float, 
-                   minimum: int | float = float("-inf"), 
-                   maximum: int | float = float("inf"), 
-                   variable_name = "value") -> None:
+def validate_range(value: int | float,
+                   minimum: int | float = float("-inf"),
+                   maximum: int | float = float("inf"),
+                   variable_name: str = "value") -> None:
     """
     Validate that a numeric value lies within an inclusive range.
 
@@ -205,7 +205,9 @@ def validate_state_internals(state: LevelState) -> None:
     if mushroom_total > r*c-1:
         raise ValueError("mushroom_total must not exceed the available space in the map")
 
-    MUSHROOM_TILE = [tile for tile in locations if tile.behaviour is TileBehaviour.GOAL][0] # As of now, only one goal is supported
+    # As of now, only one goal is supported
+    MUSHROOM_TILE = [tile for tile in locations if tile.behaviour is TileBehaviour.GOAL][0]
+
     if mushroom_total-mushroom_collected != len(locations[MUSHROOM_TILE]):
         raise ValueError("There is not enough mushroom to end the game.")
 
@@ -435,7 +437,7 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
     if len(CHARACTER_TILES) != 1 and len(locations[CHARACTER_TILE]) != 1:
         print(CHARACTER_TILES, locations[CHARACTER_TILE])
         raise ValueError("Game must have only one player.")
-    
+
     # All cells must be visited only once (except player location)
     r, c = size
     # Populate grid
@@ -453,4 +455,3 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
         raise ValueError("Coordinates must completely fill the grid range")
 
     # Assume solvable as per [highlighted cause I don't wanna link solver as it is still a bit slow]
-

@@ -15,6 +15,7 @@ from utils.custom_types import LevelState
 
 colorama.init(autoreset=True)
 
+
 # === CREATE SCREEN INSTRUCTIONS ===
 def create_instructions(state: LevelState) -> tuple[list[str], list[str]]:
     """
@@ -68,8 +69,11 @@ def create_instructions(state: LevelState) -> tuple[list[str], list[str]]:
         f"[!]{Style.BRIGHT} Reset{Style.RESET_ALL}",
         f"[E]{Style.BRIGHT} Exit{Style.RESET_ALL}",
         "",
-        "No items here" if not state.covering.ui else f"{Fore.GREEN}[P] Pick up {state.covering.ui}{Style.RESET_ALL}" if not state.inventory.ui else f"{Fore.RED}Cannot pick up {state.covering.ui}{Style.RESET_ALL}",
-        "Not holding anything" if not state.inventory.ui else f"{Fore.BLUE}Currently holding {state.inventory.ui}{Style.RESET_ALL}",
+        "No items here" if not state.covering.ui
+        else f"{Fore.GREEN}[P] Pick up {state.covering.ui}{Style.RESET_ALL}" if not state.inventory.ui
+        else f"{Fore.RED}Cannot pick up {state.covering.ui}{Style.RESET_ALL}",
+        "Not holding anything" if not state.inventory.ui
+        else f"{Fore.BLUE}Currently holding {state.inventory.ui}{Style.RESET_ALL}",
         "",
     ]
 
@@ -85,11 +89,13 @@ def create_instructions(state: LevelState) -> tuple[list[str], list[str]]:
     ]
 
     if state.game_end:
-        side_instructions = header+win_message if state.mushroom_collected == state.mushroom_total else header+lose_message
+        side_instructions = (header+win_message if state.mushroom_collected == state.mushroom_total
+                             else header+lose_message)
     else:
         side_instructions = header+description+default_instructions
-    
-    below_instructions = [f"{Fore.RED}{Style.BRIGHT}Invalid input detected{Style.RESET_ALL}"] if state.invalid_input else []
+
+    below_instructions = ([f"{Fore.RED}{Style.BRIGHT}Invalid input detected{Style.RESET_ALL}"]
+                          if state.invalid_input else [])
 
     return side_instructions, below_instructions
 
@@ -103,7 +109,7 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
     map and instructions exceeds the terminal width, they are displayed vertically;
     otherwise, they are displayed side by side. The terminal is cleared before
     printing.
-    
+
     Parameters
     ----------
     state : LevelState
@@ -119,14 +125,16 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
 
     # Function to clear terminal
     def clear():
-       os.system('cls' if os.name == 'nt' else 'clear')
-    
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     # Escape ANSI escape sequences to measure proper length
+
     def visible_width(text):
+
         # Regex to match ANSI escape sequences
         ansi_escape = compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
         stripped = ansi_escape.sub('', text)
+
         return stripped
 
     # Check width of terminal
@@ -134,9 +142,9 @@ def show_screen(state: LevelState, terminal_columns: int = -1) -> str:
         terminal_columns = shutil.get_terminal_size()[0]
 
     # Create what needs to be placed in screen
-    ## The Map
+    # The Map
     map_ui = state.grid_ui
-    ## The Instructions
+    # The Instructions
     side_instructions, below_instructions = create_instructions(state)
 
     # Calculate width to determine screen arrangement
