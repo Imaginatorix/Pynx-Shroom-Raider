@@ -107,9 +107,9 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
 
 
 # == VALIDATE RANGE (INCLUSIVE) ==
-def validate_range(value: float, 
-                   minimum: float = float("-inf"), 
-                   maximum: float = float("inf"), 
+def validate_range(value: int | float, 
+                   minimum: int | float = float("-inf"), 
+                   maximum: int | float = float("inf"), 
                    variable_name = "value") -> None:
     """
     Validate that a numeric value lies within an inclusive range.
@@ -136,7 +136,7 @@ def validate_range(value: float,
         If `value` lies outside the inclusive range
         `[minimum, maximum]`.
     """
-    validate_type(value, Number, "value")
+    validate_type(value, int | float, "value")
     if not (minimum <= value <= maximum):
         raise ValueError(f"{variable_name} must be in between {minimum} and {maximum} (inclusive).")
 
