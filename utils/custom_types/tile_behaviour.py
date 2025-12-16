@@ -1,14 +1,14 @@
 """Enumeration of different behaviors associated with a tile."""
 
 from __future__ import annotations
-
 from enum import Enum, auto
+
 
 # === TILE BEHAVIOUR ===
 class TileBehaviour(Enum):
     """
     Enumeration of different behaviors associated with a tile.
-    
+
     Attributes
     ----------
     DANGER : auto()

@@ -28,7 +28,7 @@ MAP_INSTRUCTIONS_GAP = 5
 SPACE = '\U00003000'
 
 # === TILE DEFINITIONS ===
-## Tile definitions for all elements, player, and item types.
+# Tile definitions for all elements, player, and item types.
 # TILES
 EMPTY_TILE = Tile('Empty', '.', SPACE, TileBehaviour.WALKABLE)
 LARO_CRAFT_TILE = Tile('Laro Craft', 'L', '🧑', TileBehaviour.PLAYER)
@@ -45,7 +45,7 @@ NONE_TILE: Tile = Tile('', '', '', TileBehaviour.NONE)
 
 
 # SET OF ALL VALID TILES
-## The set of all usable tiles.
+# The set of all usable tiles.
 VALID_TILES = {
     EMPTY_TILE,
     LARO_CRAFT_TILE,
@@ -59,7 +59,7 @@ VALID_TILES = {
 }
 
 # PLAINTEXT TO TILE CONVERSION
-## Mapping from plaintext grid characters to their corresponding Tile objects.
+# Mapping from plaintext grid characters to their corresponding Tile objects.
 PLAIN_TO_TILE = {
     tile.plain: tile
     for tile in VALID_TILES
