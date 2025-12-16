@@ -222,7 +222,6 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ```bash
 Pynx-Shroom-Raider/
-├──__pycache__/
 ├── shroom_raider.py                    # Shroom Raider: base game integrated with leaderboard
 ├── utils/                              # Other helper functions
 │   ├── custom_types/                       # Classes and enums used
@@ -243,6 +242,7 @@ Pynx-Shroom-Raider/
 │   ├── conftest.py
 │   └── unit_test_format.py
 │
+├── docs/                              # Sphinx generated docs
 │
 ├── levels/                             # Game levels  
 │   ├── challenge/                             #  The three map designs that our group submit

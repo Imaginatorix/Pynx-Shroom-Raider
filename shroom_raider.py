@@ -1,3 +1,5 @@
+"""Main python file of the game. Flags such as -f, -m, -o, -l may be used (check `README.md` for more details)."""
+
 import argparse
 import colorama
 from utils.parser import parse_level_from_file, save_state

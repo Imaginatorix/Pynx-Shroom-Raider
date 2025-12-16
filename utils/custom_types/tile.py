@@ -1,3 +1,5 @@
+"""Immutable representation of different tiles found in the game."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

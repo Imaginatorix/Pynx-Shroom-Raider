@@ -1,3 +1,5 @@
+"""Encapsulates the current state of a level."""
+
 from __future__ import annotations
 
 from .tile import Tile

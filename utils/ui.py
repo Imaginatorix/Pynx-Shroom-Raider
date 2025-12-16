@@ -66,7 +66,6 @@ def create_instructions(state: LevelState) -> tuple[list[str], list[str]]:
         f"[S]{Style.BRIGHT} Move down{Style.RESET_ALL}",
         f"[D]{Style.BRIGHT} Move right{Style.RESET_ALL}",
         f"[!]{Style.BRIGHT} Reset{Style.RESET_ALL}",
-        f"[E]{Style.BRIGHT} Exit{Style.RESET_ALL}",
         "",
         "No items here" if not state.covering.ui else f"{Fore.GREEN}[P] Pick up {state.covering.ui}{Style.RESET_ALL}" if not state.inventory.ui else f"{Fore.RED}Cannot pick up {state.covering.ui}{Style.RESET_ALL}",
         "Not holding anything" if not state.inventory.ui else f"{Fore.BLUE}Currently holding {state.inventory.ui}{Style.RESET_ALL}",
