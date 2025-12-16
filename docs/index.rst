@@ -6,9 +6,11 @@
 Pynx Shroom Raider documentation
 ================================
 
+Project Overview
+----------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    README
 
