@@ -43,6 +43,9 @@ numpydoc_class_members_toctree = False
 
 autosummary_generate = True
 
+# Silence MyST xref_missing warnings
+myst_warning_is_error = False
+
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
