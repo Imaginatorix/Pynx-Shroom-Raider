@@ -136,6 +136,7 @@ def validate_range(value: float,
         If `value` lies outside the inclusive range
         `[minimum, maximum]`.
     """
+    validate_type(value, Number, "value")
     if not (minimum <= value <= maximum):
         raise ValueError(f"{variable_name} must be in between {minimum} and {maximum} (inclusive).")
 
