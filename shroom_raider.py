@@ -115,7 +115,7 @@ if __name__ == "__main__":
     # if no system input flags -> run default map with no moves and output file
     curr_level = parse_level_from_file(
                 system_input.stage_file
-                if system_input.stage_file else "levels/stage0.txt")
+                if system_input.stage_file else "levels/challenge/stage2.txt")
     moves: str = system_input.string_of_moves
     output_file: str = system_input.output_file
 

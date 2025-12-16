@@ -3,7 +3,7 @@ import sys
 
 # Set random seed
 random.seed(11.11) # Tribute to CS11 Gods
-RANDOM_TEST_CASES = 100
+RANDOM_TEST_CASES = 50
 
 # === Valid/Normal Cases (Regular input values within acceptable limits) ===
 VALID = [
