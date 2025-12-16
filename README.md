@@ -18,32 +18,32 @@ Will you help him traverse the dangerous wilderness and find the cure?
 
 ---
 ## 📘 Table of Contents
-1. [🕹️ User Manual](#️-user-manual)
-    - [🚩 Goal](#-goal)
-    - [🏃 How to Run the Game](#-how-to-run-the-game)
-    - [🎮 Controls](#-controls)
-    - [📶 Leaderboard Mechanics](#-Leaderboard)
-2. [⚙️ Mechanics](#️-mechanics)
-    - [🧱 Tiles and Items Overview](#-tiles-and-items-overview)
+1. [🕹️ User Manual](#️user-manual)
+    - [🚩 Goal](#goal)
+    - [🏃 How to Run the Game](#how-to-run-the-game)
+    - [🎮 Controls](#controls)
+    - [📶 Leaderboard Mechanics](#leaderboard)
+2. [⚙️ Mechanics](#️mechanics)
+    - [🧱 Tiles and Items Overview](#tiles-and-items-overview)
 3. [🧑‍💻 About Codebase](#about-codebase)
-    - [📁 Directory Structure](#-directory-structure)
-4. [🧪 Unit Testing](#-unit-testing)
-    - [🏃 Running the Tests](#-running-the-tests)
-    - [🚨 Test Coverage](#-test-coverage)
-    - [➕ Adding New Tests](#-adding-new-tests)
-5. [📚 References](#-references)
-6. [👥 Team Information](#-team-information)
-7. [⚖️ License & Copyright](#️-license--copyright)
+    - [📁 Directory Structure](#directory-structure)
+4. [🧪 Unit Testing](#unit-testing)
+    - [🏃 Running the Tests](#running-the-tests)
+    - [🚨 Test Coverage](#test-coverage)
+    - [➕ Adding New Tests](#adding-new-tests)
+5. [📚 References](#references)
+6. [👥 Team Information](#team-information)
+7. [⚖️ License & Copyright](#️license--copyright)
 
 ---
 
-## 🕹️ User Manual
+<h2 id="user-manual">🕹️ User Manual</h2>
 
-### 🚩 Goal
+<h3 id="goal">🚩 Goal</h3>
 
 Navigate through a forest grid, collect every mushroom 🍄 while avoiding falling victim to the dangerous external elements (e.g. water 🟦).
 
-### 🏃 How to Run the Game
+<h3 id="how-to-run-the-game">🏃 How to Run the Game</h3>
 
 1. Clone the repository
     ```bash
@@ -100,8 +100,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         python3 shroom_raider.py -l levels/challenge/stage1.txt
         ```
 
-
-### 🎮 Controls
+<h3 id="controls">🎮 Controls</h3>
 
 <table>
     <tr>
@@ -140,16 +139,16 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 - Invalid input does nothing and re-prompts you.
 
 ---
-### 📶 Leaderboard
+<h3 id="leaderboard">📶 Leaderboard</h3>
 - The leaderboard ranks the `top 10 users` based on the **number of moves** done per stage file. 
 - After collecting all mushrooms, the number of moves the player used to get all the mushrooms. The move count will reset when the player inputs `!` to restart the level.
 - The leaderboard will be shown directly after winning the game.
 - The leaderboard can also be shown using the `-l` flag when running the game ([see instructions](#-Leaderboard))
 - Stored in a .json file locally after cloning the repository.
 
-## ⚙️ Mechanics
+<h2 id="mechanics">⚙️ Mechanics</h2>
 
-### 🧱 Tiles and Items Overview
+<h3 id="tiles-and-items-overview">🧱 Tiles and Items Overview</h3>
 
 <table>
     <tr>
@@ -218,7 +217,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 <h2 id="about-codebase">🧑‍💻 About Codebase</h2>
 
-### 📁 Directory Structure
+<h3 id="directory-structure">📁 Directory Structure</h3>
 
 ```bash
 Pynx-Shroom-Raider/
@@ -256,19 +255,17 @@ Pynx-Shroom-Raider/
 ```
 
 
-
-## 🧪 Unit Testing
+<h2 id="unit-testing">🧪 Unit Testing</h2>
 
 Unit tests are written using `pytest`, as required.
 
-### 🏃 Running the Tests
+<h2 id="running-the-tests">🏃 Running the Tests</h2>
 
 To execute all tests, run:
 ```bash
 pytest
 ```
-
-### 🚨 Test Coverage
+<h3 id="unit-testing">🚨 Test Coverage</h3>
 
 <table>
     <tr>
@@ -295,18 +292,16 @@ The tests:
 - Includes valid and invalid input handling.
 - Simulates multiple endgame states.
 - And other criteria for thoroughness
-
-### ➕ Adding New Tests
-
+<h3 id="adding-new-tests">➕ Adding New Tests</h3>
 1. Modify `tests/test_custom/test_user.py` in the function `test_functionality`.
 2. Include all necessary `assert`s in different function so long as it starts with `test_`.
 3. Run `pytest` again to verify!
 
 ---
+<h2 id="references">📚 References</h2>
 
-## 📚 References
+<h3 id="core-documentation">Core Documentation</h3>
 
-### Core Documentation
 - [Python Documentation](https://docs.python.org/3/)
 - [Pytest Framework Documentation](https://docs.pytest.org/en/stable/)
 - [Emojipedia](https://emojipedia.org/)
@@ -315,20 +310,23 @@ The tests:
 - [Python `random` Module](https://docs.python.org/3/library/random.html)
 - [Python `string` Module](https://docs.python.org/3/library/string.html)
 
-### Style Guides & Documentation Standards
+<h3 id="style-guides-&-documentation-standards">Style Guides & Documentation Standards</h3>
+
 - [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
 - [PEP 8 Checker (PDF)](https://app.readthedocs.org/projects/pep8/downloads/pdf/release-1.7.x/)
 - [Python Docstrings Guide (DataCamp)](https://www.datacamp.com/tutorial/docstrings-python)
 - [NumPy Docstring Standard](https://numpydoc.readthedocs.io/en/latest/format.html)
 - [Sphinx Documentation Tutorial (YouTube)](https://www.youtube.com/watch?v=nZttMg_n_s0)
 
-### Pytest & Testing Resources
+<h3 id="core-documentation">Pytest & Testing Resources</h3>
+
 - [Pytest: Generate Tests vs `mark.parametrize`](https://pytest-with-eric.com/introduction/pytest-generate-tests/#Comparing-pytest-mark-parametrize-and-pytest-generate-tests)
 - [Limiting Maximum Runtime for Unit Tests](https://stackoverflow.com/questions/19527320/how-can-i-limit-the-maximum-running-time-for-a-unit-)
 
-### Stack Overflow Discussions
+<h3>Stack Overflow Discussions</h3>
 
-#### Terminal & Console Handling
+<h4>Terminal & Console Handling</h4>
+
 - [Get Linux Console Window Width in Python](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python)
 - [Detect Text Display Width Before Printing (curses)](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
 - [Programmatically Change Console Font Size](https://stackoverflow.com/questions/52336257/python-programmatically-change-console-font-size)
@@ -345,7 +343,7 @@ The tests:
 - [Ty Taylor — *The Art and Science of Procedural Puzzle Generation*](https://www.youtube.com/watch?v=Mssc0S8GeFI)
 - [Procedural Generation of Sokoban Levels](https://www.youtube.com/watch?v=ljj6rAaM4A8)
 
-## 👥 Team Information
+<h2 id="team-information">👥 Team Information</h2>
 
 **Course:** CS 11 - Introduction to Computer Science 1
 
@@ -360,6 +358,6 @@ The tests:
 - 👤 Domingo, Ericson
 - 👤 Jumawan, Edward Isaac
 
-## ⚖️ License & Copyright
+<h2 id="license--copyright">⚖️ License & Copyright</h2>
 
 See the [LICENSE](LICENSE) file for license rights and limitations (MIT).
