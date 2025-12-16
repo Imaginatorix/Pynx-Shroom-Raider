@@ -7,7 +7,6 @@ It includes:
 of `LevelState` objects are consistent
 """
 
-from numbers import Number
 from typing import Any, TypeAlias, Union
 from typing import get_args, get_origin
 
@@ -82,7 +81,7 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
 
         # list[T], set[T]
         if origin in (list, set):
-            if not isinstance(value, origin):
+            if not isinstance(value, list) and not isinstance(value, set):
                 return False
             (elem_type,) = args
             return all(_validate_type(v, elem_type) for v in value)
@@ -108,7 +107,10 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
 
 
 # == VALIDATE RANGE (INCLUSIVE) ==
-def validate_range(value: Number, minimum: Number = float("-inf"), maximum: Number = float("inf"), variable_name="value"):
+def validate_range(value: float, 
+                   minimum: float = float("-inf"), 
+                   maximum: float = float("inf"), 
+                   variable_name = "value") -> None:
     """
     Validate that a numeric value lies within an inclusive range.
 

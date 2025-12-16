@@ -45,7 +45,7 @@ def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
     """
     validate_type(grid, list[str], "grid")
 
-    locations = {
+    locations: dict[Tile, set] = {
         tile: set()
         for tile in VALID_TILES
     }
