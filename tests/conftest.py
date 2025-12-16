@@ -28,7 +28,6 @@ PARAMS = {
     "huge_size": size_data.HUGE,
     "type_errors_size": size_data.TYPE_ERRORS,
     "value_errors_size": size_data.VALUE_ERRORS,
-    # STATE
 }
 
 

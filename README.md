@@ -308,12 +308,44 @@ The tests:
 
 ## 📚 References
 
-The following resources were used in creating this project:
+### Core Documentation
 - [Python Documentation](https://docs.python.org/3/)
-- [Pytest Framework Docs](https://docs.pytest.org/en/stable/)
+- [Pytest Framework Documentation](https://docs.pytest.org/en/stable/)
 - [Emojipedia](https://emojipedia.org/)
-- Stack Overflow discussions on:
-    - String-Terminal Interaction Information [1](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python) [2](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
+- [Pillow (PIL.Image) Documentation](https://pillow.readthedocs.io/en/stable/reference/Image.html#module-PIL.Image)
+- [Python `calendar` Module](https://docs.python.org/3.14/library/calendar.html#module-calendar)
+- [Python `random` Module](https://docs.python.org/3/library/random.html)
+- [Python `string` Module](https://docs.python.org/3/library/string.html)
+
+### Style Guides & Documentation Standards
+- [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
+- [PEP 8 Checker (PDF)](https://app.readthedocs.org/projects/pep8/downloads/pdf/release-1.7.x/)
+- [Python Docstrings Guide (DataCamp)](https://www.datacamp.com/tutorial/docstrings-python)
+- [NumPy Docstring Standard](https://numpydoc.readthedocs.io/en/latest/format.html)
+- [Sphinx Documentation Tutorial (YouTube)](https://www.youtube.com/watch?v=nZttMg_n_s0)
+
+### Pytest & Testing Resources
+- [Pytest: Generate Tests vs `mark.parametrize`](https://pytest-with-eric.com/introduction/pytest-generate-tests/#Comparing-pytest-mark-parametrize-and-pytest-generate-tests)
+- [Limiting Maximum Runtime for Unit Tests](https://stackoverflow.com/questions/19527320/how-can-i-limit-the-maximum-running-time-for-a-unit-)
+
+### Stack Overflow Discussions
+
+#### Terminal & Console Handling
+- [Get Linux Console Window Width in Python](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python)
+- [Detect Text Display Width Before Printing (curses)](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
+- [Programmatically Change Console Font Size](https://stackoverflow.com/questions/52336257/python-programmatically-change-console-font-size)
+- [Resize the Terminal with Python](https://stackoverflow.com/questions/6418678/resize-the-terminal-with-python)
+- [Detect Window Resize in Python](https://stackoverflow.com/questions/65310175/how-to-detect-window-resize-in-python)
+
+#### Performance & Language Details
+- [Most Negative Value for Python Integers](https://stackoverflow.com/questions/4241832/most-negative-value-for-python)
+- [`deepcopy` Performance Issues](https://stackoverflow.com/questions/24756712/deepcopy-is-extremely-slow)
+
+### Algorithms & Procedural Generation
+
+#### Talks & Videos
+- [Ty Taylor — *The Art and Science of Procedural Puzzle Generation*](https://www.youtube.com/watch?v=Mssc0S8GeFI)
+- [Procedural Generation of Sokoban Levels](https://www.youtube.com/watch?v=ljj6rAaM4A8)
 
 ## 👥 Team Information
 
