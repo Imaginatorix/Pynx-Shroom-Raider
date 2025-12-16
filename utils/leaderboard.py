@@ -35,7 +35,6 @@ updateleaderboard(filename: str, move_count: int, name: str = "") -> LevelLeader
 import json
 import os
 from dataclasses import dataclass, asdict
-from dacite import from_dict
 from colorama import Style, Fore, init
 
 
@@ -70,7 +69,7 @@ class LevelLeaderboardData:
     """
     levels: dict
 
-    def __init__(self, levels: dict = None):
+    def __init__(self, levels: dict = {}):
         """Initialize LevelLeaderboardData with optional level data.
 
         Paramater:
@@ -81,7 +80,7 @@ class LevelLeaderboardData:
 
 
     @classmethod
-    def initial_data(cls, leaderboard_data: dict = None) -> "LevelLeaderboardData":
+    def initial_data(cls, leaderboard_data: dict = {}) -> "LevelLeaderboardData":
         """Create LevelLeaderboardData from a dictionary of leaderboard info.
 
         Parameter
@@ -208,7 +207,7 @@ def showleaderboard(filename: str, name: str = "") -> LevelLeaderboardData:
     return leaderboard
 
 
-def updateleaderboard(filename: str, move_count: int, name: str = "") -> None:
+def updateleaderboard(filename: str, move_count: int, name: str = "") -> LevelLeaderboardData:
     """Update the leaderboard for a given level and save to JSON.
 
     -Loads the existing leaderboard
