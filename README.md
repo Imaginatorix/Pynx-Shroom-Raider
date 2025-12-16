@@ -1,8 +1,4 @@
 <!-- Banner here -->
-<a href="docs/_build/html/index.html" target="_blank">
-  <h3>📖 Open Sphinx Documentation (HTML)</h3>
-</a>
-
 # 🍄 Pynx-Shroom-Raider
 
 A terminal-based adventure game written in **Python 3**, where you play as **Laro Craft**,  a passionate mushroom collector and daring adventurer exploring a mysterious forest while avoiding dangerous elements that may come his way.
@@ -16,6 +12,10 @@ No one knows what this mysterious illness might be, but…
 Legends whisper of a cure: the 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂𝐓𝐈𝐎𝐍...
 
 Will you help him traverse the dangerous wilderness and find the cure?
+
+---
+
+### [📖 Open Sphinx Documentation (HTML)](docs/_build/html/index.html)
 
 <!-- **🫣 Sneak Peek** -->
 <!-- <video src=''></video> -->
