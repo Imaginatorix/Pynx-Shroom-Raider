@@ -15,6 +15,7 @@ from utils.custom_types import LevelState, Tile
 from utils.settings import MUSHROOM_TILE, NONE_TILE, PLAIN_TO_TILE, VALID_TILES
 from utils.validator import validate_type, validate_locations, validate_size
 
+
 # === GET THE LOCATIONS OF THE GAME ELEMENTS ===
 def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
     """
@@ -45,7 +46,7 @@ def get_tile_locations(grid: list[str]) -> dict[Tile, set]:
     """
     validate_type(grid, list[str], "grid")
 
-    locations = {
+    locations: dict[Tile, set] = {
         tile: set()
         for tile in VALID_TILES
     }
@@ -96,7 +97,7 @@ def parse_level_from_file(filename: str) -> LevelState:
     IOError
         If the file cannot be opened or read.
     """
-    
+
     with open(filename, 'r') as f:
         lines = f.readlines()
 
@@ -106,7 +107,7 @@ def parse_level_from_file(filename: str) -> LevelState:
         # Get the rest line of .txt file
         grid = lines[1:]
 
-    # Get the size as the row and column 
+    # Get the size as the row and column
     r, c = map(int, stage_size.split())
     size = (r, c)
     validate_size(size)
@@ -141,7 +142,7 @@ def save_state(filename: str, state: LevelState, has_cleared: str) -> None:
     None
         This function does not return a value.
     """
-    
+
     size = state.size
     grid = state.grid_ascii
 

@@ -7,7 +7,6 @@ It includes:
 of `LevelState` objects are consistent
 """
 
-from numbers import Number
 from typing import Any, TypeAlias, Union
 from typing import get_args, get_origin
 
@@ -18,6 +17,7 @@ from utils.custom_types import LevelState, Tile, TileBehaviour
 # === ATOMIC VALIDATORS (REUSABLE) ===
 
 TypeHint: TypeAlias = Any
+
 
 def format_hint(hint: TypeHint) -> str:
     """
@@ -82,7 +82,7 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
 
         # list[T], set[T]
         if origin in (list, set):
-            if not isinstance(value, origin):
+            if not isinstance(value, list) and not isinstance(value, set):
                 return False
             (elem_type,) = args
             return all(_validate_type(v, elem_type) for v in value)
@@ -102,13 +102,15 @@ def validate_type(value: Any, hint: TypeHint, variable_name: str = "value") -> N
             return False
         return True
 
-
     if not _validate_type(value, hint):
         raise TypeError(f"{variable_name} must be {format_hint(hint)}")
 
 
 # == VALIDATE RANGE (INCLUSIVE) ==
-def validate_range(value: Number, minimum: Number = float("-inf"), maximum: Number = float("inf"), variable_name="value"):
+def validate_range(value: int | float,
+                   minimum: int | float = float("-inf"),
+                   maximum: int | float = float("inf"),
+                   variable_name: str = "value") -> None:
     """
     Validate that a numeric value lies within an inclusive range.
 
@@ -134,6 +136,7 @@ def validate_range(value: Number, minimum: Number = float("-inf"), maximum: Numb
         If `value` lies outside the inclusive range
         `[minimum, maximum]`.
     """
+    validate_type(value, int | float, "value")
     if not (minimum <= value <= maximum):
         raise ValueError(f"{variable_name} must be in between {minimum} and {maximum} (inclusive).")
 
@@ -202,7 +205,9 @@ def validate_state_internals(state: LevelState) -> None:
     if mushroom_total > r*c-1:
         raise ValueError("mushroom_total must not exceed the available space in the map")
 
-    MUSHROOM_TILE = [tile for tile in locations if tile.behaviour is TileBehaviour.GOAL][0] # As of now, only one goal is supported
+    # As of now, only one goal is supported
+    MUSHROOM_TILE = [tile for tile in locations if tile.behaviour is TileBehaviour.GOAL][0]
+
     if mushroom_total-mushroom_collected != len(locations[MUSHROOM_TILE]):
         raise ValueError("There is not enough mushroom to end the game.")
 
@@ -432,7 +437,7 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
     if len(CHARACTER_TILES) != 1 and len(locations[CHARACTER_TILE]) != 1:
         print(CHARACTER_TILES, locations[CHARACTER_TILE])
         raise ValueError("Game must have only one player.")
-    
+
     # All cells must be visited only once (except player location)
     r, c = size
     # Populate grid
@@ -450,4 +455,3 @@ def validate_locations(size: tuple[int, int], locations: dict[Tile, set[tuple[in
         raise ValueError("Coordinates must completely fill the grid range")
 
     # Assume solvable as per [highlighted cause I don't wanna link solver as it is still a bit slow]
-

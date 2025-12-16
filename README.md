@@ -13,7 +13,11 @@ Legends whisper of a cure: the 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂
 
 Will you help him traverse the dangerous wilderness and find the cure?
 
-**🫣 Sneak Peek**
+---
+
+### [📖 Open Sphinx Documentation (HTML)](docs/_build/html/index.html)
+
+<!-- **🫣 Sneak Peek** -->
 <!-- <video src=''></video> -->
 
 ---
@@ -22,19 +26,18 @@ Will you help him traverse the dangerous wilderness and find the cure?
     - [🚩 Goal](#-goal)
     - [🏃 How to Run the Game](#-how-to-run-the-game)
     - [🎮 Controls](#-controls)
+    - [📶 Leaderboard Mechanics](#-Leaderboard)
 2. [⚙️ Mechanics](#️-mechanics)
     - [🧱 Tiles and Items Overview](#-tiles-and-items-overview)
 3. [🧑‍💻 About Codebase](#about-codebase)
     - [📁 Directory Structure](#-directory-structure)
-    - [🤔 How It Works](#-how-it-works)
 4. [🧪 Unit Testing](#-unit-testing)
     - [🏃 Running the Tests](#-running-the-tests)
     - [🚨 Test Coverage](#-test-coverage)
     - [➕ Adding New Tests](#-adding-new-tests)
-5. [⭐ Bonus Features](#-bonus-features)
-6. [📚 References](#-references)
-7. [👥 Team Information](#-team-information)
-8. [⚖️ License & Copyright](#️-license--copyright)
+5. [📚 References](#-references)
+6. [👥 Team Information](#-team-information)
+7. [⚖️ License & Copyright](#️-license--copyright)
 
 ---
 
@@ -71,7 +74,7 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         ```
         Example
         ```bash
-        python3 shroom_raider.py -f levels/fall/stage1.txt
+        python3 shroom_raider.py -f levels/challenge/stage1.txt
         ```
 
     - **Option 3: Automated Mode**
@@ -82,13 +85,25 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
         ```
         Example
         ```bash
-        python3 shroom_raider.py -f levels/fall/stage1.txt -m "DDWW" -o result.txt
+        python3 shroom_raider.py -f levels/challenge/stage1.txt -m "DDWW" -o result.txt
         ```
 
         This command will:
         - Simulate the sequence of moves (right, right, up, up),
         - Produce no console output,
         - Write the final state and result (`CLEAR` or `NO CLEAR`) to `result.txt`.
+
+    - **Option 4: Leaderboard Mode**
+
+        Show the leaderboard depending on the stage file given:
+        ```bash
+        python3 shroom_raider.py -l <stage_file>
+        ```
+        Example
+        ```bash
+        python3 shroom_raider.py -l levels/challenge/stage1.txt
+        ```
+
 
 ### 🎮 Controls
 
@@ -129,6 +144,12 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 - Invalid input does nothing and re-prompts you.
 
 ---
+### 📶 Leaderboard
+- The leaderboard ranks the `top 10 users` based on the **number of moves** done per stage file. 
+- After collecting all mushrooms, the number of moves the player used to get all the mushrooms. The move count will reset when the player inputs `!` to restart the level.
+- The leaderboard will be shown directly after winning the game.
+- The leaderboard can also be shown using the `-l` flag when running the game ([see instructions](#-Leaderboard))
+- Stored in a .json file locally after cloning the repository.
 
 ## ⚙️ Mechanics
 
@@ -205,78 +226,40 @@ Navigate through a forest grid, collect every mushroom 🍄 while avoiding falli
 
 ```bash
 Pynx-Shroom-Raider/
-├──__pycache__/
-├── generated_maps/ 
-├── shroom_raider.py                    # Shroom Raider: base game points
-├── shroom_raider_extra.py              # Shroom Raider: Additional Feature points
+├── shroom_raider.py                    # Shroom Raider: base game integrated with leaderboard
 ├── utils/                              # Other helper functions
-│   ├── algorithm.py                        # Algorithm to find optimal solution
-│   ├── game_progress.py                    # Game Level Progression 
-│   ├── movement_extra.py                   # Shroom Raider: Advanced Movement Features
+│   ├── custom_types/                       # Classes and enums used
+│   ├── leaderboard.py                      # Leaderboard logic 
 │   ├── movement.py                         # Shroom Raider: Core Movement Mechanics
 │   ├── parser.py                           # Game Parsing System 
 │   ├── settings.py                         # All global variables
-│   ├── storyline.py                        # Shroom Raider Storyline
 │   ├── ui.py                               # All screen and UI management
-│   └── validator.py                        #
+│   └── validator.py                        # Internal validation 
 │
 │
 ├── tests/                              # Testing Game Function with Pytest
-│   ├── __pycache__/
-│   ├── test_movement/
+│   ├── data_generator/
+│   ├── test_custom/
 │   ├── test_parser/
 │   ├── test_shroom_raider/
-│   ├── test_ui/
-│   └── test_validator/
+│   ├── test_validator/
+│   ├── conftest.py
+│   └── unit_test_format.py
+│
+├── docs/                               # Sphinx generated docs
 │
 ├── levels/                             # Game levels  
-│   └── fall/                               # FALL  SEASON : Third season of the game
-│       ├── stage1.txt
-│       ├── stage2.txt
-│       ├── stage3.txt
-│       ├── stage4.txt
-│       ├── stage5.txt
-│       └── stage6.txt
-│   └── spring/                             # SPRING  SEASON : First season of the game
-│       ├── stage1.txt
-│       ├── stage2.txt
-│       ├── stage3.txt
-│       ├── stage4.txt
-│       ├── stage5.txt
-│       └── stage6.txt
-│   └── summer/                             # SUMMER  SEASON : Second season of the game
-│       ├── stage1.txt
-│       ├── stage2.txt
-│       ├── stage3.txt
-│       ├── stage4.txt
-│       ├── stage5.txt
-│       └── stage6.txt
-│   └── temple/                             # TEMPLE STAGE : Final level of the game
-│       ├── stage1.txt
-│       ├── stage2.txt
-│       ├── stage3.txt
-│       ├── stage4.txt
-│       ├── stage5.txt
-│       └── stage6.txt
-│   └── winter/                             # WINTER  SEASON : fourth season of the game
-│       ├── stage1.txt
-│       ├── stage2.txt
-│       ├── stage3.txt
-│       ├── stage4.txt
-│       ├── stage5.txt
-│       └── stage6.txt
-│
+│   ├── challenge/                             #  The three map designs that our group submit
+│   │   ├── stage1.txt
+│   │   ├── stage2.txt
+│   │   └── stage3.txt
+│   └── stage0.py                              #  Default map for the game
 ├── requirements.txt                    
 ├── LICENSE
 └── README.md
 ```
 
-### 🤔 How It Works
 
-<!-- ![Flowchart](./assets/flowchart.drawio.svg) -->
-<!-- How your algorithm works and how that step is implemented -->
-
----
 
 ## 🧪 Unit Testing
 
@@ -297,17 +280,9 @@ pytest
         <th>Description</th>
     </tr>
     <tr>
-        <td><code>test_movement.py</code></td>
-        <td>Test the user input and fire spread mechanics.</td>
-    </tr>
-    <tr>
         <td><code>test_parser.py</code></td>
         <td>Test the level information of the map, test the locations, </br>
         and test the parse output.</td>
-    </tr>
-    <tr>
-        <td><code>test_ui.py</code></td>
-        <td>Test the game ui.</td>
     </tr>
     <tr>
         <td><code>test_shroom_raider.py</code></td>
@@ -327,114 +302,52 @@ The tests:
 
 ### ➕ Adding New Tests
 
-1. Modify `test_custom/test_user.py` in the function `test_functionality`.
+1. Modify `tests/test_custom/test_user.py` in the function `test_functionality`.
 2. Include all necessary `assert`s in different function so long as it starts with `test_`.
 3. Run `pytest` again to verify!
 
 ---
 
-## ⭐ Bonus Features
-
-<table>
-    <tr>
-        <th>Feature</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td style="text-align: left; vertical-align: top;">Main Menu</td>
-        <td>A central hub where players can start the game. </br> 
-        The panel includes options to log in, sign up, play locally, or exit.</td>
-    </tr>
-    <tr>
-        <td>Log in and Sign up for player</td>
-        <td>Allows users to create accounts or access existing ones.</td>
-    </tr>
-    <tr>
-        <td style="text-align: left; vertical-align: top;">Ability to exit a level via the command ("e").</td>
-        <td>Allows players to quit the level at any </br>
-        time using a specific command ("e").</td>
-    </tr>
-    <tr>
-        <ul>
-        <td style="text-align: left; vertical-align: top;">Playmode</td>
-        <td>Offers different gameplay options: </br>
-        <li><b>Levels </b> - Can be played without signing in.</li>
-            <ul>
-            <li><b>Story</b> - Start from the beginning of the game’s storyline.</li>
-            <li><b>Random Map</b> - Play through a random map.</li>
-            <li><b>Unlocked Levels</b> - Play through the levels you've done in the story. </li> 
-            </ul> 
-        <li><b>Online Battle</b>  Play multiplayer matches online: </li>
-            <ul>
-            <li><b>Ranked Match</b> - Competitively play agains other players.</li>
-            <li><b>Unranked Match</b> - Casually play agains other players.</li>
-            </ul>
-        </ul>
-        </td>
-    </tr>
-    <tr>
-        <td style="text-align: left; vertical-align: top;">Leaderboard for competitive rank</td>
-        <td>Tracks the highest ranking players</br>
-    </tr>
-    <tr>
-        <td style="text-align: left; vertical-align: top;">Leaderboard for lowest moves per story level</td>
-        <td>Tracks the players with lowest moves in each story level</br>
-    </tr>
-    <tr>
-        <ul>
-        <td style="text-align: left; vertical-align: top;">Persistent leaderboard</td>
-        <td><b>Both leaderboards tracks and displays player scores across sessions.</b>
-        <li>Tracks level leaderboards across different seasons.</li>
-        <li>Stores the moves used to complete each level.</li>
-        </td>
-        </ul>
-    </tr>
-    <tr>
-        <td style="text-align: left; vertical-align: top;">Game Settings</td>
-        <td>Lets players adjust game controls preference </br>
-        (Auto input or manual input)
-        <li>Auto input - removes the need to click enter per input</li>
-        <li>Manual input - have to use enter to input moves.</li>
-        </td>
-    </tr>
-    <tr>
-        <td>Storyline</td>
-        <td>Laro’s game narrative and objectives.</td>
-    </tr>
-    <tr>
-        <td>Laro Storyline</td>
-        <td>Something</td>
-    </tr>
-    <tr>
-        <td>Fancier user interface</td>
-        <td>
-            <li>Menu inputs are done through the survey module</li>
-            <li>Loading animation while waiting for the connection to firebase</li>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Usage of Firebase Database
-        </td>
-        <td>
-        <li>Allows user accounts</li>
-        <li>Keeps track of logged in user's progress</li>
-        <li>Handles when internet is not available</li>
-        <li>Keeps track of the rank leaderboard</li>
-        <li>Keeps track of user's > rank, story progress, game input preference</li>
-        <li>Allows account deletion</li>
-        </td>
-    </tr>
-</table>
-
 ## 📚 References
 
-The following resources were used in creating this project:
+### Core Documentation
 - [Python Documentation](https://docs.python.org/3/)
-- [Pytest Framework Docs](https://docs.pytest.org/en/stable/)
+- [Pytest Framework Documentation](https://docs.pytest.org/en/stable/)
 - [Emojipedia](https://emojipedia.org/)
-- Stack Overflow discussions on:
-    - String-Terminal Interaction Information [1](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python) [2](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
+- [Pillow (PIL.Image) Documentation](https://pillow.readthedocs.io/en/stable/reference/Image.html#module-PIL.Image)
+- [Python `calendar` Module](https://docs.python.org/3.14/library/calendar.html#module-calendar)
+- [Python `random` Module](https://docs.python.org/3/library/random.html)
+- [Python `string` Module](https://docs.python.org/3/library/string.html)
+
+### Style Guides & Documentation Standards
+- [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
+- [PEP 8 Checker (PDF)](https://app.readthedocs.org/projects/pep8/downloads/pdf/release-1.7.x/)
+- [Python Docstrings Guide (DataCamp)](https://www.datacamp.com/tutorial/docstrings-python)
+- [NumPy Docstring Standard](https://numpydoc.readthedocs.io/en/latest/format.html)
+- [Sphinx Documentation Tutorial (YouTube)](https://www.youtube.com/watch?v=nZttMg_n_s0)
+
+### Pytest & Testing Resources
+- [Pytest: Generate Tests vs `mark.parametrize`](https://pytest-with-eric.com/introduction/pytest-generate-tests/#Comparing-pytest-mark-parametrize-and-pytest-generate-tests)
+- [Limiting Maximum Runtime for Unit Tests](https://stackoverflow.com/questions/19527320/how-can-i-limit-the-maximum-running-time-for-a-unit-)
+
+### Stack Overflow Discussions
+
+#### Terminal & Console Handling
+- [Get Linux Console Window Width in Python](https://stackoverflow.com/questions/566746/how-to-get-linux-console-window-width-in-python)
+- [Detect Text Display Width Before Printing (curses)](https://stackoverflow.com/questions/70573954/python-curses-detect-texts-display-width-before-printing-it)
+- [Programmatically Change Console Font Size](https://stackoverflow.com/questions/52336257/python-programmatically-change-console-font-size)
+- [Resize the Terminal with Python](https://stackoverflow.com/questions/6418678/resize-the-terminal-with-python)
+- [Detect Window Resize in Python](https://stackoverflow.com/questions/65310175/how-to-detect-window-resize-in-python)
+
+#### Performance & Language Details
+- [Most Negative Value for Python Integers](https://stackoverflow.com/questions/4241832/most-negative-value-for-python)
+- [`deepcopy` Performance Issues](https://stackoverflow.com/questions/24756712/deepcopy-is-extremely-slow)
+
+### Algorithms & Procedural Generation
+
+#### Talks & Videos
+- [Ty Taylor — *The Art and Science of Procedural Puzzle Generation*](https://www.youtube.com/watch?v=Mssc0S8GeFI)
+- [Procedural Generation of Sokoban Levels](https://www.youtube.com/watch?v=ljj6rAaM4A8)
 
 ## 👥 Team Information
 

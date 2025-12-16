@@ -1,3 +1,5 @@
+"""Encapsulates the current state of a level."""
+
 from __future__ import annotations
 
 from .tile import Tile
@@ -15,8 +17,7 @@ class LevelState():
                  inventory: Tile,
                  mushroom_collected: int = 0,
                  game_end: bool = False,
-                 invalid_input: bool = False,
-                ) -> None:
+                 invalid_input: bool = False) -> None:
         """
         Encapsulates the current state of a level.
 
@@ -97,7 +98,7 @@ class LevelState():
     def game_end(self) -> bool:
         """Returns if the game has ended."""
         return self._game_end
-    
+
     @game_end.setter
     def game_end(self, val: bool) -> None:
         """Updates the _game_end attribute."""
@@ -115,14 +116,14 @@ class LevelState():
 
     @invalid_input.setter
     def invalid_input(self, val: bool) -> None:
-        """Updates the _invalid_input attribute.""" 
+        """Updates the _invalid_input attribute."""
         self._invalid_input = val
-    
+
     @property
     def covering(self) -> Tile:
         """Returns the tile the player is on."""
         return self._covering
-    
+
     @covering.setter
     def covering(self, val: Tile) -> None:
         """Updates the _covering attribute."""
@@ -144,10 +145,12 @@ class LevelState():
         for tile, coord in self._locations.items():
             for i, j in coord:
                 # Set cell to higher priority (for now, only character)
-                if not grid[i][j] or self.TILE_DISPLAY_PRIORITY[tile.behaviour] > self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]:
+                if (not grid[i][j] or
+                        self.TILE_DISPLAY_PRIORITY[tile.behaviour] >
+                        self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]):
                     grid_tile[i][j] = tile
                     grid[i][j] = tile.ui
-        
+
         return [''.join(row) for row in grid]
 
     @property
@@ -161,7 +164,9 @@ class LevelState():
         for tile, coord in self._locations.items():
             for i, j in coord:
                 # Set cell to higher priority (for now, only character)
-                if not grid[i][j] or self.TILE_DISPLAY_PRIORITY[tile.behaviour] > self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]:
+                if (not grid[i][j] or
+                        self.TILE_DISPLAY_PRIORITY[tile.behaviour] >
+                        self.TILE_DISPLAY_PRIORITY[grid_tile[i][j].behaviour]):
                     grid_tile[i][j] = tile
                     grid[i][j] = tile.plain
 
@@ -173,7 +178,6 @@ class LevelState():
         """Returns if the player can pick up an item on the current tile"""
         return self._inventory.behaviour is TileBehaviour.NONE and self._covering.behaviour is TileBehaviour.ITEM
 
-
     def pick_item(self) -> None:
         """Updates the _inventory attribute based on the current tile."""
         player_location = next(iter(self._locations[self.LARO_CRAFT_TILE]))
@@ -182,45 +186,45 @@ class LevelState():
         self._locations[self._inventory].remove(player_location)
         self._locations[self.EMPTY_TILE].add(player_location)
 
-
-    def next_player_location(self, action: tuple[int,int]) -> tuple[tuple[int, int], Tile]:
+    def next_player_location(self, action: tuple[int, int]) -> tuple[tuple[int, int], Tile]:
         """
         Return new player location and tile.
 
         Parameters
         ----------
-        action: tuple[int, int] 
+        action: tuple[int, int]
             Movement of the player
 
         Returns
         -------
         tuple[tuple[int, int], Tile]
             New player position and the next tile the player is on after moving.
-        """ 
-        new_location = next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0], next(iter(self._locations[self.LARO_CRAFT_TILE]))[1] + action[1]
+        """
+        new_location = (next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0],
+                        next(iter(self._locations[self.LARO_CRAFT_TILE]))[1] + action[1])
         new_tile = self.EMPTY_TILE
         for name, s in self._locations.items():
             if new_location in s and name is not self.LARO_CRAFT_TILE:
-                 new_tile = name
+                new_tile = name
         return new_location, new_tile
 
-
-    def is_valid_movement(self, action: tuple[int,int]) -> bool:
+    def is_valid_movement(self, action: tuple[int, int]) -> bool:
         """
         Check if movement is possible.
 
         Parameters
         ----------
-        action: tuple[int, int] 
+        action: tuple[int, int]
             Movement of the player
 
         Returns
         -------
         bool
             True if movement is possible
-        """ 
+        """
         new_player_location, next_tile = self.next_player_location(action)
-        if not (0<=new_player_location[0]<self._size[0] and 0<=new_player_location[1]<self._size[1]):
+        if not (0 <= new_player_location[0] < self._size[0] and
+                0 <= new_player_location[1] < self._size[1]):
             return False
         elif next_tile.behaviour is not TileBehaviour.OBSTACLE:
             return True
@@ -228,7 +232,6 @@ class LevelState():
             return True
         else:
             return False
-    
 
     def use_axe(self, new_player_location: tuple[int, int]) -> None:
         """
@@ -236,13 +239,12 @@ class LevelState():
 
         Parameters
         ----------
-        new_player_location: tuple[int, int] 
+        new_player_location: tuple[int, int]
             New position of the player
         """
         self._locations[self.TREE_TILE].remove(new_player_location)
         self._inventory = self.NONE_TILE
         self._covering = self.NONE_TILE
-
 
     def use_fire(self, new_player_location: tuple[int, int]) -> None:
         """
@@ -250,12 +252,12 @@ class LevelState():
 
         Parameters
         ----------
-        new_player_location: tuple[int, int] 
+        new_player_location: tuple[int, int]
             New position of the player
         """
         self._inventory = self.NONE_TILE
         self._covering = self.NONE_TILE
-        kernel = ((-1,0), (0,-1), (1,0), (0,1))
+        kernel = ((-1, 0), (0, -1), (1, 0), (0, 1))
         frontier = [new_player_location]
         n = 0
 
@@ -268,18 +270,17 @@ class LevelState():
                     frontier.append(new)
                     self._locations[self.TREE_TILE].remove(new)
                     self._locations[self.EMPTY_TILE].add(new)
-            n+=1
+            n += 1
 
-
-    def push_rock(self, curr_rock_location: tuple[int, int],action: tuple[int,int]) -> None:
+    def push_rock(self, curr_rock_location: tuple[int, int], action: tuple[int, int]) -> None:
         """
         Try to push a rock.
 
         Parameters
         ----------
-        curr_rock_location: tuple[int, int] 
+        curr_rock_location: tuple[int, int]
             Current position of the rock that will be pushed
-        action: tuple[int, int] 
+        action: tuple[int, int]
             Movement of the player
 
         Raises
@@ -287,7 +288,7 @@ class LevelState():
         ValueError
             If the new rock position is invalid
         """
-        new_rock_location = (next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0]*2, 
+        new_rock_location = (next(iter(self._locations[self.LARO_CRAFT_TILE]))[0] + action[0]*2,
                              next(iter(self._locations[self.LARO_CRAFT_TILE]))[1] + action[1]*2)
         if new_rock_location in self._locations[self.WATER_TILE]:
             # Remove water tile in new position and add paved tile
@@ -304,7 +305,7 @@ class LevelState():
             self._locations[self.EMPTY_TILE].remove(new_rock_location)
         else:
             raise ValueError
-   
+
     def game_lose(self, new_player_location: tuple[int, int]) -> None:
         """Remove the water tile on new player location and call game_end method"""
         self._locations[self.WATER_TILE].remove(new_player_location)
@@ -315,16 +316,15 @@ class LevelState():
         self._locations[self.MUSHROOM_TILE].remove(new_player_location)
         self._mushroom_collected += 1
 
-
     def check_win(self) -> bool:
         """Returns if the player has won."""
         return self._mushroom_collected == self._mushroom_total
 
-
     def set_player_location(self, new_player_location: tuple[int, int]) -> None:
         """Updates the _locations[LARO_CRAFT_TILE] attribute to new player position."""
-        if (self._covering.behaviour is not TileBehaviour.ITEM and 
-            next(iter(self._locations[self.LARO_CRAFT_TILE])) not in self._locations[self.PAVED_TILE]):
+        if (self._covering.behaviour is not TileBehaviour.ITEM and
+                next(iter(self._locations[self.LARO_CRAFT_TILE]))
+                not in self._locations[self.PAVED_TILE]):
             self._locations[self.EMPTY_TILE].add(next(iter(self._locations[self.LARO_CRAFT_TILE])))
         try:
             self._locations[self.EMPTY_TILE].remove(new_player_location)

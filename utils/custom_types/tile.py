@@ -1,7 +1,9 @@
-from __future__ import annotations
+"""Immutable representation of different tiles found in the game."""
 
+from __future__ import annotations
 from dataclasses import dataclass
 from .tile_behaviour import TileBehaviour
+
 
 # === TILE REPRESENTATION ===
 @dataclass(frozen=True)

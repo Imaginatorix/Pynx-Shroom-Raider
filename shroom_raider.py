@@ -1,3 +1,5 @@
+"""Main python file of the game. Flags such as -f, -m, -o, -l may be used (check `README.md` for more details)."""
+
 import argparse
 import colorama
 from utils.parser import parse_level_from_file, save_state
@@ -115,7 +117,7 @@ if __name__ == "__main__":
     # if no system input flags -> run default map with no moves and output file
     curr_level = parse_level_from_file(
                 system_input.stage_file
-                if system_input.stage_file else "levels/stage0.txt")
+                if system_input.stage_file else "levels/challenge/stage2.txt")
     moves: str = system_input.string_of_moves
     output_file: str = system_input.output_file
 
@@ -133,7 +135,7 @@ if __name__ == "__main__":
         # Writes to an output file if available
         if output_file:
             save_state(output_file, curr_level, is_clear)
-
-        updateleaderboard(system_input.stage_file
-                          if system_input.stage_file else "levels/stage0.txt",
-                          move_count)
+        elif is_clear == "CLEAR":
+            updateleaderboard(system_input.stage_file if
+                              system_input.stage_file else "levels/stage0.txt",
+                              move_count)
