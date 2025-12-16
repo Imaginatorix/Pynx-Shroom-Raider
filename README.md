@@ -13,7 +13,9 @@ Legends whisper of a cure: the 𝐌𝐈𝐆𝐇𝐓𝐘 𝐂𝐎𝐍𝐂𝐎𝐂
 
 Will you help him traverse the dangerous wilderness and find the cure?
 
-**🫣 Sneak Peek**
+### [📖 **Sphinx Documentation (HTML)**](docs/_build/html/index.html)
+
+<!-- **🫣 Sneak Peek** -->
 <!-- <video src=''></video> -->
 
 ---
