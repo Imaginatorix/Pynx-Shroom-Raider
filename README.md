@@ -225,7 +225,6 @@ Pynx-Shroom-Raider/
 ├──__pycache__/
 ├── shroom_raider.py                    # Shroom Raider: base game integrated with leaderboard
 ├── utils/                              # Other helper functions
-│   ├── __pycache__/
 │   ├── custom_types/                       # Classes and enums used
 │   ├── leaderboard.py                      # Leaderboard logic 
 │   ├── movement.py                         # Shroom Raider: Core Movement Mechanics
@@ -236,7 +235,6 @@ Pynx-Shroom-Raider/
 │
 │
 ├── tests/                              # Testing Game Function with Pytest
-│   ├── __pycache__/
 │   ├── data_generator/
 │   ├── test_custom/
 │   ├── test_parser/
@@ -300,7 +298,7 @@ The tests:
 
 ### ➕ Adding New Tests
 
-1. Modify `test_custom/test_user.py` in the function `test_functionality`.
+1. Modify `tests/test_custom/test_user.py` in the function `test_functionality`.
 2. Include all necessary `assert`s in different function so long as it starts with `test_`.
 3. Run `pytest` again to verify!
 
