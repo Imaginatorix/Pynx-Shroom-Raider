@@ -10,6 +10,8 @@ Pynx Shroom Raider documentation
    :maxdepth: 2
    :caption: Contents:
 
+   README
+
 API Reference
 -------------
 
@@ -17,6 +19,5 @@ API Reference
    :toctree: generated
    :recursive:
 
-   README
    shroom_raider
    utils

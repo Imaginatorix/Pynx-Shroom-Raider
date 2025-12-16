@@ -242,7 +242,7 @@ Pynx-Shroom-Raider/
 │   ├── conftest.py
 │   └── unit_test_format.py
 │
-├── docs/                               # Sphinx generated docs
+├── docs/                              # Sphinx generated docs
 │
 ├── levels/                             # Game levels  
 │   ├── challenge/                             #  The three map designs that our group submit
